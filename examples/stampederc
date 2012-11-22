@@ -1,0 +1,15 @@
+# Overrides of Stampede environment variables
+# See $STAMPEDE_HOME/bin/env.sh for information on all the available variables.
+# Only the most important for customization are shown here.
+
+# The name of the project, used as a directory.
+# STAMPEDE_PROJECT=myproject
+
+# When emailing alerts, use this address.
+# STAMPEDE_ALERT_EMAIL_ADDRESS=admin@myserver.com
+
+# Set to non-empty when you want to disable email alerts, e.g., for testing.
+# STAMPEDE_DISABLE_ALERT_EMAILS=true
+
+# How many attempts to make for the workflow before giving up.
+# STAMPEDE_NUMBER_OF_TRIES=5

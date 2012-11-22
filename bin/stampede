@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# stampede - Creates or invoked a "stampede"; a workflow process.
+# The following options are supported:
+#   stampede [-h|--help] [options] [create | [makefile] [targets]]
+# Where,
+#   -h | --help   Describe the available options.
+#   create        Create a skeleton for a new stampede.
+#   makefile      The makefile to drive the stampede (default: current directory's).
+#   targets       Make targets to build (default: the first target).
+#
+# See the $STAMPEDE_HOME/README.md file for more information
+# on Stampede.
+
+if [ -z "$STAMPEDE_HOME" ]
+then
+  tmpdir=$(dirname $0)
+  [ "$tmpdir" = '.' ] && tmpdir=$PWD
+  STAMPEDE_HOME=$(dirname $tmpdir)
+fi
+export STAMPEDE_HOME
+
+
+function help {
+    cat <<-EOF
+usage: [env ENV_VAR_DEFS] stampede [-h | --help] \ 
+         [--year=YYYY] [--month=MM | --mon=MM] [--day=DD] \
+         [--hour=HH] [--minute=MM | --min=MM] [--second=SS | --sec=SS] \
+         [--subsecond=X | --subsec=X] 
+         [--force-rerun] [--tries=N] \
+         [-v | --verbose[=N]] [-n | noexec] 
+         create | makefile [make_options] [targets]
+where:
+  -h | --help        Print this message and exit.
+  ENV_VAR_DEFS       One-time overrides of env. vars defined in bin/env.sh.
+  --year=YYYY        Use YYYY (4 digits!) as the year. All time-related values
+                     default to the time the stampede starts.
+  --month=MM | --mon=MM
+                     Use MM (2 digits!) as the month.
+  --day=DD           Use DD (2 digits!) as the day.
+  --hour=HH          Use HH (2 digits!) as the hour.
+  --minute=MM | --min=MM 
+                     Use MM (2 digits!) as the minute.
+  --second=SS | --sec=SS
+                     Use SS (2 digits!) as the second.
+  --subsecond=X | --subsec=X
+                     Use X (up to 10 digits) as the fraction of a second.
+  --force-rerun      Force a rerun, ignoring make's usual dependency checking.
+  --tries=N          Make up to N attempts to succeed (default: 5 tries).
+  -v | --verbose[=N] Print more verbose output (useful for debugging w/ -n).
+                     If =N given, larger N results in more verbose output.
+                     (default is set by STAMPEDE_LOG_LEVEL)
+  -n | --noexec      Don't actually execute the commands in the script, 
+                     just "echo" them.
+  create             Create a new stampede workflow.
+  makefile           Run the stampede defined in "makefile".
+  make_options       Pass these options to make.
+  targets            Build these targets (default: first target in the makefile).
+EOF
+}
+
+function determine_log_level {
+  level=$1
+  case $1 in
+    [12345]) echo $1 ;;
+    D*) echo 1  ;;
+    I*) echo 2  ;;
+    W*) echo 3  ;;
+    E*) echo 4  ;;
+    F*) echo 5  ;;
+    *) 
+      echo "Unrecognized log level \"$1\". Must be 1-5 or DEBUG, INFO, WARN/WARNING, ERROR, or FATAL." >&2
+      kill -ABRT $$
+      ;;
+  esac
+}
+
+# defaults:
+let attempts=0  # "flag" value; may be reset below
+command=make 
+makefile=
+makeopts=()
+while [ $# -ne 0 ]
+do
+    case $1 in
+        -h|--he*)
+            help
+            exit 0
+            ;;
+        --year=*)
+            export YEAR=${1#--year=}
+            ;;
+        --mon*=*)
+            export MONTH=${1#--mon*=}
+            ;;
+        --day=*)
+            export DAY=${1#--day=}
+            ;;
+        --hour=*)
+            export HOUR=${1#--hour=}
+            ;;
+        --min*=*)
+            export MINUTE=${1#--min*=}
+            ;;
+        --sec*=*)
+            export SECOND=${1#--sec*=}
+            ;;
+        --subsec*=*)
+            export SUBSECOND=${1#--subsec*=}
+            ;;
+        --force-rerun)
+            force_rerun="--always-make"
+            ;;
+        --tries=?*)
+            let attempts=${1#--tries=}
+            ;;
+        --verbose=?*)
+            level=${1#--verbose=}
+            let STAMPEDE_LOG_LEVEL=$(determine_log_level $level)
+            ;;
+        -v|--verbose)
+            shift
+            let STAMPEDE_LOG_LEVEL=$(determine_log_level $1)
+            ;;
+        -n|--n*)
+            noexec="--dry-run"
+            NOOP=echo
+            ;;
+        create)
+            command=$1
+            ;;
+        *)
+            if [ -z "$MAKEFILE" ]
+            then
+              makefile_arg=$1
+              MAKEFILE=$(basename $1)
+              PROJECT_DIR=$(dirname $1)
+              makefile_dir=$PROJECT_DIR
+              if [ "$makefile_dir" = "." -o "$makefile_dir" = "$MAKEFILE" ] 
+              then
+                makefile_dir=
+              else
+                makefile_dir="--directory=$PROJECT_DIR"
+              fi
+              export MAKEFILE
+              export PROJECT_DIR
+            else
+              make_opts[${#make_opts[*]}]=$1
+            fi
+            ;;
+    esac        
+    shift
+done
+
+if [ "$command" = "create" ]
+then
+  if [ -n "$NOOP" ]
+  then
+    echo "exec $STAMPEDE_HOME/bin/create-project.sh"
+    exit 0
+  else
+    exec $STAMPEDE_HOME/bin/create-project.sh
+  fi
+fi
+
+# Because we let the user change YEAR, MONTH, DAY, etc. we must include
+# common.sh AFTER processing input options.
+
+. $STAMPEDE_HOME/bin/common.sh
+
+
+# Set the number of allowed attempts, if necessary.
+[ $attempts -le 0 ] && let attempts=$STAMPEDE_NUMBER_OF_TRIES
+
+info "Starting $0 $command (time: $STAMPEDE_START_TIME):"
+info "  makefile:              $makefile_arg"
+info "  make options/targets:  $STAMPEDE_MAKE_OPTIONS ${make_opts[@]}"
+info "  log file:              $(log_file)"
+info "  force rerun?           $(true_or_false $force_rerun "on" "off")"
+info "  maximum attempts:      $attempts"
+info "  verbosity:             $(to_log_level $STAMPEDE_LOG_LEVEL)"
+info "  no execute mode?       $(true_or_false "$NOOP" "true" "false")"
+debug " Environment variables:"
+debug "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:  $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
+env | grep '^STAMPEDE_' | while read line
+do
+  str1=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\1:/')
+  str2=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\2/')
+  debug "    $(printf "%-30s\t%s" "$str1" "$str2")"
+done
+
+let count=0
+while [ $count -lt $attempts ]
+do
+  let count=$count+1
+  info running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
+  if [ -z $NOOP ]
+  then
+    make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
+    do
+      info "  output: $line"
+    done
+  fi
+  if [ $? -eq 0 ]
+  then
+    info "Finished!"
+    exit 0
+  fi
+done
+die 1 "Failed after $count attempts!"
