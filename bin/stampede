@@ -14,9 +14,9 @@
 
 if [ -z "$STAMPEDE_HOME" ]
 then
-  tmpdir=$(dirname $0)
-  [ "$tmpdir" = '.' ] && tmpdir=$PWD
-  STAMPEDE_HOME=$(dirname $tmpdir)
+  _sdir=$(dirname $0)
+  [ "$_sdir" = '.' ] && _sdir=$PWD
+  STAMPEDE_HOME=$(dirname $_sdir)
 fi
 export STAMPEDE_HOME
 
