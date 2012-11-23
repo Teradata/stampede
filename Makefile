@@ -6,13 +6,17 @@ all: setup tests
 
 setup:
 
-tests:
-	@cd test; for f in test-*.sh; \
-	  do echo "Running $$f:"; \
-	  STAMPEDE_HOME=${STAMPEDE_HOME} ./$$f; \
-	  if [ $$? -ne 0 ]; then \
-	    echo "$$f failed!"; \
-	    kill -TERM $$$$; \
-	  fi; \
-	done 
+# Run the tests in this order, as the later tests
+# assume the features tested by the previous tests 
+# are valid!
+tests: test-env test-log test-common test-send-email
 	@echo "Successful!!"
+
+test-env test-log test-common test-send-email:
+	@cd test; \
+	echo "Running $@:"; \
+	STAMPEDE_HOME=${STAMPEDE_HOME} ./$@.sh; \
+	if [ $$? -ne 0 ]; then \
+	  echo "$@ failed!"; \
+	  exit 1; \
+	fi

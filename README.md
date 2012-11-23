@@ -86,57 +86,8 @@ The `example` directory contains several example *stampedes* that you can adapt 
 
 Tests of *Stampede* itself are in the `test` directory.
 
+## TODO
 
-## Supported Platforms
-
-bash 3
-cygwin
-
-## Bash Notes
-
-A few advanced bash constructs are used. They are briefly described here, but more complete information is readily available on the Internet.
-
-### Variables that are numbers
-
-    let count=0
-		while [ some_condition_is_true ]
-		do
-		  do_something
-			let count=$count+1
-		done
-		echo "Looped $count times"
-
-### Testing the success or failure of a previous command
-
-    my_command
-		if [ $? != 0 ]
-		then
-      echo "It failed!"
-			exit 1
-    fi
-
-The $? variable is the exit status of the previously-run command (e.g., "my_command") and it will be 0 if the command succeeded. Note, you can also use "-ne" instead "!=", in this case, because $? is actually a number.
-
-### Conditionally set a variable
-
-    FLAG=1
-    ...
-    : ${FLAG:=0}
-		
-The value of FLAG will be 1. The 3rd line only assigns FLAG if it hasn't already been assigned. (This is different than if FLAG were previously assigned the value of "", the empty string.)  The ":" is required so that bash doesn't try to run the value $FLAG as a command.
-
-### Get the parent directory that contains a file or directory
-
-    FILE=/a/b/c.txt
-    ...
-    echo $(dirname $FILE)  # prints "/a/b"
-		
-### Return a new string with a prefix or suffix removed from another string
-
-    FILE=20110601-foo-bar
-    ...
-    echo ${FILE#*-}   # prints "foo-bar"
-    echo ${FILE##*-}  # prints "bar"
-    echo ${FILE%-*}   # prints "20110601-foo"
-    echo ${FILE%%-*}  # prints "20110601"
-
+* Copyright notices.
+* License file.
+* Use the `syslog` logging levels.

@@ -44,30 +44,37 @@ done
 
 this_dir=$(dirname $BASH_SOURCE)
 
-# The operating system name.
-: ${OS_NAME:=$(uname -s 2> /dev/null | /usr/bin/tr "[:upper:]" "[:lower:]" 2> /dev/null)}
-export OS_NAME
-
 # Time string format for log file entries. Actually, this "format" can be any option(s)
 # for the date command that affect the output format, e.g., -u for UTC format. So, if you
 # specify a standard format string, you must include the "+" at the front of it.
 # If you want to use date's default format, leave this definition empty.
+# NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
 : ${STAMPEDE_LOG_TIME_FORMAT:=""}
 export STAMPEDE_LOG_TIME_FORMAT
 
-# Time string format: mostly used internally.
+
+# Time string format: mostly used internally. Contrast with STAMPEDE_LOG_TIME_FORMAT.
+# NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
 : ${STAMPEDE_TIME_FORMAT:="%Y-%m-%d %H:%M:%S"}
 export STAMPEDE_TIME_FORMAT
 
-# The time this script started (defaults to NOW).
-: ${STAMPEDE_START_TIME:=$(date +"$STAMPEDE_TIME_FORMAT")}
+# The time this script started in epoch seconds (defaults to NOW).
+if [ -z "$EPOCH_SECOND" ]
+then
+  let EPOCH_SECOND=$(date "%s")
+fi
+export EPOCH_SECOND
+: ${STAMPEDE_START_TIME:=$EPOCH_SECOND}
 export STAMPEDE_START_TIME
 
+function start_time {
+  time_fields "$STAMPEDE_TIME_FORMAT"
+}
 
 # Helper function to extract date fields from STAMPEDE_START_TIME.
 function time_fields {
   fields=$1
-  echo $($this_dir/date.sh --date "$STAMPEDE_START_TIME" --informat "$STAMPEDE_TIME_FORMAT" --format "$fields")
+  $this_dir/date.sh --date "$EPOCH_SECOND" --informat "%s" --format "$fields"
 }
 
 # Year (YYYY) of STAMPEDE_START_TIME.
@@ -93,10 +100,6 @@ export MINUTE
 # Second (SS) of STAMPEDE_START_TIME.
 : ${SECOND:=$(time_fields "%S")}
 export SECOND
-
-# Second (1234567890) of STAMPEDE_START_TIME.
-: ${SUBSECOND:=$(time_fields "%s")}
-export SUBSECOND
 
 # Number (N) for the day of the week from STAMPEDE_START_TIME,
 # where Sunday = 0 and Saturday = 6
@@ -137,18 +140,15 @@ export STAMPEDE_DISABLE_ALERT_EMAILS
 : ${STAMPEDE_ALERT_EMAIL_ADDRESS:=root@localhost}
 export STAMPEDE_ALERT_EMAIL_ADDRESS
 
-# When waiting for a resource to appear (e.g., files) from a process outside
-# our control, how many minutes to wait. Specify a number followed by a letter
-# to indicate the units, ymdhms.
-: ${STAMPEDE_WAIT_FOR_RESOURCE:=8h}
-export STAMPEDE_WAIT_FOR_RESOURCE
+
+# How long to sleep a process while waiting for something, e.g., before
+# trying a step again.
+: ${STAMPEDE_DEFAULT_SLEEP_INTERVAL:=60s}
+export STAMPEDE_DEFAULT_SLEEP_INTERVAL
 
 # How many attempts to make for the workflow before giving up.
 : ${STAMPEDE_NUMBER_OF_TRIES:=5}
 export STAMPEDE_NUMBER_OF_TRIES
-
-# Default makefile
-: ${MAKEFILE:=makefile}
 
 # Options that are always passed to make. 
 #   --jobs    Run as many build tasks in parallel as possible. It's faster,
@@ -156,3 +156,15 @@ export STAMPEDE_NUMBER_OF_TRIES
 # See "man make" for details.
 : ${STAMPEDE_MAKE_OPTIONS:=--jobs}
 export STAMPEDE_MAKE_OPTIONS
+
+#-----------------------------------------
+# Definitions that can be overridden in tests.
+
+: ${DIE:=die}
+export DIE
+
+: ${EXIT:=kill -TERM $$}
+export EXIT
+
+: ${STAMPEDE_LOG_DATE:=date}
+export STAMPEDE_LOG_DATE

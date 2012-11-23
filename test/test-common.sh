@@ -5,74 +5,116 @@
 TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh
 
-. $STAMPEDE_HOME/bin/common.sh
-
 save_exit="$EXIT"
-export EXIT=echo
-echo "  Starting die test:"
-die 5 'LINE 1' 'LINE 2' > $STAMPEDE_LOG_DIR/die.log
-grep -q 'FATAL.*test-common.*LINE [12]' $STAMPEDE_LOG_DIR/die.log
-status=$?
-if [ $status -ne 0 ]
+EXIT=fake_exit
+echo "  die test:"
+msg=$(die 'LINE 1' 'LINE 2' 2>&1)
+EXIT="$save_exit"
+if [ "$msg" != " FATAL test-common.sh: die called: LINE 1 LINE 2" ]
 then
-  echo "die test failed! Here is the output:"
-	cat $STAMPEDE_LOG_DIR/die.log
-	rm $STAMPEDE_LOG_DIR/die.log
-	exit 1
+	  die "die test failed! (msg = <$msg>)"
 fi
-rm $STAMPEDE_LOG_DIR/die.log
-export EXIT="$save_exit"
 
-echo "  Starting true_or_false test:"
+echo "  true_or_false test:"
 for x in "t" ""
 do
 		answer=$(true_or_false $x "true" "false")
 		case $answer in
 				true)
-						[ "$x" != "t" ] && die 1 "true_or_false test with true failed! Answer was $answer"
+						[ "$x" != "t" ] && die "true_or_false test with true failed! Answer was $answer"
 						;;
 				false)
-						[ "$x" != "" ] && die 1 "true_or_false test with false failed! Answer was $answer"
+						[ "$x" != "" ] && die "true_or_false test with false failed! Answer was $answer"
 						;;
 		esac
 done
 
-echo "  Starting ymd test:"
+echo "  ymd test:"
 ymd1=$(ymd)
-[ "$ymd1" = "20121120"   ] || die 1 "$ymd1 != 20121120!"
+[ "$ymd1" = "20121120"   ] || die "$ymd1 != 20121120!"
 ymd2=$(ymd -)
-[ "$ymd2" = "2012-11-20" ] || die 1 "$ymd2 != 2012-11-20!"
+[ "$ymd2" = "2012-11-20" ] || die "$ymd2 != 2012-11-20!"
 
-echo "  Starting yesterday_ymd test:"
+echo "  yesterday_ymd test:"
 ymd1=$(yesterday_ymd)
-[ "$ymd1" = "20121119"   ] || die 1 "<$ymd1> != 20121119!"
+[ "$ymd1" = "20121119"   ] || die "<$ymd1> != 20121119!"
 ymd2=$(yesterday_ymd -)
-[ "$ymd2" = "2012-11-19" ] || die 1 "$ymd2 != 2012-11-19!"
+[ "$ymd2" = "2012-11-19" ] || die "$ymd2 != 2012-11-19!"
 
-echo "  Starting log_file test:"
+echo "  log_file test:"
 logfile=$(log_file)
 expected="./logs/test-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log"
-[ "$logfile" = "$expected" ] || die 1 "$logfile != $expected"
+[ "$logfile" = "$expected" ] || die "$logfile != $expected"
 
-echo "  Starting to_log_level test:"
-save_dir=$DIE
-export DIE=echo
-for i in -1 0 6
+echo "  check_failure test:"
+ls $0 >& /dev/null
+check_failure "check_failure test should pass" >& /dev/null
+
+save_die=$DIE
+DIE=fake_die
+ls foobar >& /dev/null
+msg=$(check_failure "check_failure test should fail" 2>&1)
+if [ "$msg" != "check_failure test should fail failed! (status = 1)" ]
+then
+	DIE=$save_die
+	die "check_failure test should fail, but didn't. (msg = $msg)"
+fi
+DIE=$save_die
+
+echo "  to_seconds test:"
+strings=('' 0 0s 0h 1 1s 1m 1h 20 20s 20m 20h)
+ns=(0 0 0 0 1 1 60 3600 20 20 1200 72000)
+for i in {0..11}
 do
-	if [ "$(to_log_level $i)" != "1 Unrecognized log level $i!" ]
-	then
-		export DIE=$save_dir
-		die 1 "to_log_level failed for -1"
-	fi
+	let answer=$(to_seconds ${strings[$i]})
+	let expected=${ns[$i]}
+	[ $answer -eq $expected ] || die "to_seconds test failed: <$answer> != <$expected> for string ${strings[$i]}."
 done
-names=(DEBUG INFO WARNING ERROR FATAL)
-for i in {0..4}
-do 
-	let ii=i+1
-	if [ "$(to_log_level $ii)" != "${names[$i]}" ]
-	then
-		export DIE=$save_dir
-		die "to_log_level failed for $ii. Expected ${names[$i]}" 
-	fi
+
+save_exit=$EXIT
+EXIT=":"
+msg=$(to_seconds 1d 2>&1)
+case $msg in
+	*Unsupported?units?for?to_seconds:?d)
+		;;
+	*)
+		EXIT=$save_exit
+		die "Failed to return expected error message. (msg = $msg)"
+		;;
+esac
+EXIT=$save_exit
+
+echo "  waiting test:"
+for i in {1..2}
+do
+	let seconds=$i*2
+	# extract just what we want to check:
+	msg=$(waiting $i 2 "waiting test" 2>&1 | cut -d \( -f 2 | sed -e 's/)//')
+	[ "$msg" = "waiting $seconds seconds so far" ] ||	die "waiting test failed! (msg = $msg)"
 done
-export DIE=$save_dir
+
+for cmd in try_for try_for_or_die
+do
+	echo "  $cmd test:"
+	for s in "" s m h
+	do
+		msg=$(eval $cmd 2 1$s "ls $0 &> /dev/null")
+		[ $? -eq 0 ] || die "$cmd failed for arguments "2 1$s"! (msg = $msg)"
+	done
+done
+try_for 2 1 "ls foobar &> /dev/null"
+[ $? -ne 0 ] || die "try_for returned 0 even though it should have failed."
+DIE=fake_die try_for_or_die 2 1 "ls foobar &> /dev/null" &> /dev/null
+[ $? -ne 0 ] || die "try_for returned 0 even though it should have failed."
+
+let end=$($STAMPEDE_HOME/bin/date.sh --format "%s" 1:1 5 S)
+for cmd in try_until try_until_or_die
+do
+	echo "  $cmd test:"
+	msg=$(eval $cmd $end 2s "ls $0 &> /dev/null")
+	[ $? -eq 0 ] || die "$cmd failed for arguments \"$end 1s\"! (msg = $msg)"
+done
+try_until $end 1 "ls foobar &> /dev/null"
+[ $? -ne 0 ] || die "try_until returned 0 even though it should have failed."
+DIE=fake_die try_until_or_die $end 1 "ls foobar &> /dev/null" &> /dev/null
+[ $? -ne 0 ] || die "try_until returned 0 even though it should have failed."

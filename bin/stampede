@@ -207,4 +207,4 @@ do
     exit 0
   fi
 done
-die 1 "Failed after $count attempts!"
+die "Failed after $count attempts!"

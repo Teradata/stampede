@@ -20,12 +20,12 @@ let count=0
 function doloop {
   dotest | while read line
   do
-    [ "$line" != "${expected[$count]}" ] && die 1 "$0: ($count) $line != ${expected[$count]}."
+    [ "$line" != "${expected[$count]}" ] && die "$0: ($count) $line != ${expected[$count]}."
     let count=$count+1
     # hack to get the final count out of the nested process!
     echo -n $count   
   done
 }
 count_str=$(doloop)
-[ "$count_str" != "123" ] && die 1 "$0: Number of output lines ($count_str) not equal to expected ${#expected[@]}."
+[ "$count_str" != "123" ] && die "$0: Number of output lines ($count_str) not equal to expected ${#expected[@]}."
 exit 0

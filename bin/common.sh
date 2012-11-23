@@ -1,12 +1,12 @@
 # Common functions, etc. used by the other scripts.
+# Notes:
+#  1) Variables like DIE and EXIT are used so it's easy to replace calls
+#     "die" and "exit" with test substitutes. See, e.g., test/test-common.sh
 
 # Pull in environment variable definitions. 
 # ASSUMES that STAMPEDE_HOME is defined.
 . $STAMPEDE_HOME/bin/env.sh
-
-# Override for tests.
-: ${DIE:=die}
-export DIE=die
+. $STAMPEDE_HOME/bin/log.sh
 
 # If a delimiter isn't specified, you'll get "YYYYMMDD".
 function ymd { 
@@ -23,70 +23,7 @@ function yesterday_ymd {
 		--informat "$fmt" --format "$fmt" -1:-1 d
 }
 
-
-function log_file {
-	echo "$STAMPEDE_LOG_DIR/$STAMPEDE_LOG_FILE"
-}
-
-function to_log_level {
-	case $1 in
-		1)  echo "DEBUG"   ;;
-		2)  echo "INFO"    ;;
-		3)  echo "WARNING" ;;
-		4)  echo "ERROR"   ;;
-		5)  echo "FATAL"   ;;
-		*)  $DIE 1 "Unrecognized log level $1!" ;;
-	esac
-}
-
-function init_log_file {
-	mkdir -p $STAMPEDE_LOG_DIR
-	touch $(log_file)
-}
-
-function log {
-	let level=$1
-	if [ $level -ge $STAMPEDE_LOG_LEVEL ]
-	then
-		level_str=$(to_log_level $level)
-		shift
-		if [ -z "$STAMPEDE_LOG_TIME_FORMAT" ]
-		then
-			d=$(date)
-		else
-			d=$(date "$STAMPEDE_LOG_TIME_FORMAT")
-		fi
-		init_log_file
-		args="$@"
-		printf "%s %-7s %-10s %s\n" "$d" $level_str "$(basename $0):" "$args" | tee -a $(log_file)
-	fi
-}
-function debug {
-	log 1 "$@"
-}
-function info {
-	log 2 "$@"
-}
-function warn {
-	log 3 "$@"
-}
-function warning {  # alias for warn
-	warn "$@"
-}
-# It doesn't exit...
-function error {
-	log 4 "$@"
-}
-# It doesn't exit...
-function fatal {
-	log 5 "$@"
-}
-
-: ${EXIT:=kill -TERM $$}  # overrideable for testing
-
 function die {
-	let status=$1
-	shift
 	fatal "die called:" "$@"
 	if [ "$STAMPEDE_DISABLE_ALERT_EMAILS" = "" ]
 	then
@@ -107,31 +44,66 @@ function handle_signal {
 	fatal "******* $0 failed, signal ($status - ) received."
 	fatal "  See Log file $(log_file) for more in_formation."
 	fatal "  (Current directory: $PWD)"
-	$DIE   $status "Exiting..."
+	$DIE   "Exiting..."
 }
 
 trap "handle_signal" SIGHUP SIGINT 
 
 function check_failure {
-	let status=$1
-	name=$2
+	let status=$?
 	if [ $status != 0 ]
 	then
-		$DIE $status "$name failed!"
+		$DIE "$@ failed! (status = $status)"
 	else
-		info "$name succeeded!"
+		info "$@ succeeded!"
+	fi
+}
+
+# Accepts an argument such as "20x", where "x" is one of hms, with "s" as the 
+# default and returns the corresponding number of seconds.
+# Note: We don't support days, months, and years, because then you would have 
+# to specify a date to know the context!
+function to_seconds {
+	nn=$(echo $1 | sed -e 's/[^0-9]\+//')
+	units=$(echo $1 | sed -e 's/[0-9]\+//')
+	if [ -z "$nn" ]
+	then
+		let n=0
+	else
+		let n=$nn
+	fi
+	if [ -z "$units" -o "$units" = "s" ]
+	then
+		echo $n
+	else
+		case $units in
+			m)  
+				let n2=$n*60
+				echo $n2
+				;;
+			h)  
+				let n2=$n*3600
+				echo $n2
+				;;
+			*)
+				die "Unsupported units for to_seconds: $units"
+				;;
+		esac
 	fi
 }
 
 function waiting {
 	tries=$1
-	message=$2
+	shift
+	sleep_interval=$1
+	shift
 
 	if [ $tries -le 5 -o $(expr $tries % 5) = 0 ]
 	then
-		info "$message (waiting $tries minutes so far)"
+		let seconds=$tries*$sleep_interval
+		info "$@ (waiting $seconds seconds so far)"
 	fi
-	sleep 60
+	sleep $sleep_interval
 }
 
 # Helper used for verbose output. For example:
@@ -146,26 +118,100 @@ function true_or_false {
 	fi
 }
 
-# Helper used for verbose output. For example:
-#   info '  X succeeded?  $(succeeded $? "yes" "no")'
-function succeeded {
-	if [ $1 -ne 0 ]
-	then
-		echo $3
-	else
-		echo $2
-	fi
+# Helper for try_for and try_until.
+function _do_try {
+	name=$1
+	shift
+	let end=$1
+	shift
+	let retry_every=$(to_seconds $1)
+	shift
+	let die_on_timeout=$1
+	shift
+	start=$(date +"$STAMPEDE_TIME_FORMAT")
+
+	# Compute the times in epoch seconds
+	eval "$@"
+	while [ $? -ne 0 ]
+	do
+		let now=$(date +"%s")
+		if [ $now -gt $end ]
+		then
+			[ "$die_on_timeout" -ne 0 ] && $DIE "$name(): Waiting timed out!"
+			return 1
+		fi
+		sleep $retry_every 
+		eval "$@"
+	done
 }
 
-# Test for the existence of a file or directory, in local or HDFS,
-# based on whether or not "$using_local" is defined or not.
-# function test_file {
-# 		if [ "$using_local" = "" ]
-# 		then
-# 				test "$verbose" -gt 1 && info "existence test: hadoop dfs -test $@"
-# 				hadoop dfs -test "$@"
-# 		else
-# 				test "$verbose" -gt 1 && info "existence test: test $@"
-# 				test "$@"
-# 		fi
-# }
+# Helper for the try_for*.
+function _do_try_for {
+	let should_die=$1
+	shift
+	let wait_time=$(to_seconds $1)
+	shift
+	retry_every=$1
+	shift
+	let now=$(date +"%s")
+	let end=$($STAMPEDE_HOME/bin/date.sh --date "$now" --informat "%s" --format "%s" 1:1 $wait_time S)
+	name=try_for
+	[ $should_die -eq 1 ] && name=${name}_or_die
+	_do_try $name $end $retry_every $should_die "$@"
+}
+
+# Helper for the try_until*.
+function _do_try_until {
+	let should_die=$1
+	shift
+	let end=$1
+	shift
+	retry_every=$1
+	shift
+	name=try_until
+	[ $should_die -eq 1 ] && name=${name}_or_die
+	_do_try $name $end $retry_every $should_die "$@"
+}
+
+# Wait for an expression to succeed for a specified time period from now.
+# The first argument is the amount of time to wait in seconds, or append one of 
+# the characters 'h', 'm', or 's' to interpret the number as hours, minutes, or
+# seconds.
+# The second argument is how long to wait between attempts in seconds or "Nx", 
+# where x is one of hms.
+# The remaining arguments are the bash expression to try on every iteration. 
+# It must return a status of 0 when evaluated to indicate success and nonzero for
+# failure. For example, "ls foo" returns 1 unless "foo" exists, in which case
+# it returns 0.
+# If the wait times out 1 is returned.
+# NOTE: The process will sleep between attempts.
+# See also the other try_* functions.
+function try_for {
+	_do_try_for 0 "$@"
+}
+
+# Like "try_for", but will die if the waiting times out.
+function try_for_or_die {
+	_do_try_for 1 "$@"
+}
+
+# Wait for an expression to succeed until a specified time.
+# The first argument is the point in time when waiting will stop,
+# specified in epoch seconds. 
+# The second argument is how long to wait between attempts in seconds or "Nx", 
+# where x is one of hms.
+# The remaining arguments are the bash expression to try on every iteration. 
+# It must return a status of 0 when evaluated to indicate success and nonzero for
+# failure. For example, "ls foo" returns 1 unless "foo" exists, in which case
+# it returns 0.
+# If the wait times out 1 is returned.
+# NOTE: The process will sleep between attempts.
+# See also the other try_* functions.
+function try_until {
+	_do_try_until 0 "$@"
+}
+
+# Like "try_until", but will die if the waiting times out.
+function try_until_or_die {
+	_do_try_until 1 "$@"
+}

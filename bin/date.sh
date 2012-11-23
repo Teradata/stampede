@@ -18,14 +18,15 @@ where:"
                   Omit the "+" at the beginning of the string, which the date command would require.
   --format fmt    Format the output date(s) using fmt.
   --sep separator Separate output dates by "separator" (default: " ").
-  M:N             Calculate one or more "units" (default: days), based on this interpretation of M:N:
+  M:N             Calculate one or more "units" (default unit: 1 day), based on this interpretation of M:N:
     M:N             Return a range of dates from M days to N days FROM the starting date. 
                     Prefix M or N with a "-" to use days AGO. 
     :N            Start with the starting date, inclusive, i.e., M=0.
     M:            End with the starting date, inclusive, i.e., N=0.
                   Because the M and N are inclusive, the number of dates returned is abs(N-M)+1.
                   Also, if the N < M, the results "count down".
-  units           For the M:N range, one of the characters in ymwdHMS.
+  units           How to interpret the the M:N range. An optional number (default: 1),
+                  followed by one of the characters in ymwdHMS.
   If "M:N units" are omitted, the script just reformats the input or today's date.
 EOF
 }
@@ -37,6 +38,7 @@ function die {
 }
 separator=" "
 date_range="0:0"
+let delta=1
 units="d"
 while [ $# -ne 0 ]
 do
@@ -66,8 +68,14 @@ do
 		*:*)
 			date_range=$1
 			;;
-		*)
+		0*|1*|2*|3*|4*|5*|6*|7*|8*|9*)
+			let delta=$1
+			;;
+		y|m|w|d|H|M|S)
 			units=$1
+			;;
+		*)
+			die "unrecongized argument: $1"
 			;;
 	esac
 	shift
@@ -93,12 +101,6 @@ case $date_range in
 		;;
 esac
 
-case $units in
-	y|m|d|H|M|S) ;;
-	*)
-		die "The units value \"$units\" must be one of the characters in ymdHMS."
-		;;
-esac
 
 function mac_date {
 	start_date=$1
@@ -113,7 +115,7 @@ function mac_date {
 	fi
 	if [ -n "$outformat" ]
 	then
-		#echo date -j -v${delta}${units} -f "$informat" "$start_date" +"$outformat"
+		# echo date -j -v${delta}${units} -f "$informat" "$start_date" +"$outformat" 1>&2
 		date -j -v${delta}${units} -f "$informat" "$start_date" +"$outformat"
 	else
 		date -j -v${delta}${units} -f "$informat" "$start_date"
@@ -164,16 +166,17 @@ test -n "$start" || start=0
 test -n "$end"   || end=0
 
 set=
-for delta in $(eval "echo {$start..$end}")
+for delta2 in $(eval "echo {$start..$end}")
 do 
-	case $delta in
+	let delta3=$delta2*$delta
+	case $delta3 in
 		-*)
 			;;
 		*)
-			delta="+$delta"
+			delta3="+$delta3"
 			;;
 	esac
-	echo -n "$sep$(mac_or_linux_date "$start_date" "$delta" $units "$informat" "$out_format")"
+	echo -n "$sep$(mac_or_linux_date "$start_date" "$delta3" $units "$informat" "$out_format")"
 	sep=$separator
 done
 echo ""
