@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;&#58;&#100;&#101;&#97;&#x6e;&#46;&#119;&#x61;&#x6d;&#112;&#108;&#x65;&#x72;&#64;&#116;&#x68;&#105;&#x6e;&#x6b;&#x62;&#x69;&#x67;&#97;&#x6e;&#x61;&#108;&#121;&#x74;&#105;&#x63;&#115;&#x2e;&#99;&#x6f;&#109;">&#x64;&#x65;&#x61;&#110;&#46;&#x77;&#97;&#109;&#112;&#x6c;&#x65;&#114;&#64;&#116;&#x68;&#x69;&#x6e;&#107;&#98;&#x69;&#x67;&#97;&#110;&#x61;&#x6c;&#x79;&#x74;&#x69;&#99;&#x73;&#x2e;&#x63;&#111;&#109;</a><br/>
+<a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#100;&#101;&#x61;&#110;&#46;&#119;&#97;&#x6d;&#112;&#108;&#101;&#x72;&#64;&#116;&#x68;&#105;&#110;&#107;&#98;&#105;&#x67;&#x61;&#x6e;&#97;&#x6c;&#121;&#116;&#105;&#99;&#115;&#x2e;&#x63;&#111;&#x6d;">&#100;&#x65;&#97;&#x6e;&#46;&#x77;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#114;&#x40;&#116;&#x68;&#x69;&#x6e;&#x6b;&#x62;&#x69;&#103;&#97;&#x6e;&#97;&#x6c;&#x79;&#x74;&#105;&#x63;&#115;&#46;&#x63;&#111;&#x6d;</a><br/>
 November 21, 2012</p>
 
 <p>Welcome to <em>Stampede</em>, the Hadoop-aware workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
@@ -91,7 +91,13 @@ November 21, 2012</p>
 
 <h2 id="manifest">Manifest</h2>
 
-<p>The top-level directory contains this <code>README.md</code>. The rest of <em>Stampede</em> is in subdirectories.</p>
+<p>The top-level directory contains the following files, in addition to directories that will be described next:</p>
+
+<ul>
+<li><code>README.md</code> - This file.</li>
+<li><code>LICENSE</code> - The copyright and license (Apache 2.0).</li>
+<li><code>Makefile</code> - The <code>makefile</code> used to to test and install <em>Stampede</em>.</li>
+</ul>
 
 <h3 id="bindirectory">Bin Directory</h3>
 
@@ -124,63 +130,11 @@ November 21, 2012</p>
 
 <p>Tests of <em>Stampede</em> itself are in the <code>test</code> directory.</p>
 
-<h2 id="supportedplatforms">Supported Platforms</h2>
+<h2 id="todo">TODO</h2>
 
-<p>bash 3
-cygwin</p>
-
-<h2 id="bashnotes">Bash Notes</h2>
-
-<p>A few advanced bash constructs are used. They are briefly described here, but more complete information is readily available on the Internet.</p>
-
-<h3 id="variablesthatarenumbers">Variables that are numbers</h3>
-
-<pre><code>let count=0
-    while [ some_condition_is_true ]
-    do
-      do_something
-        let count=$count+1
-    done
-    echo &quot;Looped $count times&quot;
-</code></pre>
-
-<h3 id="testingthesuccessorfailureofapreviouscommand">Testing the success or failure of a previous command</h3>
-
-<pre><code>my_command
-    if [ $? != 0 ]
-    then
-  echo &quot;It failed!&quot;
-        exit 1
-fi
-</code></pre>
-
-<p>The $? variable is the exit status of the previously-run command (e.g., &#8220;my_command&#8221;) and it will be 0 if the command succeeded. Note, you can also use &#8220;-ne&#8221; instead &#8220;!=&#8221;, in this case, because $? is actually a number.</p>
-
-<h3 id="conditionallysetavariable">Conditionally set a variable</h3>
-
-<pre><code>FLAG=1
-...
-: ${FLAG:=0}
-</code></pre>
-
-<p>The value of FLAG will be 1. The 3rd line only assigns FLAG if it hasn&#8217;t already been assigned. (This is different than if FLAG were previously assigned the value of &quot;&#8220;, the empty string.) The &#8221;:&quot; is required so that bash doesn&#8217;t try to run the value $FLAG as a command.</p>
-
-<h3 id="gettheparentdirectorythatcontainsafileordirectory">Get the parent directory that contains a file or directory</h3>
-
-<pre><code>FILE=/a/b/c.txt
-...
-echo $(dirname $FILE)  # prints &quot;/a/b&quot;
-</code></pre>
-
-<h3 id="returnanewstringwithaprefixorsuffixremovedfromanotherstring">Return a new string with a prefix or suffix removed from another string</h3>
-
-<pre><code>FILE=20110601-foo-bar
-...
-echo ${FILE#*-}   # prints &quot;foo-bar&quot;
-echo ${FILE##*-}  # prints &quot;bar&quot;
-echo ${FILE%-*}   # prints &quot;20110601-foo&quot;
-echo ${FILE%%-*}  # prints &quot;20110601&quot;
-</code></pre>
+<ul>
+<li>Copyright notices.</li>
+</ul>
     </div>
 </body>
 </html>

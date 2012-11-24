@@ -1,0 +1,27 @@
+# Convert a log level to the corresponding number.
+# usage: from_log_level NAME
+# where the case of NAME doesn't matter.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+let min_log_level=${STAMPEDE_LOG_LEVELS[0]}
+let max_log_level=${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}
+
+level=$(echo $1 | tr "[:lower:]" "[:upper:]")
+let n=-1
+for i in ${STAMPEDE_LOG_LEVELS[@]}
+do
+  l=${STAMPEDE_LOG_LEVEL_NAMES[$i]}
+  if [ "$l" = "$level" ]
+  then
+    let n=$i
+    break
+  fi
+done
+if [ $n -lt $min_log_level ]
+then
+  $DIE "Unrecognized log level \"$1\"!"
+else
+  echo $n
+fi

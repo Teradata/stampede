@@ -1,0 +1,3 @@
+# fake_date
+. $(dirname $BASH_SOURCE)/../bin/common.sh
+echo $(start_time)

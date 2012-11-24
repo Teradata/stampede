@@ -1,0 +1,11 @@
+# Return the log file being used or "SYSLOG(1)".
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+if [ $STAMPEDE_LOG_USE_SYSLOG -eq 0 ]
+then
+  echo "SYSLOG(1)"
+else
+  echo "$STAMPEDE_LOG_DIR/$STAMPEDE_LOG_FILE"
+fi

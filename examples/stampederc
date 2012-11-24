@@ -1,6 +1,6 @@
-# Overrides of Stampede environment variables
+# Overrides of Stampede environment variables:
 # See $STAMPEDE_HOME/bin/env.sh for information on all the available variables.
-# Only the most important for customization are shown here.
+# Only the most useful for customization are shown here.
 
 # The name of the project, used as a directory.
 # STAMPEDE_PROJECT=myproject
@@ -8,8 +8,31 @@
 # When emailing alerts, use this address.
 # STAMPEDE_ALERT_EMAIL_ADDRESS=admin@myserver.com
 
-# Set to non-empty when you want to disable email alerts, e.g., for testing.
-# STAMPEDE_DISABLE_ALERT_EMAILS=true
+# Set to 0 when you want to disable email alerts, e.g., for testing.
+# Use any other integer to enable them.
+# let STAMPEDE_DISABLE_ALERT_EMAILS=1
+
+
+# A format string used with printf to format the log message string. 
+# It should have four "%s" elements, for the date, severity level name, 
+# name of the application, and a %s into which all the remaining message
+# arguments will be formatted.
+# If you need more flexible formatting, your can define own formatting function
+# as discussed in bin/env.sh
+# STAMPEDE_LOG_MESSAGE_FORMAT_STRING="%s %-9s %-10s: %s"
+
+# Set to 0 if you want to use syslog(1) for logging.
+if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
+# The host to which syslog calls are sent.
+# STAMPEDE_LOG_SYSLOG_HOST=mycentralhost
+
+
+# How long to sleep a process while waiting for something, e.g., before
+# trying a step again. The default units are seconds, but you can append
+# one of 's', 'm', or 'h' for seconds, minutes, hours, respectively.
+: ${STAMPEDE_DEFAULT_SLEEP_INTERVAL:=60s}
+export STAMPEDE_DEFAULT_SLEEP_INTERVAL
 
 # How many attempts to make for the workflow before giving up.
-# STAMPEDE_NUMBER_OF_TRIES=5
+: ${STAMPEDE_NUMBER_OF_TRIES:=5}
+export STAMPEDE_NUMBER_OF_TRIES

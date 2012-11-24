@@ -17,24 +17,24 @@ then
   _sdir=$(dirname $0)
   [ "$_sdir" = '.' ] && _sdir=$PWD
   STAMPEDE_HOME=$(dirname $_sdir)
+  [ "$STAMPEDE_HOME" = '.' ] && STAMPEDE_HOME=$PWD
 fi
 export STAMPEDE_HOME
-
 
 function help {
     cat <<-EOF
 usage: [env ENV_VAR_DEFS] stampede [-h | --help] \ 
-         [--year=YYYY] [--month=MM | --mon=MM] [--day=DD] \
-         [--hour=HH] [--minute=MM | --min=MM] [--second=SS | --sec=SS] \
-         [--subsecond=X | --subsec=X] 
-         [--force-rerun] [--tries=N] \
-         [-v | --verbose[=N]] [-n | noexec] 
-         create | makefile [make_options] [targets]
+         [--year=YYYY] [--month=MM | --mon=MM] [--day=DD] \ 
+         [--hour=HH] [--minute=MM | --min=MM] \ 
+         [--second=SS | --sec=SS] [--epoch=seconds] \ 
+         [--force-rerun] [--tries=N] \ 
+         [-v | --verbose[=N]] [-n | noexec] \ 
+         [create | makefile [make_options] [targets]]
 where:
   -h | --help        Print this message and exit.
   ENV_VAR_DEFS       One-time overrides of env. vars defined in bin/env.sh.
   --year=YYYY        Use YYYY (4 digits!) as the year. All time-related values
-                     default to the time the stampede starts.
+                     default to the time the stampede starts. See note below.
   --month=MM | --mon=MM
                      Use MM (2 digits!) as the month.
   --day=DD           Use DD (2 digits!) as the day.
@@ -43,36 +43,32 @@ where:
                      Use MM (2 digits!) as the minute.
   --second=SS | --sec=SS
                      Use SS (2 digits!) as the second.
-  --subsecond=X | --subsec=X
-                     Use X (up to 10 digits) as the fraction of a second.
+  --epoch=seconds    Set ALL time fields to correspond to the specified seconds
+                     since the Unix epoch. See note below.
   --force-rerun      Force a rerun, ignoring make's usual dependency checking.
   --tries=N          Make up to N attempts to succeed (default: 5 tries).
-  -v | --verbose[=N] Print more verbose output (useful for debugging w/ -n).
-                     If =N given, larger N results in more verbose output.
-                     (default is set by STAMPEDE_LOG_LEVEL)
+  --log-level=N      Log more verbose output (useful for debugging w/ -n).
+                     SYSLOG(1) log levels are used, so LARGER N results in LESS
+                     verbose output (default: value of STAMPEDE_LOG_LEVEL).
+                     For N, you can also use EMERGENCY, ALERT, CRITICAL, ERROR,
+                     WARNING, NOTICE, INFO, and DEBUG (case doesn't matter). 
   -n | --noexec      Don't actually execute the commands in the script, 
                      just "echo" them.
   create             Create a new stampede workflow.
-  makefile           Run the stampede defined in "makefile".
+  makefile           Run "makefile", which defines the stampede 
+                     (default: \$PWD/makefile).
   make_options       Pass these options to make.
-  targets            Build these targets (default: first target in the makefile).
+  targets            Build these targets (default: first on in makefile).
+Note on time-related arguments: The purpose of these arguments is to enable
+specifying time-stamped resources, defaulting to those with the current date
+and time. If you specify any of the time-related arguments, WITH THE EXCEPTION OF
+"--epoch=seconds", it only affects that field. All other time-related fields that
+aren't specified will default to the current start time. Instead, --epoch=seconds
+changes ALL time fields to the corresponding time. In principle, you can mix 
+--epoch=seconds with other time arguments; the latter will still override the 
+corresponding equivalent field values from the epoch seconds, but this could be
+very confusing.
 EOF
-}
-
-function determine_log_level {
-  level=$1
-  case $1 in
-    [12345]) echo $1 ;;
-    D*) echo 1  ;;
-    I*) echo 2  ;;
-    W*) echo 3  ;;
-    E*) echo 4  ;;
-    F*) echo 5  ;;
-    *) 
-      echo "Unrecognized log level \"$1\". Must be 1-5 or DEBUG, INFO, WARN/WARNING, ERROR, or FATAL." >&2
-      kill -ABRT $$
-      ;;
-  esac
 }
 
 # defaults:
@@ -105,8 +101,11 @@ do
         --sec*=*)
             export SECOND=${1#--sec*=}
             ;;
-        --subsec*=*)
-            export SUBSECOND=${1#--subsec*=}
+        --epoch=*)
+            # Although it looks like we're just setting yet another time field,
+            # like the others. In fact, this value is used to calculate all the
+            # others if they aren't specified explicitly.
+            export EPOCH_SECOND=${1#--epoch=}
             ;;
         --force-rerun)
             force_rerun="--always-make"
@@ -114,17 +113,17 @@ do
         --tries=?*)
             let attempts=${1#--tries=}
             ;;
-        --verbose=?*)
-            level=${1#--verbose=}
-            let STAMPEDE_LOG_LEVEL=$(determine_log_level $level)
-            ;;
-        -v|--verbose)
-            shift
-            let STAMPEDE_LOG_LEVEL=$(determine_log_level $1)
+        --log-level=?*)
+            log_level=${1#--log-level=}
             ;;
         -n|--n*)
             noexec="--dry-run"
             NOOP=echo
+            ;;
+        -*)
+            echo "Unrecognized option: $1" 1>&2
+            echo "See stampede \"--help\" for more details." 1>&2
+            exit 1
             ;;
         create)
             command=$1
@@ -132,18 +131,7 @@ do
         *)
             if [ -z "$MAKEFILE" ]
             then
-              makefile_arg=$1
-              MAKEFILE=$(basename $1)
-              PROJECT_DIR=$(dirname $1)
-              makefile_dir=$PROJECT_DIR
-              if [ "$makefile_dir" = "." -o "$makefile_dir" = "$MAKEFILE" ] 
-              then
-                makefile_dir=
-              else
-                makefile_dir="--directory=$PROJECT_DIR"
-              fi
-              export MAKEFILE
-              export PROJECT_DIR
+              makefile=$1
             else
               make_opts[${#make_opts[*]}]=$1
             fi
@@ -163,11 +151,44 @@ then
   fi
 fi
 
+# Not creating a new project, but running make on the existing one.
+
+: ${makefile:=Makefile}  # if not explicitly set on the command line.
+MAKEFILE=$(basename $makefile)
+PROJECT_DIR=$(dirname $makefile)
+makefile_dir=$PROJECT_DIR
+if [ "$makefile_dir" = "." -o "$makefile_dir" = "$MAKEFILE" ] 
+then
+  makefile_dir=
+else
+  makefile_dir="--directory=$PROJECT_DIR"
+fi
+export MAKEFILE
+export PROJECT_DIR
+
 # Because we let the user change YEAR, MONTH, DAY, etc. we must include
 # common.sh AFTER processing input options.
 
 . $STAMPEDE_HOME/bin/common.sh
 
+# After loading common.sh functions we need, validate and set the log level.
+function determine_log_level {
+  let level=$1
+  case $1 in
+    [0-9]*) 
+      toss=$(to_log_level $1)  # Used only to catch invalid values.
+      echo $1
+      ;;
+    *)
+      from_log_level $1
+      ;;
+  esac
+}
+
+if [ -n "$log_level" ]
+then
+  let STAMPEDE_LOG_LEVEL=$(determine_log_level $log_level)
+fi
 
 # Set the number of allowed attempts, if necessary.
 [ $attempts -le 0 ] && let attempts=$STAMPEDE_NUMBER_OF_TRIES
@@ -181,7 +202,8 @@ info "  maximum attempts:      $attempts"
 info "  verbosity:             $(to_log_level $STAMPEDE_LOG_LEVEL)"
 info "  no execute mode?       $(true_or_false "$NOOP" "true" "false")"
 debug " Environment variables:"
-debug "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:  $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
+debug "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:   $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
+debug "    EPOCH_SECOND:                        $EPOCH_SECOND"
 env | grep '^STAMPEDE_' | while read line
 do
   str1=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\1:/')
@@ -194,9 +216,9 @@ while [ $count -lt $attempts ]
 do
   let count=$count+1
   info running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
-  if [ -z $NOOP ]
+  if [ -z "$NOOP" ]
   then
-    make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
+    make -ks -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
     do
       info "  output: $line"
     done

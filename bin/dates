@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #----------------------------------
-# date.sh - Mac/Linux date formatting and calculation tool.
-# usage:  date.sh [--help] options
+# dates - Mac/Linux date formatting and calculation tool.
+# usage:  dates [--help] options
 # This script wraps the different date tools on Mac and Linux.
 # TODO: support Cygwin's version of date.
 
 function help {
 		cat <<EOF
-usage: date.sh [--help] [--today | --date date [--informat fmt]] [--format fmt] [--sep separator] [M:N [units]]"
+usage: dates [--help] [--today | --date date [--informat fmt]] [--format fmt] [--sep separator] [M:N [units]]"
 where:"
   --help          This message.
   --today         Use today's date as the starting date.

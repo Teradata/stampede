@@ -27,9 +27,14 @@
 #      before the defaults are defined here. Just be sure to define and export those
 #      settings before common.sh is sources.
 
-# This Stampede Project (workflow). Typically the same as the project root directory. 
-# Define this in an appropriate .stampederc file! Here we just use the
-# name of the directory where the Makefile was found (effectively...).
+# This Stampede Project (workflow). Typically the same as the project root
+# directory name, defined as PROJECT_DIR in the "stampede" driver script from
+# the directory containing the specified makefile, e.g., "myproject" for
+# "/home/me/myproject/Makefile". We first test for PROJECT_DIR="", which will 
+# happen when a support script is run independently. In this case we use $PWD.
+# You can define a particular value in an appropriate .stampederc file if you 
+# prefer. 
+[ -z "$PROJECT_DIR" ] && PROJECT_DIR=$PWD
 if [ -z "$STAMPEDE_PROJECT" ]
 then
   STAMPEDE_PROJECT=$(basename $PROJECT_DIR)
@@ -37,12 +42,25 @@ then
 fi
 export STAMPEDE_PROJECT
 
+# Verify that STAMPEDE_HOME is defined. It is if this script is sourced from
+# the stampede driver script, but not from other support scripts.
+if [ -z "$STAMPEDE_HOME" ]
+then
+  _sdir=$(dirname $0)
+  [ "$_sdir" = '.' ] && _sdir=$PWD
+  STAMPEDE_HOME=$(dirname $_sdir)
+  [ "$STAMPEDE_HOME" = '.' ] && STAMPEDE_HOME=$PWD
+fi
+export STAMPEDE_HOME
+
 for f in /etc/stampederc /etc/sysconfig/stampede $HOME/.stampederc $STAMPEDE_PROJECT/.stampederc
 do
   [ -f "$f" ] && . "$f"
 done
 
 this_dir=$(dirname $BASH_SOURCE)
+
+# -- Date/time variables:
 
 # Time string format for log file entries. Actually, this "format" can be any option(s)
 # for the date command that affect the output format, e.g., -u for UTC format. So, if you
@@ -61,7 +79,7 @@ export STAMPEDE_TIME_FORMAT
 # The time this script started in epoch seconds (defaults to NOW).
 if [ -z "$EPOCH_SECOND" ]
 then
-  let EPOCH_SECOND=$(date "%s")
+  let EPOCH_SECOND=$(date +"%s")
 fi
 export EPOCH_SECOND
 : ${STAMPEDE_START_TIME:=$EPOCH_SECOND}
@@ -74,7 +92,7 @@ function start_time {
 # Helper function to extract date fields from STAMPEDE_START_TIME.
 function time_fields {
   fields=$1
-  $this_dir/date.sh --date "$EPOCH_SECOND" --informat "%s" --format "$fields"
+  $this_dir/dates --date "$EPOCH_SECOND" --informat "%s" --format "$fields"
 }
 
 # Year (YYYY) of STAMPEDE_START_TIME.
@@ -113,6 +131,11 @@ export SECOND
 # e.g., "Thursday".
 : ${DAY_OF_WEEK:=$(time_fields "%A")}
 
+# -- Logging variables:
+
+# The names and levels of the SYSLOG(1)-compatible log levels.
+export STAMPEDE_LOG_LEVEL_NAMES=(EMERGENCY ALERT CRITICAL ERROR WARNING NOTICE INFO DEBUG)
+export STAMPEDE_LOG_LEVELS=(0 1 2 3 4 5 6 7)
 
 # Log files location.
 # On *nix systems, a more standard option is /var/logs/stampede.
@@ -125,14 +148,41 @@ export STAMPEDE_LOG_DIR
 : ${STAMPEDE_LOG_FILE:=$STAMPEDE_PROJECT-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log}
 export STAMPEDE_LOG_FILE
 
-# Logging level, 1-5 (debug, info, warning, error, fatal)
-[ -z "$STAMPEDE_LOG_LEVEL" ] && let STAMPEDE_LOG_LEVEL=2
+# Default logging level. See a description of the options in bin/log.sh.
+[ -z "$STAMPEDE_LOG_LEVEL" ] && let STAMPEDE_LOG_LEVEL=4
 
-# -- Other default values:
+# A format string used with printf to format the log message string. 
+# It should have four "%s" elements, for the date, severity level name, 
+# name of the application, and a %s into which all the remaining message
+# arguments will be formatted.
+# If you need more flexible formatting, define your own formatting function
+# and override STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION to reference it.
+: ${STAMPEDE_LOG_MESSAGE_FORMAT_STRING:="%s %-9s %s: %s"}
+export STAMPEDE_LOG_MESSAGE_FORMAT_STRING
 
-# Set to non-empty when you want to disable email alerts, e.g., for testing.
+# Name of the function called to format log messages.
+: ${STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION:=format_log_message}
+
+# Set to 0 if you want to use syslog(1) for logging.
+if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
+then
+  let STAMPEDE_LOG_USE_SYSLOG=1
+fi
+export STAMPEDE_LOG_USE_SYSLOG
+
+# The host to which syslog calls are sent.
+: ${STAMPEDE_LOG_SYSLOG_HOST:=localhost}
+export STAMPEDE_LOG_SYSLOG_HOST
+
+# -- Miscellaneous variables:
+
+# Set to 0 when you want to disable email alerts, e.g., for testing.
+# Use any other integer to enable them.
 # Assumes that the *nix "mail" command is configured on the server.
-: ${STAMPEDE_DISABLE_ALERT_EMAILS:=true}
+if [ -z "$STAMPEDE_DISABLE_ALERT_EMAILS" ]
+then
+  let STAMPEDE_DISABLE_ALERT_EMAILS=1
+fi
 export STAMPEDE_DISABLE_ALERT_EMAILS
 
 #The email address to which alerts are sent.
@@ -157,8 +207,7 @@ export STAMPEDE_NUMBER_OF_TRIES
 : ${STAMPEDE_MAKE_OPTIONS:=--jobs}
 export STAMPEDE_MAKE_OPTIONS
 
-#-----------------------------------------
-# Definitions that can be overridden in tests.
+# -- Definitions designed to be overridden in tests.
 
 : ${DIE:=die}
 export DIE

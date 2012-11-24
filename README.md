@@ -57,7 +57,11 @@ Note that as of this writing, support for running Hadoop in Windows environments
 
 ## Manifest
 
-The top-level directory contains this `README.md`. The rest of *Stampede* is in subdirectories.
+The top-level directory contains the following files, in addition to directories that will be described next:
+
+* `README.md` - This file.
+* `LICENSE` - The copyright and license (Apache 2.0).
+* `Makefile` - The `makefile` used to to test and install *Stampede*.
 
 ### Bin Directory
 
@@ -67,8 +71,8 @@ Briefly, here are the files in the `bin` directory:
 
 * `stampede` - The "stampede" (workflow) driver script. It can be invoked manually or by `cron`. It has several options to configure behavior. Run `stampede --help` for details.
 * `env.sh` - Defines global shell variables. Start here for configuring behavior.
-* `common.sh` - Common `bash` functions used in several scripts.
-* `date.sh` - A helper script to format dates and perform date arithmetic.
+* `common.sh` - Wrapper around `bash` functions, etc. used in several scripts.
+* *numerous scripts* - The rest of the files in this directory are utilities usable in stampede Makefiles, etc. Scripts that end with `.sh` are used internally.
 
 ### Example Directory
 
@@ -86,8 +90,11 @@ The `example` directory contains several example *stampedes* that you can adapt 
 
 Tests of *Stampede* itself are in the `test` directory.
 
+
 ## TODO
 
 * Copyright notices.
-* License file.
-* Use the `syslog` logging levels.
+* Fill in examples.
+* Installer.
+* Create project support.
+* Test email support.

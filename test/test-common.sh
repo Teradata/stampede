@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------
-# test-common.sh - Tests of the common.sh file
+# test-common.sh - Tests of common.sh and other functionality.
 
 TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh
@@ -10,10 +10,13 @@ EXIT=fake_exit
 echo "  die test:"
 msg=$(die 'LINE 1' 'LINE 2' 2>&1)
 EXIT="$save_exit"
-if [ "$msg" != " FATAL test-common.sh: die called: LINE 1 LINE 2" ]
-then
+case "$msg" in
+	*ALERT*test-common.sh:?die?called:?LINE?1?LINE?2)
+		;;
+	*)
 	  die "die test failed! (msg = <$msg>)"
-fi
+	  ;;
+esac
 
 echo "  true_or_false test:"
 for x in "t" ""
@@ -25,6 +28,20 @@ do
 						;;
 				false)
 						[ "$x" != "" ] && die "true_or_false test with false failed! Answer was $answer"
+						;;
+		esac
+done
+
+echo "  success_or_failure test:"
+for x in 0 1
+do
+		answer=$(success_or_failure $x "yes" "no")
+		case $answer in
+				yes)
+						[ $x -ne 0 ] && die "success_or_failure test with 0 failed! Answer was $answer"
+						;;
+				no)
+						[ $x -ne 1 ] && die "success_or_failure test with 1 failed! Answer was $answer"
 						;;
 		esac
 done
@@ -85,6 +102,8 @@ esac
 EXIT=$save_exit
 
 echo "  waiting test:"
+save_level=$STAMPEDE_LOG_LEVEL
+STAMPEDE_LOG_LEVEL=$(from_log_level INFO)
 for i in {1..2}
 do
 	let seconds=$i*2
@@ -107,7 +126,7 @@ try_for 2 1 "ls foobar &> /dev/null"
 DIE=fake_die try_for_or_die 2 1 "ls foobar &> /dev/null" &> /dev/null
 [ $? -ne 0 ] || die "try_for returned 0 even though it should have failed."
 
-let end=$($STAMPEDE_HOME/bin/date.sh --format "%s" 1:1 5 S)
+let end=$($STAMPEDE_HOME/bin/dates --format "%s" 1:1 5 S)
 for cmd in try_until try_until_or_die
 do
 	echo "  $cmd test:"
@@ -118,3 +137,5 @@ try_until $end 1 "ls foobar &> /dev/null"
 [ $? -ne 0 ] || die "try_until returned 0 even though it should have failed."
 DIE=fake_die try_until_or_die $end 1 "ls foobar &> /dev/null" &> /dev/null
 [ $? -ne 0 ] || die "try_until returned 0 even though it should have failed."
+
+STAMPEDE_LOG_LEVEL=$save_level

@@ -5,8 +5,10 @@
 
 # Pull in environment variable definitions. 
 # ASSUMES that STAMPEDE_HOME is defined.
-. $STAMPEDE_HOME/bin/env.sh
-. $STAMPEDE_HOME/bin/log.sh
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/env.sh
+. $thisdir/log.sh
+export PATH=$thisdir:$PATH
 
 # If a delimiter isn't specified, you'll get "YYYYMMDD".
 function ymd { 
@@ -19,20 +21,21 @@ function ymd {
 function yesterday_ymd { 
 	delimiter=$1
 	fmt=""%Y$delimiter%m$delimiter%d""
-	$STAMPEDE_HOME/bin/date.sh --date $(ymd $delimiter) \
+	$STAMPEDE_HOME/bin/dates --date $(ymd $delimiter) \
 		--informat "$fmt" --format "$fmt" -1:-1 d
 }
 
 function die {
-	fatal "die called:" "$@"
-	if [ "$STAMPEDE_DISABLE_ALERT_EMAILS" = "" ]
+	alert "die called:" "$@"
+	if [ $STAMPEDE_DISABLE_ALERT_EMAILS -eq 0 ]
 	then
 		info "Sending email to $STAMPEDE_ALERT_EMAIL_ADDRESS" 
-		$STAMPEDE_HOME/bin/send-email.sh "FATAL" \
+		$STAMPEDE_HOME/bin/send-email.sh "ALERT" \
 			"$STAMPEDE_ALERT_EMAIL_ADDRESS" \
-			"$0 did not complete successfully." \
-			"Error message: $@." \
-      "See $(log_file) for details."
+			"$0 did not complete successfully." <<EOF
+Error message: $@.
+See $(log_file) for details.
+EOF
 	fi
   $EXIT
 }
@@ -41,9 +44,9 @@ function handle_signal {
 	let status=$?
 	trap "" SIGHUP SIGINT 
 	status_name=$(kill -l $status >& /dev/null || echo "<unknown>")
-	fatal "******* $0 failed, signal ($status - ) received."
-	fatal "  See Log file $(log_file) for more in_formation."
-	fatal "  (Current directory: $PWD)"
+	alert "******* $0 failed, signal ($status - ) received."
+	alert "  See Log file $(log_file) for more in_formation."
+	alert "  (Current directory: $PWD)"
 	$DIE   "Exiting..."
 }
 
@@ -106,15 +109,31 @@ function waiting {
 	sleep $sleep_interval
 }
 
-# Helper used for verbose output. For example:
+# Helper function most conveniently used for generating either/or text.
+# For example, this call to true_or_false:
 #   info '  X is on?  $(true_or_false "$x_flag" "on" "off")'
-# will log "on" if $x_flag is not empty, otherwise "off".
+# will return "on" if $x_flag is not empty, otherwise "off".
+# Contrast with success_or_failure.
 function true_or_false {
-	if [ "$1" = "" ]
+	if [ "$1" != "" ]
 	then
-		echo $3
-	else
 		echo $2
+	else
+		echo $3
+	fi
+}
+
+# Helper function most conveniently used for generating either/or text.
+# For example, this call to success_or_failure:
+#   info '  succeeded?  $(success_or_failure $? "yes" "no")'
+# will return "yes" if $? is 0, otherwise "no".
+# Contrast with true_or_false. 
+function success_or_failure {
+	if [ $1 -eq 0 ]
+	then
+		echo $2
+	else
+		echo $3
 	fi
 }
 
@@ -154,7 +173,7 @@ function _do_try_for {
 	retry_every=$1
 	shift
 	let now=$(date +"%s")
-	let end=$($STAMPEDE_HOME/bin/date.sh --date "$now" --informat "%s" --format "%s" 1:1 $wait_time S)
+	let end=$($STAMPEDE_HOME/bin/dates --date "$now" --informat "%s" --format "%s" 1:1 $wait_time S)
 	name=try_for
 	[ $should_die -eq 1 ] && name=${name}_or_die
 	_do_try $name $end $retry_every $should_die "$@"

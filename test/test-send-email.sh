@@ -9,13 +9,13 @@ TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh
 
 function dotest {
-  MAIL=$TEST_DIR/mail-mock.sh $STAMPEDE_HOME/bin/send-email.sh FATAL deanwampler "test1" <<EOF
+  MAIL=$TEST_DIR/mail-mock.sh $STAMPEDE_HOME/bin/send-email.sh alert deanwampler "test1" <<EOF
 one
 two
 EOF
 }
 
-expected=("FATAL: Stampede failure: test1 deanwampler" "one" "two")
+expected=("alert: Stampede failure: test1 deanwampler" "one" "two")
 let count=0
 function doloop {
   dotest | while read line
