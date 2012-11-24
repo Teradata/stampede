@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# true_or_false - Helper function used to generate either/or text.
+# usage: true_or_false "value" "true_string" "false_string".
+# For example, this call to true_or_false:
+#   info '  X is on?  $(true_or_false "$x_flag" "on" "off")'
+# will return "on" if $x_flag is not empty, otherwise "off".
+# Contrast with bin/success_or_failure.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+if [ "$1" != "" ]
+then
+  echo $2
+else
+  echo $3
+fi

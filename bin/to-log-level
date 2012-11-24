@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# to-log-level - Convert a log level number to the corresponding name.
+# usage: to-log-level N
+# Where N is a number between 0-7, inclusive (the valid SYSLOG(1) levels.)
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+let min_log_level=${STAMPEDE_LOG_LEVELS[0]}
+let max_log_level=${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}
+
+function err_str {
+  echo "to-log-level: Unrecognized log level number or name \"$1\" given!"
+}
+
+case $1 in
+  [0-9]*)
+    let n=$1
+    if [ $n -lt $min_log_level -o $n -gt $max_log_level ]
+    then
+      $DIE "$(err_str $1) Must be between $min_log_level and $max_log_level, inclusive."
+    else
+      echo ${STAMPEDE_LOG_LEVEL_NAMES[$n]}
+    fi
+    ;;
+  *)
+    name=$(echo $1 | tr "[:lower:]" "[:upper:]")
+    for f in ${STAMPEDE_LOG_LEVEL_NAMES[@]}
+    do
+      if [ "$f" = "$name" ]
+      then
+        echo "$f"
+        exit 0;
+      fi
+    done
+    $DIE $(err_str $1)
+    ;;
+esac

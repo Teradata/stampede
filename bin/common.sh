@@ -10,20 +10,6 @@ thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/log.sh
 export PATH=$thisdir:$PATH
 
-# If a delimiter isn't specified, you'll get "YYYYMMDD".
-function ymd { 
-	delimiter=$1
-	echo $YEAR$delimiter$MONTH$delimiter$DAY;     
-}
-
-# Computing the day before ymd.
-# If a delimiter isn't specified, you'll get "YYYYMMDD".
-function yesterday_ymd { 
-	delimiter=$1
-	fmt=""%Y$delimiter%m$delimiter%d""
-	$STAMPEDE_HOME/bin/dates --date $(ymd $delimiter) \
-		--informat "$fmt" --format "$fmt" -1:-1 d
-}
 
 function die {
 	alert "die called:" "$@"
@@ -34,7 +20,7 @@ function die {
 			"$STAMPEDE_ALERT_EMAIL_ADDRESS" \
 			"$0 did not complete successfully." <<EOF
 Error message: $@.
-See $(log_file) for details.
+See $(log-file) for details.
 EOF
 	fi
   $EXIT
@@ -45,105 +31,20 @@ function handle_signal {
 	trap "" SIGHUP SIGINT 
 	status_name=$(kill -l $status >& /dev/null || echo "<unknown>")
 	alert "******* $0 failed, signal ($status - ) received."
-	alert "  See Log file $(log_file) for more in_formation."
+	alert "  See Log file $(log-file) for more in_formation."
 	alert "  (Current directory: $PWD)"
 	$DIE   "Exiting..."
 }
 
 trap "handle_signal" SIGHUP SIGINT 
 
-function check_failure {
-	let status=$?
-	if [ $status != 0 ]
-	then
-		$DIE "$@ failed! (status = $status)"
-	else
-		info "$@ succeeded!"
-	fi
-}
-
-# Accepts an argument such as "20x", where "x" is one of hms, with "s" as the 
-# default and returns the corresponding number of seconds.
-# Note: We don't support days, months, and years, because then you would have 
-# to specify a date to know the context!
-function to_seconds {
-	nn=$(echo $1 | sed -e 's/[^0-9]\+//')
-	units=$(echo $1 | sed -e 's/[0-9]\+//')
-	if [ -z "$nn" ]
-	then
-		let n=0
-	else
-		let n=$nn
-	fi
-	if [ -z "$units" -o "$units" = "s" ]
-	then
-		echo $n
-	else
-		case $units in
-			m)  
-				let n2=$n*60
-				echo $n2
-				;;
-			h)  
-				let n2=$n*3600
-				echo $n2
-				;;
-			*)
-				die "Unsupported units for to_seconds: $units"
-				;;
-		esac
-	fi
-}
-
-function waiting {
-	tries=$1
-	shift
-	sleep_interval=$1
-	shift
-
-	if [ $tries -le 5 -o $(expr $tries % 5) = 0 ]
-	then
-		let seconds=$tries*$sleep_interval
-		info "$@ (waiting $seconds seconds so far)"
-	fi
-	sleep $sleep_interval
-}
-
-# Helper function most conveniently used for generating either/or text.
-# For example, this call to true_or_false:
-#   info '  X is on?  $(true_or_false "$x_flag" "on" "off")'
-# will return "on" if $x_flag is not empty, otherwise "off".
-# Contrast with success_or_failure.
-function true_or_false {
-	if [ "$1" != "" ]
-	then
-		echo $2
-	else
-		echo $3
-	fi
-}
-
-# Helper function most conveniently used for generating either/or text.
-# For example, this call to success_or_failure:
-#   info '  succeeded?  $(success_or_failure $? "yes" "no")'
-# will return "yes" if $? is 0, otherwise "no".
-# Contrast with true_or_false. 
-function success_or_failure {
-	if [ $1 -eq 0 ]
-	then
-		echo $2
-	else
-		echo $3
-	fi
-}
-
-# Helper for try_for and try_until.
+# Helper for try-for* and try_until*.
 function _do_try {
 	name=$1
 	shift
 	let end=$1
 	shift
-	let retry_every=$(to_seconds $1)
+	let retry_every=$(to-seconds $1)
 	shift
 	let die_on_timeout=$1
 	shift
@@ -164,19 +65,19 @@ function _do_try {
 	done
 }
 
-# Helper for the try_for*.
+# Helper for the try-for*.
 function _do_try_for {
-	let should_die=$1
-	shift
-	let wait_time=$(to_seconds $1)
-	shift
-	retry_every=$1
-	shift
-	let now=$(date +"%s")
-	let end=$($STAMPEDE_HOME/bin/dates --date "$now" --informat "%s" --format "%s" 1:1 $wait_time S)
-	name=try_for
-	[ $should_die -eq 1 ] && name=${name}_or_die
-	_do_try $name $end $retry_every $should_die "$@"
+  let should_die=$1
+  shift
+  let wait_time=$(to-seconds $1)
+  shift
+  retry_every=$1
+  shift
+  let now=$(date +"%s")
+  let end=$($STAMPEDE_HOME/bin/dates --date "$now" --informat "%s" --format "%s" 1:1 $wait_time S)
+  name=try-for
+  [ $should_die -eq 1 ] && name=${name}_or_die
+  _do_try $name $end $retry_every $should_die "$@"
 }
 
 # Helper for the try_until*.
@@ -190,47 +91,4 @@ function _do_try_until {
 	name=try_until
 	[ $should_die -eq 1 ] && name=${name}_or_die
 	_do_try $name $end $retry_every $should_die "$@"
-}
-
-# Wait for an expression to succeed for a specified time period from now.
-# The first argument is the amount of time to wait in seconds, or append one of 
-# the characters 'h', 'm', or 's' to interpret the number as hours, minutes, or
-# seconds.
-# The second argument is how long to wait between attempts in seconds or "Nx", 
-# where x is one of hms.
-# The remaining arguments are the bash expression to try on every iteration. 
-# It must return a status of 0 when evaluated to indicate success and nonzero for
-# failure. For example, "ls foo" returns 1 unless "foo" exists, in which case
-# it returns 0.
-# If the wait times out 1 is returned.
-# NOTE: The process will sleep between attempts.
-# See also the other try_* functions.
-function try_for {
-	_do_try_for 0 "$@"
-}
-
-# Like "try_for", but will die if the waiting times out.
-function try_for_or_die {
-	_do_try_for 1 "$@"
-}
-
-# Wait for an expression to succeed until a specified time.
-# The first argument is the point in time when waiting will stop,
-# specified in epoch seconds. 
-# The second argument is how long to wait between attempts in seconds or "Nx", 
-# where x is one of hms.
-# The remaining arguments are the bash expression to try on every iteration. 
-# It must return a status of 0 when evaluated to indicate success and nonzero for
-# failure. For example, "ls foo" returns 1 unless "foo" exists, in which case
-# it returns 0.
-# If the wait times out 1 is returned.
-# NOTE: The process will sleep between attempts.
-# See also the other try_* functions.
-function try_until {
-	_do_try_until 0 "$@"
-}
-
-# Like "try_until", but will die if the waiting times out.
-function try_until_or_die {
-	_do_try_until 1 "$@"
 }

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# to-seconds - Compute the seconds specified by the argument.
+# Accepts an argument "Nx", where "x" is optional and can be one of the
+# characters 'h', 'm', or 's', where 'h' means "N" is interpreted as hours,
+# 'm' implies minutes, and 's' implies seconds (the default).
+# Note: days, months, and years aren't supported, because then you would have 
+# to specify a date to know the context, e.g., for daylight savings time,
+# leap years, etc! 
+# See "bin/dates" instead for the more general case.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+nn=$(echo $1 | sed -e 's/[^0-9]\+//')
+units=$(echo $1 | sed -e 's/[0-9]\+//')
+if [ -z "$nn" ]
+then
+  let n=0
+else
+  let n=$nn
+fi
+if [ -z "$units" -o "$units" = "s" ]
+then
+  echo $n
+else
+  case $units in
+    m)  
+      let n2=$n*60
+      echo $n2
+      ;;
+    h)  
+      let n2=$n*3600
+      echo $n2
+      ;;
+    *)
+      die "Unsupported units for to-seconds: $units"
+      ;;
+  esac
+fi
+

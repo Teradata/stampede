@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# ymd - Return a YYYYMMDD string, using the values for $YEAR, $MONTH, and $DAY.
+# An optional delimiter can be specified as the single argument.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+delimiter=$1
+echo $YEAR$delimiter$MONTH$delimiter$DAY

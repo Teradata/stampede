@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# from-log-level - Convert a log level to the corresponding number.
+# usage: from-log-level NAME
+# where the case of NAME doesn't matter.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+function err_str {
+  echo "from-log-level: Unrecognized log level name or number \"$1\" given!"
+}
+
+let min_log_level=${STAMPEDE_LOG_LEVELS[0]}
+let max_log_level=${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}
+
+level=$(echo $1 | tr "[:lower:]" "[:upper:]")
+case $level in
+  [0-9]*)
+    let l=$level
+    if [ $l -lt $min_log_level -o $l -gt $max_log_level ]
+    then
+      $DIE $(err_str $1)
+    fi
+    echo $level
+    ;;
+   *)
+    for i in ${STAMPEDE_LOG_LEVELS[@]}
+    do
+      l=${STAMPEDE_LOG_LEVEL_NAMES[$i]}
+      if [ "$l" = "$level" ]
+      then
+        echo $i
+        exit 0
+      fi
+    done
+    $DIE $(err_str $1)
+    ;;
+esac

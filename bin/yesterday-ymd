@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# yesterday_ymd - Return a YYYYMMDD string for YESTERDAY's date
+# Uses the values for $YEAR, $MONTH, and $DAY as TODAY's date.
+# An optional delimiter can be specified as the single argument.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+delimiter=$1
+fmt="%Y$delimiter%m$delimiter%d"
+$thisdir/dates --date $(ymd $delimiter) --informat "$fmt" --format "$fmt" -1:-1 d

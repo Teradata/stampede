@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# try-for-or-die - Wait for an expression to succeed for a specified time period
+# from now. Die if it times out.
+# usage: try-for-or-die N Mx
+# The first argument is how many times to try.
+# The second argument is how long to wait between attempts in seconds specified
+# as "Mx", where the optional x is one of 'h', 'm', or 's' (default).
+# The remaining arguments are the bash expression to try on every iteration. 
+# It must return a status of 0 when evaluated to indicate success and nonzero for
+# failure. For example, "ls foo" returns 1 unless "foo" exists, in which case
+# it returns 0.
+# If the wait times out, it dies. Contrast with bin/try-for.
+# NOTE: The process will sleep between attempts.
+# See also the other try-* scripts.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+_do_try_for 1 "$@"

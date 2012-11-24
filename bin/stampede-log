@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# stampede-log - Write to the stampede log.
+# usage: stampede-log severity message
+# The severity can be 0-7 or one of EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, 
+# NOTICE, INFO, or DEBUG (case doesn't matter).
+# The rest of the arguments are treated as the message to log.
+# Note that any stdout and stderr output written by your commands within
+# the stampede are captured as INFO output automatically.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+if [ $# -le 0 ]
+then
+  echo "usage: $0 LEVEL message_arguments"
+  exit 1
+fi
+let level=$(from-log-level $1)
+shift
+log $level "$@"

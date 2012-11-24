@@ -62,6 +62,9 @@ this_dir=$(dirname $BASH_SOURCE)
 
 # -- Date/time variables:
 
+# Override for testing:
+export DATE=date
+
 # Time string format for log file entries. Actually, this "format" can be any option(s)
 # for the date command that affect the output format, e.g., -u for UTC format. So, if you
 # specify a standard format string, you must include the "+" at the front of it.

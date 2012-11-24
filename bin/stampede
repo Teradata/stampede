@@ -27,7 +27,7 @@ usage: [env ENV_VAR_DEFS] stampede [-h | --help] \
          [--year=YYYY] [--month=MM | --mon=MM] [--day=DD] \ 
          [--hour=HH] [--minute=MM | --min=MM] \ 
          [--second=SS | --sec=SS] [--epoch=seconds] \ 
-         [--force-rerun] [--tries=N] \ 
+         [--force-rerun] [--tries=N] [--between-tries=N] \ 
          [-v | --verbose[=N]] [-n | noexec] \ 
          [create | makefile [make_options] [targets]]
 where:
@@ -46,7 +46,11 @@ where:
   --epoch=seconds    Set ALL time fields to correspond to the specified seconds
                      since the Unix epoch. See note below.
   --force-rerun      Force a rerun, ignoring make's usual dependency checking.
-  --tries=N          Make up to N attempts to succeed (default: 5 tries).
+  --tries=N          Make up to N attempts to succeed (default: $STAMPEDE_NUMBER_OF_TRIES tries;
+                     overrides STAMPEDE_NUMBER_OF_TRIES).
+  --between-tries=N  How many seconds between tries to wait. If "N" ends with a
+                     'h', 'm', or 's', then wait N hours, minutes, or seconds
+                     (default: $STAMPEDE_DEFAULT_SLEEP_INTERVAL; overrides STAMPEDE_DEFAULT_SLEEP_INTERVAL).
   --log-level=N      Log more verbose output (useful for debugging w/ -n).
                      SYSLOG(1) log levels are used, so LARGER N results in LESS
                      verbose output (default: value of STAMPEDE_LOG_LEVEL).
@@ -72,7 +76,6 @@ EOF
 }
 
 # defaults:
-let attempts=0  # "flag" value; may be reset below
 command=make 
 makefile=
 makeopts=()
@@ -110,10 +113,14 @@ do
         --force-rerun)
             force_rerun="--always-make"
             ;;
-        --tries=?*)
-            let attempts=${1#--tries=}
+        --tries=*)
+            let STAMPEDE_NUMBER_OF_TRIES=${1#--tries=}
+            export STAMPEDE_NUMBER_OF_TRIES
             ;;
-        --log-level=?*)
+        --between-tries=*)
+            let STAMPEDE_DEFAULT_SLEEP_INTERVAL=$($STAMPEDE_HOME/bin/to-seconds ${1#--between-tries=})
+            export STAMPEDE_DEFAULT_SLEEP_INTERVAL
+        --log-level=*)
             log_level=${1#--log-level=}
             ;;
         -n|--n*)
@@ -176,11 +183,11 @@ function determine_log_level {
   let level=$1
   case $1 in
     [0-9]*) 
-      toss=$(to_log_level $1)  # Used only to catch invalid values.
+      toss=$(to-log-level $1)  # Used only to catch invalid values.
       echo $1
       ;;
     *)
-      from_log_level $1
+      from-log-level $1
       ;;
   esac
 }
@@ -194,13 +201,14 @@ fi
 [ $attempts -le 0 ] && let attempts=$STAMPEDE_NUMBER_OF_TRIES
 
 info "Starting $0 $command (time: $STAMPEDE_START_TIME):"
-info "  makefile:              $makefile_arg"
-info "  make options/targets:  $STAMPEDE_MAKE_OPTIONS ${make_opts[@]}"
-info "  log file:              $(log_file)"
-info "  force rerun?           $(true_or_false $force_rerun "on" "off")"
-info "  maximum attempts:      $attempts"
-info "  verbosity:             $(to_log_level $STAMPEDE_LOG_LEVEL)"
-info "  no execute mode?       $(true_or_false "$NOOP" "true" "false")"
+info "  makefile:                  $makefile_arg"
+info "  make options/targets:      $STAMPEDE_MAKE_OPTIONS ${make_opts[@]}"
+info "  log file:                  $(log-file)"
+info "  force rerun?               $(true-or-false $force_rerun "on" "off")"
+info "  maximum attempts:          $STAMPEDE_NUMBER_OF_TRIES"
+info "  interval between attempts: $STAMPEDE_DEFAULT_SLEEP_INTERVAL"
+info "  verbosity:                 $(to-log-level $STAMPEDE_LOG_LEVEL)"
+info "  no execute mode?           $(true-or-false "$NOOP" "true" "false")"
 debug " Environment variables:"
 debug "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:   $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
 debug "    EPOCH_SECOND:                        $EPOCH_SECOND"
@@ -212,7 +220,7 @@ do
 done
 
 let count=0
-while [ $count -lt $attempts ]
+while [ $count -lt $STAMPEDE_NUMBER_OF_TRIES ]
 do
   let count=$count+1
   info running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
@@ -227,6 +235,13 @@ do
   then
     info "Finished!"
     exit 0
+  else
+    if [ $count -lt $STAMPEDE_NUMBER_OF_TRIES ]
+    then
+      warning "Attempt #$count of $STAMPEDE_NUMBER_OF_TRIES failed!"
+      waiting $count $STAMPEDE_DEFAULT_SLEEP_INTERVAL
+    else
+      die "Failed after $count attempts! Quitting..."
+    fi
   fi
 done
-die "Failed after $count attempts!"
