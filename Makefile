@@ -11,7 +11,7 @@ all: clean tests release
 install:
 	@echo "install is TODO"
 
-clean: clean-release clean-tests
+clean: clean-release clean-tests clean-logs
 	
 release: ${RELEASE_FILE}
 
@@ -31,13 +31,13 @@ stage-release-file-contents:
 # Run the tests in this order, as the later tests
 # assume the features tested by the previous tests 
 # are valid!
-tests: clean-tests test-env test-log test-syslog test-common test-send-email
+tests: clean-tests test-env test-dates test-log test-syslog test-common test-send-email
 	@echo "Successful!!"
 
 clean-tests:
 	rm -rf test/logs
 
-test-env test-log test-common test-send-email:
+test-env test-dates test-log test-common test-send-email:
 	@cd test; \
 	echo "Running $@:"; \
 	STAMPEDE_HOME=${STAMPEDE_HOME} ./$@.sh; \
@@ -54,3 +54,7 @@ test-syslog:
 	  echo "test-log with syslog enabled failed!"; \
 	  exit 1; \
 	fi
+
+clean-logs:
+	rm -rf logs
+
