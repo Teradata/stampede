@@ -98,3 +98,4 @@ Tests of *Stampede* itself are in the `test` directory.
 * Installer.
 * Create project support.
 * Test email support.
+* Test all the stampede CLI options.

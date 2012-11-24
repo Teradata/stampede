@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------
-# test-env.sh - Tests of the env.sh file
+# test-env.sh - Tests of the environment variables.
 
 TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh
