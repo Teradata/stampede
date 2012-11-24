@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 #----------------------------------------------------
-# test-send-email.sh - Tests the send-email.sh script
+# test-send-email - Tests the send-email script
 # by mocking the mail program.
 # usage:
-#   test-send-email.sh
+#   test-send-email
 
 TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh
 
 function dotest {
-  MAIL=$TEST_DIR/mail-mock.sh $STAMPEDE_HOME/bin/send-email.sh alert deanwampler "test1" <<EOF
+  MAIL=$TEST_DIR/mail-mock.sh $STAMPEDE_HOME/bin/send-email alert deanwampler "test1" <<EOF
 one
 two
 EOF

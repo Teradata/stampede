@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#100;&#101;&#x61;&#110;&#46;&#119;&#97;&#x6d;&#112;&#108;&#101;&#x72;&#64;&#116;&#x68;&#105;&#110;&#107;&#98;&#105;&#x67;&#x61;&#x6e;&#97;&#x6c;&#121;&#116;&#105;&#99;&#115;&#x2e;&#x63;&#111;&#x6d;">&#100;&#x65;&#97;&#x6e;&#46;&#x77;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#114;&#x40;&#116;&#x68;&#x69;&#x6e;&#x6b;&#x62;&#x69;&#103;&#97;&#x6e;&#97;&#x6c;&#x79;&#x74;&#105;&#x63;&#115;&#46;&#x63;&#111;&#x6d;</a><br/>
+<a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#58;&#100;&#101;&#x61;&#x6e;&#x2e;&#x77;&#x61;&#109;&#x70;&#x6c;&#x65;&#114;&#x40;&#x74;&#104;&#105;&#110;&#x6b;&#x62;&#x69;&#103;&#97;&#x6e;&#x61;&#108;&#121;&#x74;&#105;&#99;&#115;&#x2e;&#x63;&#x6f;&#x6d;">&#x64;&#x65;&#x61;&#x6e;&#46;&#119;&#x61;&#109;&#x70;&#x6c;&#x65;&#x72;&#64;&#x74;&#104;&#x69;&#x6e;&#107;&#x62;&#105;&#x67;&#97;&#110;&#97;&#108;&#x79;&#x74;&#x69;&#x63;&#x73;&#x2e;&#99;&#x6f;&#x6d;</a><br/>
 November 21, 2012</p>
 
 <p>Welcome to <em>Stampede</em>, the Hadoop-aware workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
@@ -101,15 +101,16 @@ November 21, 2012</p>
 
 <h3 id="bindirectory">Bin Directory</h3>
 
-<p><em>Stampede</em> supplies helper <code>bash</code> scripts in the <code>bin</code> directory. </p>
+<p><em>Stampede</em> supplies helper <code>bash</code> scripts in the <code>bin</code> directory. All the scripts that end with <code>.sh</code> are used internally by stampede. The files without this extension are usable-callable utilities for building workflows.</p>
 
 <p>Briefly, here are the files in the <code>bin</code> directory:</p>
 
 <ul>
 <li><code>stampede</code> - The &#8220;stampede&#8221; (workflow) driver script. It can be invoked manually or by <code>cron</code>. It has several options to configure behavior. Run <code>stampede --help</code> for details.</li>
 <li><code>env.sh</code> - Defines global shell variables. Start here for configuring behavior.</li>
-<li><code>common.sh</code> - Common <code>bash</code> functions used in several scripts.</li>
-<li><code>date.sh</code> - A helper script to format dates and perform date arithmetic.</li>
+<li><code>common.sh</code> - Wrapper around <code>bash</code> functions, etc. used in several scripts.</li>
+<li><code>log.sh</code> - Support functions for logging.</li>
+<li><em>numerous scripts</em> - The rest of the files in this directory are bash scripts that can be used in stampede Makefiles, etc.</li>
 </ul>
 
 <h3 id="exampledirectory">Example Directory</h3>
@@ -134,6 +135,11 @@ November 21, 2012</p>
 
 <ul>
 <li>Copyright notices.</li>
+<li>Fill in examples.</li>
+<li>Installer.</li>
+<li>Create project support.</li>
+<li>Test email support.</li>
+<li>Test all the stampede CLI options.</li>
 </ul>
     </div>
 </body>

@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 #----------------------------------------------------
-# send-email.sh - Send alert on errors.
-# usage:
-#   send-email.sh severity address subject < message_lines
-# It reads the lines of the message from stdin.
-# The command-line mail program must be configured and enabled.
+# send-email - Send alert on errors.
 
 # Override the following on the command line for testing.
 : ${MAIL:=mail}
+
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+send-email - Send an email message, typically to alert on errors.
+usage: send-email severity address subject < message_lines
+It reads the lines of the message from stdin.
+The command-line mail program must be configured and enabled.
+EOF
+exit 0
+fi
 
 severity=$1
 shift

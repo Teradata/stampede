@@ -65,14 +65,15 @@ The top-level directory contains the following files, in addition to directories
 
 ### Bin Directory
 
-*Stampede* supplies helper `bash` scripts in the `bin` directory. 
+*Stampede* supplies helper `bash` scripts in the `bin` directory. All the scripts that end with `.sh` are used internally by stampede. The files without this extension are usable-callable utilities for building workflows.
 
 Briefly, here are the files in the `bin` directory:
 
 * `stampede` - The "stampede" (workflow) driver script. It can be invoked manually or by `cron`. It has several options to configure behavior. Run `stampede --help` for details.
 * `env.sh` - Defines global shell variables. Start here for configuring behavior.
 * `common.sh` - Wrapper around `bash` functions, etc. used in several scripts.
-* *numerous scripts* - The rest of the files in this directory are utilities usable in stampede Makefiles, etc. Scripts that end with `.sh` are used internally.
+* `log.sh` - Support functions for logging.
+* *numerous scripts* - The rest of the files in this directory are bash scripts that can be used in stampede Makefiles, etc. 
 
 ### Example Directory
 

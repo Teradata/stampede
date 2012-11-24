@@ -51,12 +51,16 @@ ymd1=$(ymd)
 [ "$ymd1" = "20121120"   ] || die "$ymd1 != 20121120!"
 ymd2=$(ymd -)
 [ "$ymd2" = "2012-11-20" ] || die "$ymd2 != 2012-11-20!"
+ymd3=$(ymd --as-args)
+[ "$ymd3" = "--year=2012 --month=11 --day=20" ] || die "$ymd3 != --year=2012 --month=11 --day=20!"
 
 echo "  yesterday-ymd test:"
-ymd1=$(yesterday-ymd)
-[ "$ymd1" = "20121119"   ] || die "<$ymd1> != 20121119!"
-ymd2=$(yesterday-ymd -)
-[ "$ymd2" = "2012-11-19" ] || die "$ymd2 != 2012-11-19!"
+yymd1=$(yesterday-ymd)
+[ "$yymd1" = "20121119"   ] || die "<$yymd1> != 20121119!"
+yymd2=$(yesterday-ymd -)
+[ "$yymd2" = "2012-11-19" ] || die "$yymd2 != 2012-11-19!"
+yymd3=$(yesterday-ymd --as-args)
+[ "$yymd3" = "--year=2012 --month=11 --day=19" ] || die "$yymd3 != --year=2012 --month=11 --day=19!"
 
 echo "  log-file test:"
 logfile=$(log-file)

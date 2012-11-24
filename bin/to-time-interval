@@ -1,19 +1,27 @@
 #!/usr/bin/env bash
 #------------------------------------------
 # to-time-interval - Compute the a time-interval string specified by the argument.
-# Accepts an argument "Nx", where "x" is optional and can be one of the
-# characters 'h', 'm', or 's', interpreted as follows:
-#   'h' means "N" is interpreted as hours. Returns "N hours".
-#   'm' means "N" is interpreted as minutes. Returns "N minutes".
-#   's' means "N" is interpreted as seconds (the default). Returns "N seconds".
-# However, if N=1, then the singular is returned.
-# Note: days, months, and years aren't supported, because then you would have 
-# to specify a date to know the context, e.g., for daylight savings time,
-# leap years, etc! 
-# See also "bin/to_seconds" "bin/dates" instead for the more general case.
 
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/common.sh
+
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+to-time-interval - Compute the a time-interval string specified by the argument.
+Accepts an argument "Nx", where "x" is optional and can be one of the
+characters 'h', 'm', or 's', interpreted as follows:
+    'h' means "N" is interpreted as hours. Returns "N hours".
+    'm' means "N" is interpreted as minutes. Returns "N minutes".
+    's' means "N" is interpreted as seconds (the default). Returns "N seconds".
+However, if N=1, then the singular is returned.
+Note: days, months, and years aren't supported, because then you would have 
+to specify a date to know the context, e.g., for daylight savings time,
+leap years, etc! 
+See also "bin/to_seconds" "bin/dates" instead for the more general case.
+EOF
+exit 0
+fi
 
 nn=$(echo $1 | sed -e 's/[^0-9]\+//')
 units=$(echo $1 | sed -e 's/[0-9]\+//')

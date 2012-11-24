@@ -16,7 +16,7 @@ function die {
 	if [ $STAMPEDE_DISABLE_ALERT_EMAILS -eq 0 ]
 	then
 		info "Sending email to $STAMPEDE_ALERT_EMAIL_ADDRESS" 
-		$STAMPEDE_HOME/bin/send-email.sh "ALERT" \
+		$STAMPEDE_HOME/bin/send-email "ALERT" \
 			"$STAMPEDE_ALERT_EMAIL_ADDRESS" \
 			"$0 did not complete successfully." <<EOF
 Error message: $@.

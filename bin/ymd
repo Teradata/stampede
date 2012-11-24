@@ -1,10 +1,29 @@
 #!/usr/bin/env bash
 #------------------------------------------
 # ymd - Return a YYYYMMDD string, using the values for $YEAR, $MONTH, and $DAY.
-# An optional delimiter can be specified as the single argument.
 
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/common.sh
 
-delimiter=$1
-echo $YEAR$delimiter$MONTH$delimiter$DAY
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+ymd - Return a YYYYMMDD string, using the values for $YEAR, $MONTH, and $DAY.
+usage: ymd [delimiter | --as-args]
+An optional delimiter can be specified as the single argument.
+Or, if "--as-args" is specified, the output is
+    --year=YYYY --month=MM --day=DD
+which can be used to invoke stampede.
+EOF
+exit 0
+fi
+
+case $1 in
+  --as-args)
+    echo "--year=$YEAR --month=$MONTH --day=$DAY"
+    ;;
+  *)
+    delimiter=$1
+    echo $YEAR$delimiter$MONTH$delimiter$DAY
+    ;;
+esac

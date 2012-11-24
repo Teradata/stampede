@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 #------------------------------------------
 # waiting - Used to sleep for a specified period of time and logging
-# messages that you're waiting...
-# usage: tries_so_far sleep_interval
-# Where the tries_so_far is just a number and the sleep_interval is "Nx",
-# where N is a number and x is optional, one of 'h' (hours), 'm' (minutes),
-# or 's' (seconds, the default).
 
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/common.sh
+
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+waiting - Used to sleep for a specified period of time and logging
+messages that you're waiting...
+usage: tries_so_far sleep_interval
+Where the tries_so_far is just a number and the sleep_interval is "Nx",
+where N is a number and x is optional, one of 'h' (hours), 'm' (minutes),
+or 's' (seconds, the default).
+EOF
+exit 0
+fi
 
 tries=$1
 shift
