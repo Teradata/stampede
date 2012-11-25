@@ -10,7 +10,7 @@ then
   cat <<EOF
 to-log-level - Convert a log level number to the corresponding name.
 usage: to-log-level N
-Where N is a number between 0-7, inclusive (the valid SYSLOG(1) levels.)
+Where N is a number between 0-7, inclusive (the valid SYSLOG levels.)
 Or, if you provide a name, it will be returned, as long as it is one of 
 ${STAMPEDE_LOG_LEVEL_NAMES[@]}
 (case ignored).

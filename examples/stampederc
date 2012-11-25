@@ -21,10 +21,11 @@
 # as discussed in bin/env.sh
 # STAMPEDE_LOG_MESSAGE_FORMAT_STRING="%s %-9s %-10s: %s"
 
-# Set to 0 if you want to use syslog(1) for logging.
-if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
-# The host to which syslog calls are sent.
-# STAMPEDE_LOG_SYSLOG_HOST=mycentralhost
+# Set to 0 if you want to use SYSLOG for logging - logger(1).
+# STAMPEDE_LOG_USE_SYSLOG=0
+
+# Options to pass to logger(1) for syslog logging.
+# STAMPEDE_LOG_SYSLOG_OPTIONS=
 
 
 # How long to sleep a process while waiting for something, e.g., before

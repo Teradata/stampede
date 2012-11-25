@@ -28,7 +28,7 @@ where:"
                   Because the M and N are inclusive, the number of dates returned is abs(N-M)+1.
                   Also, if the N < M, the results "count down".
   units           How to interpret the the M:N range. An optional number (default: 1),
-                  followed by one of the characters in ymwdHMS.
+                  followed by one of the characters in ymdHMS. ('w' is also allowed for Mac OS X)
   If "M:N units" are omitted, the script just reformats the input or today's date.
 See also the tests of this script in test/test-dates.sh for examples.
 See also "man date" for more information about the *nix date command format options.

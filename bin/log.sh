@@ -1,6 +1,6 @@
 # Common functions related to logging.
 # Source this file as part of common.sh
-# We use the same logging levels supported by syslog(1),
+# We use the same logging levels supported by SYSLOG,
 # and you have the option of using syslog or the local
 # option, which is the default. See the settings in
 # bin/env.sh.
@@ -49,7 +49,7 @@ function log {
     msg=$($STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION "$d" "$level_str" "$(basename $0)" "$@")
     if [ "$STAMPEDE_LOG_USE_SYSLOG" -eq 0 ]
     then
-      syslog -s -r $STAMPEDE_LOG_SYSLOG_HOST -l $level "$@"
+      logger $STAMPEDE_LOG_SYSLOG_OPTIONS -p $level "$@"
       echo "$msg" 1>&2
     else
       init_log_file

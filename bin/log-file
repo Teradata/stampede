@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #------------------------------------------
-# log-file - Return the log file being used or "SYSLOG(1)".
+# log-file - Return the log file being used or "SYSLOG".
 
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/common.sh
@@ -8,14 +8,14 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-log-file - Return the log file being used or the string "SYSLOG(1)".
+log-file - Return the log file being used or the string "SYSLOG".
 EOF
 exit 0
 fi
 
 if [ $STAMPEDE_LOG_USE_SYSLOG -eq 0 ]
 then
-  echo "SYSLOG(1)"
+  echo "SYSLOG"
 else
   echo "$STAMPEDE_LOG_DIR/$STAMPEDE_LOG_FILE"
 fi

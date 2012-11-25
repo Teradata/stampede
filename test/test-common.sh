@@ -6,7 +6,7 @@ TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh
 
 save_exit="$EXIT"
-EXIT=fake-exit
+EXIT='exit 1'
 echo "  die test:"
 msg=$(die 'LINE 1' 'LINE 2' 2>&1)
 EXIT="$save_exit"

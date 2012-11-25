@@ -5,13 +5,20 @@ VERSION       = 0.1
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
 RELEASE_FILE_CONTENTS = README.md README.html LICENSE Makefile bin examples test
-CORE_TESTS    = test-env test-dates test-log test-common test-waiting-try test-send-email
-TESTS         = ${CORE_TESTS} test-syslog
+TESTS_NO_SYSLOG = test-env test-dates test-log test-common test-waiting-try test-send-email
+TESTS           = ${TESTS_NO_SYSLOG} test-syslog
 
 all: clean tests release
 
-install:
+all-no-syslog: clean tests-no-syslog release
+
+install: all
 	@echo "install is TODO"
+	@exit 1
+
+install-no-syslog: all-no-syslog
+	@echo "install-no-syslog is TODO"
+	@exit 1
 
 clean: clean-release clean-tests clean-logs
 	
@@ -33,13 +40,16 @@ stage-release-file-contents:
 # Run the tests in this order, as the later tests
 # assume the features tested by the previous tests 
 # are valid!
-tests: clean-tests ${TESTS} 
+tests: clean-tests ${TESTS}
+	@echo "Successful!!"
+
+tests-no-syslog: clean-tests ${TESTS_NO_SYSLOG}
 	@echo "Successful!!"
 
 clean-tests:
 	rm -rf test/logs
 
-${CORE_TESTS}:
+${TESTS_NO_SYSLOG}:
 	@cd test; \
 	echo "Running $@:"; \
 	STAMPEDE_HOME=${STAMPEDE_HOME} ./$@.sh; \
@@ -49,6 +59,11 @@ ${CORE_TESTS}:
 	fi
 
 test-syslog:
+	@echo '' 1>&2
+	@echo "NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE" 1>&2
+	@echo "You'll see 'emergency message' printed to all your terminals! It's harmless."  1>&2
+	@echo "NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE --- NOTE" 1>&2
+	@echo '' 1>&2
 	@cd test; \
 	echo "Running test-log with syslog enabled:"; \
 	STAMPEDE_HOME=${STAMPEDE_HOME} STAMPEDE_LOG_USE_SYSLOG=0 ./test-log.sh; \

@@ -52,7 +52,7 @@ where:
                      'h', 'm', or 's', then wait N hours, minutes, or seconds
                      (default: $STAMPEDE_DEFAULT_SLEEP_INTERVAL; overrides STAMPEDE_DEFAULT_SLEEP_INTERVAL).
   --log-level=N      Log more verbose output (useful for debugging w/ -n).
-                     SYSLOG(1) log levels are used, so LARGER N results in LESS
+                     SYSLOG log levels are used, so LARGER N results in LESS
                      verbose output (default: value of STAMPEDE_LOG_LEVEL).
                      For N, you can also use EMERGENCY, ALERT, CRITICAL, ERROR,
                      WARNING, NOTICE, INFO, and DEBUG (case doesn't matter). 

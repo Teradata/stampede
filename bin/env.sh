@@ -153,7 +153,7 @@ export TIMEZONE_NAME
 
 # -- Logging variables:
 
-# The names and levels of the SYSLOG(1)-compatible log levels.
+# The names and levels of the SYSLOG-compatible log levels.
 export STAMPEDE_LOG_LEVEL_NAMES=(EMERGENCY ALERT CRITICAL ERROR WARNING NOTICE INFO DEBUG)
 export STAMPEDE_LOG_LEVELS=(0 1 2 3 4 5 6 7)
 
@@ -183,16 +183,16 @@ export STAMPEDE_LOG_MESSAGE_FORMAT_STRING
 # Name of the function called to format log messages.
 : ${STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION:=format_log_message}
 
-# Set to 0 if you want to use syslog(1) for logging.
+# Set to 0 if you want to use SYSLOG for logging.
 if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
 then
   let STAMPEDE_LOG_USE_SYSLOG=1
 fi
 export STAMPEDE_LOG_USE_SYSLOG
 
-# The host to which syslog calls are sent.
-: ${STAMPEDE_LOG_SYSLOG_HOST:=localhost}
-export STAMPEDE_LOG_SYSLOG_HOST
+# Options to pass to logger(1) for syslog calls.
+: ${STAMPEDE_LOG_SYSLOG_OPTIONS:=}
+export STAMPEDE_LOG_SYSLOG_OPTIONS
 
 # -- Miscellaneous variables:
 
