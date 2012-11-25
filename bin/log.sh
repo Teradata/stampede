@@ -43,7 +43,8 @@ function log {
     then
       d=$(eval $DATE)
     else
-      d=$(eval $DATE "$STAMPEDE_LOG_TIME_FORMAT")
+      # The funky quoting is required to handle possible embedded spaces in the format.
+      d=$(eval $DATE "\"$STAMPEDE_LOG_TIME_FORMAT\"")
     fi
     msg=$($STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION "$d" "$level_str" "$(basename $0)" "$@")
     if [ "$STAMPEDE_LOG_USE_SYSLOG" -eq 0 ]

@@ -4,7 +4,9 @@ STAMPEDE_HOME = ${PWD}
 VERSION       = 0.1
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
-RELEASE_FILE_CONTENTS = README.md README.html LICENSE bin examples test
+RELEASE_FILE_CONTENTS = README.md README.html LICENSE Makefile bin examples test
+CORE_TESTS    = test-env test-dates test-log test-common test-send-email
+TESTS         = ${CORE_TESTS} test-syslog
 
 all: clean tests release
 
@@ -31,13 +33,13 @@ stage-release-file-contents:
 # Run the tests in this order, as the later tests
 # assume the features tested by the previous tests 
 # are valid!
-tests: clean-tests test-env test-dates test-log test-syslog test-common test-send-email
+tests: clean-tests ${TESTS} 
 	@echo "Successful!!"
 
 clean-tests:
 	rm -rf test/logs
 
-test-env test-dates test-log test-common test-send-email:
+${CORE_TESTS}:
 	@cd test; \
 	echo "Running $@:"; \
 	STAMPEDE_HOME=${STAMPEDE_HOME} ./$@.sh; \

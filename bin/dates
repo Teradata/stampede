@@ -7,9 +7,11 @@
 
 function help {
 		cat <<EOF
-usage: dates [--help] [--today | --date date [--informat fmt]] [--format fmt] [--sep separator] [M:N [units]]"
+usage: $0 [--help | --examples] \ 
+  [--today | --date date [--informat fmt]] [--format fmt] [--sep separator] [M:N [units]]"
 where:"
   --help          This message.
+  --examples      Show some examples.
   --today         Use today's date as the starting date.
   --date date     Use date as the starting date. MUST use the same format as the format option.
   --informat fmt  Format the --date date using fmt (ignored if --today is used,
@@ -28,6 +30,8 @@ where:"
   units           How to interpret the the M:N range. An optional number (default: 1),
                   followed by one of the characters in ymwdHMS.
   If "M:N units" are omitted, the script just reformats the input or today's date.
+  See also the tests of this script in test/test-dates.sh for examples.
+  See also "man date" for more information about the *nix date command format options.
 EOF
 }
 
@@ -40,6 +44,8 @@ separator=" "
 date_range="0:0"
 let delta=1
 units="d"
+# Default output format of the *nix date command.
+out_format="%a %b %d %T %Z %Y"
 while [ $# -ne 0 ]
 do
 	case $1 in 
@@ -85,13 +91,9 @@ test -n "$informat" || informat=$out_format
 
 if [ ! -n "$start_date" ]
 then
-	if [ -n "$out_format" ]
-	then
-		start_date=$(date +$out_format)
-		informat=$out_format   # now using same format for both input and output!
-	else
-		start_date=$(date)
-	fi
+	# Use now as the start date and epoch seconds as the format.
+	start_date=$(date +"$STAMPEDE_TIME_FORMAT")
+	informat="$STAMPEDE_TIME_FORMAT"
 fi
 
 case $date_range in
@@ -128,7 +130,19 @@ function linux_date {
 	units=$3
 	informat=$4
 	outformat=$5
-	
+
+	case $delta in
+		-*)
+			delta="- ${$delta#-}"
+			;;
+		+*)
+			delta="+ ${$delta#+}"
+			;;
+		*)
+			delta="+ $delta3"
+			;;
+	esac
+
 	case $units in
 		y) units="year ago"   ;;
 		m) units="month ago"  ;;
@@ -165,7 +179,11 @@ end=${date_range#*:}
 test -n "$start" || start=0
 test -n "$end"   || end=0
 
-set=
+# To avoid having a trailing space, which causes problems when assigning
+# the output to variables, we prepend the separator, but use "" the first 
+# time through the loop. (hack...)
+result=
+sep=
 for delta2 in $(eval "echo {$start..$end}")
 do 
 	let delta3=$delta2*$delta
@@ -176,7 +194,8 @@ do
 			delta3="+$delta3"
 			;;
 	esac
-	echo -n "$sep$(mac_or_linux_date "$start_date" "$delta3" $units "$informat" "$out_format")"
+#	result="$result$sep$(mac_or_linux_date "$start_date" "$delta3" $units "$informat" "$out_format")"
+	printf "$sep%s" "$(mac_or_linux_date "$start_date" "$delta3" $units "$informat" "$out_format")"
 	sep=$separator
 done
 echo ""

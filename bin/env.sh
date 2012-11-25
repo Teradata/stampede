@@ -65,19 +65,19 @@ this_dir=$(dirname $BASH_SOURCE)
 # Override for testing:
 export DATE=date
 
+# Time string format: mostly used internally. Contrast with STAMPEDE_LOG_TIME_FORMAT.
+# NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
+: ${STAMPEDE_TIME_FORMAT:="%Y-%m-%d %H:%M:%S%z"}
+export STAMPEDE_TIME_FORMAT
+
 # Time string format for log file entries. Actually, this "format" can be any option(s)
 # for the date command that affect the output format, e.g., -u for UTC format. So, if you
 # specify a standard format string, you must include the "+" at the front of it.
 # If you want to use date's default format, leave this definition empty.
 # NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
-: ${STAMPEDE_LOG_TIME_FORMAT:=""}
+: ${STAMPEDE_LOG_TIME_FORMAT:=+"$STAMPEDE_TIME_FORMAT"}
 export STAMPEDE_LOG_TIME_FORMAT
 
-
-# Time string format: mostly used internally. Contrast with STAMPEDE_LOG_TIME_FORMAT.
-# NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
-: ${STAMPEDE_TIME_FORMAT:="%Y-%m-%d %H:%M:%S"}
-export STAMPEDE_TIME_FORMAT
 
 # The time this script started in epoch seconds (defaults to NOW).
 if [ -z "$EPOCH_SECOND" ]

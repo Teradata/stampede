@@ -46,6 +46,11 @@ results=$($DATES --date "2012-11-20 01:02:03" --informat "%Y-%m-%d %H:%M:%S" --f
 results=$($DATES --date "2012-11-20 01:02:03" --informat "%Y-%m-%d %H:%M:%S" --format "%d" --sep '' 2:)
 [ "$results" = "222120" ] || die "failed! returned <$results>"
 
+# Handles \n as a separator?
+expected=$(for i in {22..20}; do echo $i; done)
+results=$($DATES --date "2012-11-20 01:02:03" --informat "%Y-%m-%d %H:%M:%S" --format "%d" --sep '\n' 2:)
+[ "$results" = "$expected" ] || die "failed! returned <$results>, expected = <$expected>"
+
 echo "  time delta tests:"
 
 results=$($DATES --date "2012-11-20 01:02:03" --informat "%Y-%m-%d %H:%M:%S" --format "%Y" -1:1 y)
