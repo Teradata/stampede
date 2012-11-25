@@ -1,7 +1,7 @@
 # Makefile for Stampede itself
 
 STAMPEDE_HOME = ${PWD}
-VERSION       = 0.1
+VERSION       = 0.02
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
 RELEASE_FILE_CONTENTS = README.md README.html LICENSE Makefile bin examples test
