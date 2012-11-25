@@ -19,16 +19,25 @@ EOF
 exit 0
 fi
 
-case $1 in
-  --as-args)    
-    $thisdir/dates --date "$(ymd)" --informat '%Y%m%d' --format '%Y %m %d' -1:-1 d | while read y m d
-    do
-      echo "--year=$y --month=$m --day=$d"
-    done
+before_year=
+before_month=
+before_day=
+if [ "$1" = "--as-args" ]
+then
+  before_year="--year="
+  before_month=" --month="
+  before_day=" --day="
+else
+  before_month="$1"
+  before_day="$1"  
+fi
+ymd="$YEAR-$MONTH-$DAY"
+
+case $(uname) in
+  Darwin)    
+    date -j -v-1d -f "%Y-%m-%d" "$ymd" +"$before_year%Y$before_month%m$before_day%d"
     ;;
   *)
-    delimiter=$1
-    fmt="%Y$delimiter%m$delimiter%d"
-    $thisdir/dates --date "$(ymd "$delimiter")" --informat "$fmt" --format "$fmt" -1:-1 d
+    date --date="$ymd - 1 day" +"$before_year%Y$before_month%m$before_day%d"
     ;;
 esac

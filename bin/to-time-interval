@@ -18,7 +18,7 @@ However, if N=1, then the singular is returned.
 Note: days, months, and years aren't supported, because then you would have 
 to specify a date to know the context, e.g., for daylight savings time,
 leap years, etc! 
-See also "bin/to_seconds" "bin/dates" instead for the more general case.
+See also "bin/to-seconds" and "bin/dates" instead for the more general case.
 EOF
 exit 0
 fi

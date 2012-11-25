@@ -15,7 +15,7 @@ characters 'h', 'm', or 's', where 'h' means "N" is interpreted as hours,
 Note: days, months, and years aren't supported, because then you would have 
 to specify a date to know the context, e.g., for daylight savings time,
 leap years, etc! 
-See "bin/dates" instead for the more general case.
+See also "bin/to-time-interval" and "bin/dates" instead for the more general case.
 EOF
 exit 0
 fi

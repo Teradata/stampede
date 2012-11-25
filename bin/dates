@@ -7,19 +7,19 @@
 
 function help {
 		cat <<EOF
-usage: $0 [--help | --examples] \ 
-  [--today | --date date [--informat fmt]] [--format fmt] [--sep separator] [M:N [units]]"
+usage: $0 [--help] [--verbose] \ 
+  [--today | --date=date [--informat=fmt]] [--format=fmt] [--sep=separator] [M:N [units]]"
 where:"
   --help          This message.
-  --examples      Show some examples.
+  --verbose       Echo the *nix date commands to stderr.
   --today         Use today's date as the starting date.
-  --date date     Use date as the starting date. MUST use the same format as the format option.
-  --informat fmt  Format the --date date using fmt (ignored if --today is used,
-                  required unless --format is used and the input date uses the same format).
-                  Useful when the input date has a different format than desired.
+  --date=date     Use date as the starting date. Assumes RFC-3999 format unless you specify --informat.
+  --informat=fmt  The format of the input --date=date. It's an error to also specify --today.
+                  Defaults to RFC-3999 format. Specifying --informat=rfc-3999 is equivalent.
+                  See the WARNING below about input formats on Linux.
                   Omit the "+" at the beginning of the string, which the date command would require.
-  --format fmt    Format the output date(s) using fmt.
-  --sep separator Separate output dates by "separator" (default: " ").
+  --format=fmt    Format the output date(s) using fmt. Specify --format=rfc-3999 for RFC-3999 output.
+  --sep=separator Separate output dates by "separator" (default: " "). Use '\n' for one per line.
   M:N             Calculate one or more "units" (default unit: 1 day), based on this interpretation of M:N:
     M:N             Return a range of dates from M days to N days FROM the starting date. 
                     Prefix M or N with a "-" to use days AGO. 
@@ -30,22 +30,32 @@ where:"
   units           How to interpret the the M:N range. An optional number (default: 1),
                   followed by one of the characters in ymwdHMS.
   If "M:N units" are omitted, the script just reformats the input or today's date.
-  See also the tests of this script in test/test-dates.sh for examples.
-  See also "man date" for more information about the *nix date command format options.
+See also the tests of this script in test/test-dates.sh for examples.
+See also "man date" for more information about the *nix date command format options.
+WARNING: The Linux date command often fails to return valid results when doing arithmetic
+on an input date that is not RFC-3999 format! There are exceptions, such as using the %Y-%m-%d
+format when calculating day deltas. We recommend using RFC-3999 for this reason.
 EOF
 }
 
 function die {
 	echo "$0: $@"
-	help
-	kill -QUIT $$
+	echo "See $0 --help"
+	kill -ABRT $$
 }
+
 separator=" "
 date_range="0:0"
 let delta=1
 units="d"
-# Default output format of the *nix date command.
-out_format="%a %b %d %T %Z %Y"
+# Default input and output formats of the *nix date command (RFC-3999).
+# This works much better with the linux date command!!
+RFC_3999="%a %b %d %T %Z %Y"
+in_format="$RFC_3999"
+out_format="$RFC_3999"
+let verbose=1
+let disallow_in_format=0
+let both_date_and_in_format=0
 while [ $# -ne 0 ]
 do
 	case $1 in 
@@ -53,23 +63,32 @@ do
 			help
 			exit 0
 			;;
-		-t|--today)
+		--verbose)
+			let verbose=0
 			;;
-		-d|--date)
-			shift
-			start_date=$1
+		--today)
+			start_date=$(date +"$RFC_3999")
+			in_format="$RFC_3999"
+			let disallow_in_format=$disallow_in_format+1
 			;;
-		-i|--informat)
-			shift
-			informat=$1
+		--date=*)
+			let both_date_and_in_format=$both_date_and_in_format+1
+			start_date=${1#--date=}
 			;;
-		-o|--format)
-			shift
-			out_format=$1
+		--informat=*)
+			let both_date_and_in_format=$both_date_and_in_format+1
+			let disallow_in_format=$disallow_in_format+1
+			in_format=${1#--informat=}
+			[ -n "$in_format" ] || die "The input format can't be empty!"
+			[ "$in_format" = 'rfc-3999' ] && in_format="$RFC_3999"
 			;;
-		-s|--sep*)
-			shift
-			separator=$1
+		--format=*)
+			out_format=${1#--format=}
+			[ -n "$out_format" ] || die "The output format can't be empty!"
+			[ "$out_format" = 'rfc-3999' ] && out_format="$RFC_3999"
+			;;
+		--sep*)
+			separator=${1#--sep*=}
 			;;
 		*:*)
 			date_range=$1
@@ -87,14 +106,7 @@ do
 	shift
 done
 
-test -n "$informat" || informat=$out_format
-
-if [ ! -n "$start_date" ]
-then
-	# Use now as the start date and epoch seconds as the format.
-	start_date=$(date +"$STAMPEDE_TIME_FORMAT")
-	informat="$STAMPEDE_TIME_FORMAT"
-fi
+[ $disallow_in_format -gt 1 ] && die "Can't specify --informat with --today!"
 
 case $date_range in
 	*:*)  ;;
@@ -108,28 +120,20 @@ function mac_date {
 	start_date=$1
 	delta=$2
 	units=$3
-	informat=$4
-	outformat=$5
+	in_format=$4
+	out_format=$5
 
-	if [ ! -n "$informat" ]
-	then
-		die "For Mac, must specify an input or output format."
-	fi
-	if [ -n "$outformat" ]
-	then
-		# echo date -j -v${delta}${units} -f "$informat" "$start_date" +"$outformat" 1>&2
-		date -j -v${delta}${units} -f "$informat" "$start_date" +"$outformat"
-	else
-		date -j -v${delta}${units} -f "$informat" "$start_date"
-	fi
+	[ -n "$out_format" ] && out_format="+$out_format"
+	[ $verbose -eq 0 ] && echo date -j -v${delta}${units} -f \"$in_format\" \"$start_date\" \"$out_format\" 1>&2
+	date -j -v${delta}${units} -f "$in_format" "$start_date" "$out_format"
 }
 
 function linux_date {
 	start_date=$1
 	delta=$2
 	units=$3
-	informat=$4
-	outformat=$5
+	in_format=$4
+	out_format=$5
 
 	case $delta in
 		-*)
@@ -152,12 +156,9 @@ function linux_date {
 		S) units="second ago" ;;
 	esac
 
-	if [ -n $out_format ]
-	then
-		date --date="$start_date $delta $units" +"$out_format"
-	else
-		date --date="$start_date $delta $units"
-	fi
+	[ -n "$out_format" ] && out_format="+$out_format"
+	[ $verbose -eq 0 ] && echo date --date=\"$start_date $delta $units\" \"$out_format\" 1>&2
+	date --date="$start_date $delta $units" "$out_format"
 }
 
 # Determine which date command we're using.
@@ -179,10 +180,9 @@ end=${date_range#*:}
 test -n "$start" || start=0
 test -n "$end"   || end=0
 
-# To avoid having a trailing space, which causes problems when assigning
-# the output to variables, we prepend the separator, but use "" the first 
-# time through the loop. (hack...)
-result=
+# To avoid having a leading or trailing separator, which causes problems when 
+# assigning the output to variables, we prepend the separator, but use "" the 
+# first time through the loop. (hack...)
 sep=
 for delta2 in $(eval "echo {$start..$end}")
 do 
@@ -194,8 +194,7 @@ do
 			delta3="+$delta3"
 			;;
 	esac
-#	result="$result$sep$(mac_or_linux_date "$start_date" "$delta3" $units "$informat" "$out_format")"
-	printf "$sep%s" "$(mac_or_linux_date "$start_date" "$delta3" $units "$informat" "$out_format")"
+	printf "$sep%s" "$(mac_or_linux_date "$start_date" "$delta3" $units "$in_format" "$out_format")"
 	sep=$separator
 done
 echo ""

@@ -65,9 +65,13 @@ this_dir=$(dirname $BASH_SOURCE)
 # Override for testing:
 export DATE=date
 
+# The linux date command accepts limited formats when doing arithmetic. So, this is
+# what we use for all calls to the "bin/dates" script.
+# NOTE: Unfortunately, this format does NOT sort lexicographically!
+: ${STAMPEDE_RFC_3999_TIME_FORMAT:="%a %b %d %H:%M:%S %Z %Y"}
+
 # Time string format: mostly used internally. Contrast with STAMPEDE_LOG_TIME_FORMAT.
-# NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
-: ${STAMPEDE_TIME_FORMAT:="%Y-%m-%d %H:%M:%S%z"}
+: ${STAMPEDE_TIME_FORMAT:="$STAMPEDE_RFC_3999_TIME_FORMAT"}
 export STAMPEDE_TIME_FORMAT
 
 # Time string format for log file entries. Actually, this "format" can be any option(s)
@@ -75,27 +79,33 @@ export STAMPEDE_TIME_FORMAT
 # specify a standard format string, you must include the "+" at the front of it.
 # If you want to use date's default format, leave this definition empty.
 # NOTE: it's STRONGLY recommended to use a format that sorts lexicographically!
-: ${STAMPEDE_LOG_TIME_FORMAT:=+"$STAMPEDE_TIME_FORMAT"}
+: ${STAMPEDE_LOG_TIME_FORMAT:=+"%Y-%m-%d %H:%M:%S%z"}
 export STAMPEDE_LOG_TIME_FORMAT
 
+# It would make more sense in some ways to use the EPOCH_SECONDS as the
+# start time, as integer comparisons are most reliable. However, this 
+# doesn't work so well with the linux date command, e.g., it doesn't
+# understand "--date='1234567890 + 1 day", unfortunately, while 
+# "--date='2012-11-20 01:02:03 + 1 day" works fine. :(
+: ${STAMPEDE_START_TIME:=$(date +"$STAMPEDE_TIME_FORMAT")}
+export STAMPEDE_START_TIME
 
 # The time this script started in epoch seconds (defaults to NOW).
 if [ -z "$EPOCH_SECOND" ]
 then
-  let EPOCH_SECOND=$(date +"%s")
+  let EPOCH_SECOND=$($STAMPEDE_HOME/bin/dates --date="$STAMPEDE_START_TIME" \
+    --informat="$STAMPEDE_TIME_FORMAT" --format="%s")
 fi
 export EPOCH_SECOND
-: ${STAMPEDE_START_TIME:=$EPOCH_SECOND}
-export STAMPEDE_START_TIME
 
 function start_time {
-  time_fields "$STAMPEDE_TIME_FORMAT"
+  echo "$STAMPEDE_START_TIME"
 }
 
 # Helper function to extract date fields from STAMPEDE_START_TIME.
 function time_fields {
   fields=$1
-  $this_dir/dates --date "$EPOCH_SECOND" --informat "%s" --format "$fields"
+  $this_dir/dates --date="$STAMPEDE_START_TIME" --informat="$STAMPEDE_TIME_FORMAT" --format="$fields"
 }
 
 # Year (YYYY) of STAMPEDE_START_TIME.

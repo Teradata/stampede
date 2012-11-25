@@ -73,8 +73,9 @@ function _do_try_for {
   shift
   retry_every=$1
   shift
-  let now=$(date +"%s")
-  let end=$($STAMPEDE_HOME/bin/dates --date "$now" --informat "%s" --format "%s" 1:1 $wait_time S)
+  let now=$(date +"$STAMPEDE_TIME_FORMAT")
+  let end=$($STAMPEDE_HOME/bin/dates --date="$now" \
+    --informat="$STAMPEDE_TIME_FORMAT" --format="$STAMPEDE_TIME_FORMAT" 1:1 $wait_time S)
   name=try-for
   [ $should_die -eq 1 ] && name=${name}_or_die
   _do_try $name $end $retry_every $should_die "$@"
