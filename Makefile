@@ -5,7 +5,7 @@ VERSION       = 0.1
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
 RELEASE_FILE_CONTENTS = README.md README.html LICENSE Makefile bin examples test
-CORE_TESTS    = test-env test-dates test-log test-common test-send-email
+CORE_TESTS    = test-env test-dates test-log test-common test-waiting-try test-send-email
 TESTS         = ${CORE_TESTS} test-syslog
 
 all: clean tests release

@@ -115,6 +115,8 @@ case $date_range in
 		;;
 esac
 
+[ -z "$start_date" ] && start_date=$(date +"$RFC_3999")
+
 
 function mac_date {
 	start_date=$1
@@ -137,23 +139,23 @@ function linux_date {
 
 	case $delta in
 		-*)
-			delta="- ${$delta#-}"
+			delta="- ${delta#-}"
 			;;
 		+*)
-			delta="+ ${$delta#+}"
+			delta="+ ${delta#+}"
 			;;
 		*)
-			delta="+ $delta3"
+			delta="+ $delta"
 			;;
 	esac
 
 	case $units in
-		y) units="year ago"   ;;
-		m) units="month ago"  ;;
-		d) units="day ago"    ;;
-		H) units="hour ago"   ;;
-		M) units="minute ago" ;;
-		S) units="second ago" ;;
+		y) units="year"   ;;
+		m) units="month"  ;;
+		d) units="day"    ;;
+		H) units="hour"   ;;
+		M) units="minute" ;;
+		S) units="second" ;;
 	esac
 
 	[ -n "$out_format" ] && out_format="+$out_format"

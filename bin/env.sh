@@ -144,6 +144,13 @@ export SECOND
 # e.g., "Thursday".
 : ${DAY_OF_WEEK:=$(time_fields "%A")}
 
+# Timezone (e.g., "-0600") and name (e.g., "CST").
+: ${TIMEZONE=$(time_fields "%z")}
+export TIMEZONE
+
+: ${TIMEZONE_NAME=$(time_fields "%Z")}
+export TIMEZONE_NAME
+
 # -- Logging variables:
 
 # The names and levels of the SYSLOG(1)-compatible log levels.

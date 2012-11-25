@@ -100,3 +100,7 @@ Tests of *Stampede* itself are in the `test` directory.
 * Create project support.
 * Test email support.
 * Test all the stampede CLI options.
+
+## Notes
+
+* Supporting both Linux and Mac "date" commands added a lot of complication to the code. 

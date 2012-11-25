@@ -9,7 +9,7 @@ TEST_DIR=$(dirname $BASH_SOURCE)
 
 DATES=$TEST_DIR/../bin/dates
 #INDATE="2012-11-20 01:02:03-0600"
-INDATE="Tue Nov 20 01:02:03 CST 2012"
+INDATE="$STAMPEDE_START_TIME"  # as hard-coded in setup.sh
 INFORMAT="%a %b %d %H:%M:%S %Z %Y"
 OUTFORMAT="%Y-%m-%d %H:%M:%S%z"
 
@@ -48,10 +48,10 @@ results=$($DATES --date="$INDATE" --informat=rfc-3999 --format='%w')
 [ "$results" = "2" ] || die "%w failed! returned <$results>"
 
 results=$($DATES --date="$INDATE" --informat=rfc-3999 --format='%Z')
-[ "$results" = "CST" ] || die "%Z failed! returned <$results>"
+[ "$results" = "$TIMEZONE_NAME" ] || die "%Z failed! returned <$results>"
 
 results=$($DATES --date="$INDATE" --informat=rfc-3999 --format='%z')
-[ "$results" = "-0600" ] || die "%z failed! returned <$results>"
+[ "$results" = "$TIMEZONE" ] || die "%z failed! returned <$results>"
 
 echo "  range tests:"
 

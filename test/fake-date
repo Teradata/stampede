@@ -2,5 +2,4 @@
 #------------------------------------------
 # fake_date
 
-. $(dirname $BASH_SOURCE)/../bin/common.sh
-echo $(start_time)
+echo $FAKE_STAMPEDE_LOG_START_TIME
