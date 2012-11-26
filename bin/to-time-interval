@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # to-time-interval - Compute the a time-interval string specified by the argument.
 
 thisdir=$(dirname $BASH_SOURCE)

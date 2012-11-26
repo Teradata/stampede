@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # yesterday-ymd - Return a YYYYMMDD string for YESTERDAY's date
 
 thisdir=$(dirname $BASH_SOURCE)

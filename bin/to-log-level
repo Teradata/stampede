@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # to-log-level - Convert a log level number to the corresponding name.
 
 thisdir=$(dirname $BASH_SOURCE)

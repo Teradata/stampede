@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-#----------------------------------------------------
-# test-send-email - Tests the send-email script
-# by mocking the mail program.
-# usage:
-#   test-send-email
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+# test-send-email - Tests the send-email script.
 
 TEST_DIR=$(dirname $BASH_SOURCE)
 . $TEST_DIR/setup.sh

@@ -1,3 +1,6 @@
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # Makefile for Stampede itself
 
 STAMPEDE_HOME = ${PWD}

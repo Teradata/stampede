@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # stampede-log - Write to the stampede log.
 
 thisdir=$(dirname $BASH_SOURCE)

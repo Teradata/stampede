@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # installer - Used to install Stampede.
 
 thisdir=$(dirname $BASH_SOURCE)

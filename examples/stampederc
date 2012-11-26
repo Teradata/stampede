@@ -1,3 +1,7 @@
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+
 # Overrides of Stampede environment variables:
 # See $STAMPEDE_HOME/bin/env.sh for information on all the available variables.
 # Only the most useful for customization are shown here.

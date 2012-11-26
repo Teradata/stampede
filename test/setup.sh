@@ -1,3 +1,6 @@
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # Setup the tests, such as overriding variables...
 
 export PROJECT_DIR=$TEST_DIR

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # ymd - Return a YYYYMMDD string, using the values for $YEAR, $MONTH, and $DAY.
 
 thisdir=$(dirname $BASH_SOURCE)

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # try-for - Wait for an expression to succeed for a specified time period from now.
 
 thisdir=$(dirname $BASH_SOURCE)

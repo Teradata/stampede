@@ -4,6 +4,8 @@ Dean Wampler<br/>
 [dean.wampler@thinkbiganalytics.com](mailto:dean.wampler@thinkbiganalytics.com)<br/>
 November 21, 2012
 
+*Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.*
+
 Welcome to *Stampede*, the Hadoop-aware workflow tool that works as [Cthulhu](http://en.wikipedia.org/wiki/Cthulhu) intended for *nix systems, using `make` for dependency management, `bash` for scripting, and `cron` for scheduling.
 
 ## Installation

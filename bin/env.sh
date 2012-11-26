@@ -1,7 +1,5 @@
-# Common environment variables that drive a stampede. 
-# Some are designed to be overridden on the command line for testing, etc.
-# Copyright (c) 2011-2012, Think Big Analytics. See the LICENSE.txt file
-# included with this distribution.
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
 # bin/env.sh -
 # Environment variable definitions used by Stampede.
@@ -34,6 +32,7 @@
 # happen when a support script is run independently. In this case we use $PWD.
 # You can define a particular value in an appropriate .stampederc file if you 
 # prefer. 
+
 [ -z "$PROJECT_DIR" ] && PROJECT_DIR=$PWD
 if [ -z "$STAMPEDE_PROJECT" ]
 then

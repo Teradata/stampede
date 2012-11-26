@@ -1,4 +1,7 @@
-# Common functions, etc. used by the other scripts.
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+# common.sh - Common functions, etc. used by the other scripts.
 # Notes:
 #  1) Variables like DIE and EXIT are used so it's easy to replace calls
 #     "die" and "exit" with test substitutes. See, e.g., test/test-common.sh

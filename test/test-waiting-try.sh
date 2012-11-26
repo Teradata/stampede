@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#---------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # test-waiting-try.sh - Tests of waiting and the try-* scripts.
 
 TEST_DIR=$(dirname $BASH_SOURCE)

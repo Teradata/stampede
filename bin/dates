@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-#----------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # dates - Mac/Linux date formatting and calculation tool.
-# usage:  dates [--help] options
-# This script wraps the different date tools on Mac and Linux.
 # TODO: support Cygwin's version of date.
 
 function help {

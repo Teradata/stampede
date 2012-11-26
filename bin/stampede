@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # stampede - Creates or invoked a "stampede"; a workflow process.
 # The following options are supported:
 #   stampede [-h|--help] [options] [create | [makefile] [targets]]

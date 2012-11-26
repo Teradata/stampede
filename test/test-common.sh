@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#---------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # test-common.sh - Tests of common.sh and other support scripts.
 
 TEST_DIR=$(dirname $BASH_SOURCE)

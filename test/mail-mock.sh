@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#----------------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # mail-mock.sh - Mocks the mail program for testing.
 # It writes the subject and email address on a line to stdout,
 # followed by each line of the input message.

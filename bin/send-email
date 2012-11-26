@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-#----------------------------------------------------
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # send-email - Send alert on errors.
 
 # Override the following on the command line for testing.

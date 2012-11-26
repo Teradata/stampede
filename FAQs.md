@@ -1,5 +1,7 @@
 # Stampede FAQs
 
+*Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.*
+
 # How do I customize the behavior of *Stampede*?
 
 * Pass arguments to `$STAMPEDE_HOME/bin/stampede`. See `stampede --help` for details.

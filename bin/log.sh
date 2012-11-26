@@ -1,3 +1,6 @@
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # Common functions related to logging.
 # Source this file as part of common.sh
 # We use the same logging levels supported by SYSLOG,
