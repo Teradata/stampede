@@ -1,3 +1,3 @@
 # At 8AM, about when data files are written to /ftp, run the "etl" workflow (make target)
 # defined in the "mydata" project.
-00 8 * * * /usr/local/stampede/bin/stampede --verbose=DEBUG --tries=5 /home/me/mydata/makefile etl
+00 8 * * * /usr/local/stampede/bin/stampede --log-level=DEBUG --tries=5 /home/me/mydata/makefile etl
