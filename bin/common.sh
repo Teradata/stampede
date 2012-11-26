@@ -39,8 +39,7 @@ function die {
 	if [ $STAMPEDE_DISABLE_ALERT_EMAILS -eq 0 ]
 	then
 		info "Sending email to $STAMPEDE_ALERT_EMAIL_ADDRESS" 
-		$STAMPEDE_HOME/bin/send-email "ALERT" \
-			"$STAMPEDE_ALERT_EMAIL_ADDRESS" \
+		send-email "ALERT" "$STAMPEDE_ALERT_EMAIL_ADDRESS" \
 			"$0 did not complete successfully." <<EOF
 Error message: $@.
 See $(log-file) for details.
@@ -96,7 +95,7 @@ function _do_try_for {
   shift
   retry_every=$1
   shift
-  let end=$($STAMPEDE_HOME/bin/dates --format="%s" 1:1 $wait_time S)
+  let end=$(dates --format="%s" 1:1 $wait_time S)
   name=try-for
   [ $should_die -eq 1 ] && name=${name}_or_die
   _do_try $name $end $retry_every $should_die "$@"
