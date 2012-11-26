@@ -50,7 +50,7 @@ function log {
     if [ "$STAMPEDE_LOG_USE_SYSLOG" -eq 0 ]
     then
       logger $STAMPEDE_LOG_SYSLOG_OPTIONS -p $level "$@"
-      echo "$msg" 1>&2
+      echo2 "$msg"
     else
       init_log_file
       echo "$msg" | tee -a $(log-file) 1>&2

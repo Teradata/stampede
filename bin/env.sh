@@ -175,7 +175,7 @@ export STAMPEDE_LOG_DIR
 export STAMPEDE_LOG_FILE
 
 # Default logging level. See a description of the options in bin/log.sh.
-[ -z "$STAMPEDE_LOG_LEVEL" ] && let STAMPEDE_LOG_LEVEL=4
+[ -z "$STAMPEDE_LOG_LEVEL" ] && let STAMPEDE_LOG_LEVEL=5
 
 # A format string used with printf to format the log message string. 
 # It should have four "%s" elements, for the date, severity level name, 

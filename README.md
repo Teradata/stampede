@@ -126,7 +126,6 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 
 * Copyright notices.
 * Fill in example content.
-* Create project feature in the stampede driver.
 * Test email support.
 * Test all the stampede CLI options.
 * Provide man pages.

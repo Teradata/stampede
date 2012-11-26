@@ -23,10 +23,6 @@ EOF
 exit 0
 fi
 
-function echo2 {
-  echo "$@" 1>&2
-}
-
 function answer {
   default=$1
   read answ
@@ -79,7 +75,7 @@ then
   if [ -d "$install_dir" ]
   then
     echo2 "$install_dir already exists. I should delete it first. Okay?"
-    echo2 -n "[N=cancel/y=okay]: "
+    echo2 -n "[N=cancel/y=okay] "
     [ "$(answer N)" != y ] && exit 1
 
     while [ -d "$install_dir" ]
@@ -122,14 +118,14 @@ function copy_stampederc {
   parent_dir=$(dirname $target)
   if [ ! -w "$parent_dir" -a -z "$SUDO" ]
   then
-    SUDO=$(use_sudo "You don't have write permissino for the directory \"$install_dir\".")
+    SUDO=$(use_sudo "You don't have write permissions for the directory \"$install_dir\".")
     [ $? -ne 0 ] && return 1
   fi    
   echo2 "Copying $STAMPEDE_HOME/examples/stampederc to $target:"
   $SUDO cp $STAMPEDE_HOME/examples/stampederc $target
   if [ $? -ne 0 ]
   then
-    echo2 "I couldn't copy to $target"
+    echo2 "I couldn't copy to $target."
     return 1
   fi
   return 0
@@ -144,7 +140,7 @@ do
   echo2 "  3. $HOME/.stampederc"
   echo2 "  4. You specify a target directory/file."
   echo2 "  5. Skip this step and continue (default)."
-  echo2 -n "[1/2/3/4/5/]: "
+  echo2 -n "[1/2/3/4/5/] "
   case $(answer) in
     1) 
       copy_stampederc /etc/stampederc

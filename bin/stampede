@@ -22,7 +22,8 @@ fi
 export STAMPEDE_HOME
 
 function help {
-    cat <<-EOF
+  . $STAMPEDE_HOME/bin/common.sh
+  cat <<-EOF
 $0 - Creates or invoked a "stampede"; a workflow process.
 
 Usage: [env ENV_VAR_DEFS] stampede [-h | --help] \ 
@@ -49,14 +50,14 @@ Where:
   --epoch=seconds    Set ALL time fields to correspond to the specified seconds
                      since the Unix epoch. See note below.
   --force-rerun      Force a rerun, ignoring make's usual dependency checking.
-  --tries=N          Make up to N attempts to succeed (default: $STAMPEDE_NUMBER_OF_TRIES tries;
-                     overrides STAMPEDE_NUMBER_OF_TRIES).
+  --tries=N          Make up to N attempts to succeed (default: $STAMPEDE_NUMBER_OF_TRIES
+                     from STAMPEDE_NUMBER_OF_TRIES). For no limit, specify 0.
   --between-tries=N  How many seconds between tries to wait. If "N" ends with a
                      'h', 'm', or 's', then wait N hours, minutes, or seconds
-                     (default: $STAMPEDE_DEFAULT_SLEEP_INTERVAL; overrides STAMPEDE_DEFAULT_SLEEP_INTERVAL).
+                     (default: $STAMPEDE_DEFAULT_SLEEP_INTERVAL from STAMPEDE_DEFAULT_SLEEP_INTERVAL).
   --log-level=N      Log more verbose output (useful for debugging w/ -n).
                      SYSLOG log levels are used, so LARGER N results in LESS
-                     verbose output (default: value of STAMPEDE_LOG_LEVEL).
+                     verbose output (default: $STAMPEDE_LOG_LEVEL - ${STAMPEDE_LOG_LEVEL_NAMES[$STAMPEDE_LOG_LEVEL]} - from STAMPEDE_LOG_LEVEL).
                      For N, you can also use EMERGENCY, ALERT, CRITICAL, ERROR,
                      WARNING, NOTICE, INFO, and DEBUG (case doesn't matter). 
   -n | --noexec      Don't actually execute the commands in the script, 
@@ -141,7 +142,7 @@ do
             command=$1
             ;;
         *)
-            if [ -z "$MAKEFILE" ]
+            if [ -z "$makefile" ]
             then
               makefile=$1
             else
@@ -201,52 +202,64 @@ if [ -n "$log_level" ]
 then
   let STAMPEDE_LOG_LEVEL=$(determine_log_level $log_level)
 fi
+tries_string=$STAMPEDE_NUMBER_OF_TRIES
+[ $STAMPEDE_NUMBER_OF_TRIES -le 0 ] && tries_string="no limit"
 
-# Set the number of allowed attempts, if necessary.
-[ $attempts -le 0 ] && let attempts=$STAMPEDE_NUMBER_OF_TRIES
-
-info "Starting $0 $command (time: $STAMPEDE_START_TIME):"
-info "  makefile:                  $makefile_arg"
-info "  make options/targets:      $STAMPEDE_MAKE_OPTIONS ${make_opts[@]}"
-info "  log file:                  $(log-file)"
-info "  force rerun?               $(true-or-false $force_rerun "on" "off")"
-info "  maximum attempts:          $STAMPEDE_NUMBER_OF_TRIES"
-info "  interval between attempts: $STAMPEDE_DEFAULT_SLEEP_INTERVAL"
-info "  verbosity:                 $(to-log-level $STAMPEDE_LOG_LEVEL)"
-info "  no execute mode?           $(true-or-false "$NOOP" "true" "false")"
-debug " Environment variables:"
-debug "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:   $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
-debug "    EPOCH_SECOND:                        $EPOCH_SECOND"
-env | grep '^STAMPEDE_' | while read line
-do
-  str1=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\1:/')
-  str2=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\2/')
-  debug "    $(printf "%-30s\t%s" "$str1" "$str2")"
-done
+if [ $STAMPEDE_LOG_LEVEL -le $(from-log-level info) ]
+then
+  info "Starting $0 $command (time: $STAMPEDE_START_TIME):"
+  info "  makefile:                  $makefile_arg"
+  info "  make options/targets:      $STAMPEDE_MAKE_OPTIONS ${make_opts[@]}"
+  info "  log file:                  $(log-file)"
+  info "  force rerun?               $(true-or-false $force_rerun "on" "off")"
+  info "  maximum attempts:          $tries_string"
+  info "  interval between attempts: $STAMPEDE_DEFAULT_SLEEP_INTERVAL"
+  info "  verbosity:                 $(to-log-level $STAMPEDE_LOG_LEVEL)"
+  info "  no execute mode?           $(true-or-false "$NOOP" "true" "false")"
+  info " Environment variables:"
+  info "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:   $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
+  info "    EPOCH_SECOND:                        $EPOCH_SECOND"
+  env | grep '^STAMPEDE_' | while read line
+  do
+    str1=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\1:/')
+    str2=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\2/')
+    debug "    $(printf "%-30s\t%s" "$str1" "$str2")"
+  done
+fi
+function keep_trying {
+  let count=$1
+  if [ $STAMPEDE_NUMBER_OF_TRIES -le 0 -o $count -lt $STAMPEDE_NUMBER_OF_TRIES ]
+  then
+    echo true
+  else
+    echo false
+  fi
+}
 
 let count=0
-while [ $count -lt $STAMPEDE_NUMBER_OF_TRIES ]
+while [ $(keep_trying $count) = true ]
 do
+  if [ $count -gt 0 ]
+  then
+    warning "Attempt #$count of $STAMPEDE_NUMBER_OF_TRIES failed!"
+    waiting $count $STAMPEDE_DEFAULT_SLEEP_INTERVAL
+  fi
+
   let count=$count+1
-  info running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
+  notice running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
   if [ -z "$NOOP" ]
   then
     make -ks -f "$MAKEFILE" "$makefile_dir" $STAMPEDE_MAKE_OPTIONS $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
     do
-      info "  output: $line"
+      notice "  output: $line"
     done
   fi
   if [ $? -eq 0 ]
   then
-    info "Finished!"
+    notice "Finished!"
+    echo2 "Finished!"
     exit 0
-  else
-    if [ $count -lt $STAMPEDE_NUMBER_OF_TRIES ]
-    then
-      warning "Attempt #$count of $STAMPEDE_NUMBER_OF_TRIES failed!"
-      waiting $count $STAMPEDE_DEFAULT_SLEEP_INTERVAL
-    else
-      die "Failed after $count attempts! Quitting..."
-    fi
   fi
 done
+
+die "Failed after $count attempts! Quitting..."

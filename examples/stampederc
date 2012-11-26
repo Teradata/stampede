@@ -2,7 +2,7 @@
 # See $STAMPEDE_HOME/bin/env.sh for information on all the available variables.
 # Only the most useful for customization are shown here.
 
-# The name of the project, used as a directory.
+# The name of the project, defaults to the project's directory name.
 # STAMPEDE_PROJECT=myproject
 
 # When emailing alerts, use this address.

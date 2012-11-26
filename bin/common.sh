@@ -9,6 +9,11 @@ thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/env.sh
 . $thisdir/log.sh
 
+# Like echo, but writes to stderr, instead of stdout.
+function echo2 {
+  echo "$@" 1>&2
+}
+
 # Add custom, bin, and contrib under $STAMPEDE_HOME, plus any of their
 # subdirectories, to the PATH. 
 function path_elements {

@@ -132,7 +132,7 @@ function mac_date {
 	out_format=$5
 
 	[ -n "$out_format" ] && out_format="+$out_format"
-	[ $verbose -eq 0 ] && echo date -j -v${delta}${units} -f \"$in_format\" \"$start_date\" \"$out_format\" 1>&2
+	[ $verbose -eq 0 ] && echo2 date -j -v${delta}${units} -f \"$in_format\" \"$start_date\" \"$out_format\"
 	date -j -v${delta}${units} -f "$in_format" "$start_date" "$out_format"
 }
 
@@ -165,7 +165,7 @@ function linux_date {
 	esac
 
 	[ -n "$out_format" ] && out_format="+$out_format"
-	[ $verbose -eq 0 ] && echo date --date=\"$start_date $delta $units\" \"$out_format\" 1>&2
+	[ $verbose -eq 0 ] && echo2 date --date=\"$start_date $delta $units\" \"$out_format\"
 	date --date="$start_date $delta $units" "$out_format"
 }
 

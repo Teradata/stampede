@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# create-project - Create a new Stampede project.
+
+thisdir=$(dirname $BASH_SOURCE)
+[ "$thisdir" = '.' ] && thisdir=$PWD
+thisdir_parent=$(dirname $thisdir)
+[ "$thisdir_parent" = '.' ] && thisdir_parent=$PWD
+. $thisdir/common.sh
+
+project_name=$(basename $thisdir_parent)
+
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+$0 - Create a new Stampede project. It will prompt you for information.
+
+Usage: $0
+EOF
+exit 0
+fi
+
+function answer {
+  default=$1
+  read answ
+  if [ -z "$answ" ]
+  then
+    echo $default
+  else
+    echo $answ
+  fi
+}
+
+install_dir="$HOME/stampede"
+echo2 -n "Specify the directory for your new project: [$install_dir] "
+# Convert potential '~' to $HOME.
+install_dir=$(echo $(answer "$install_dir") | sed -e "s?~?$HOME?")
+echo2 "Using $install_dir:"
+
+if [ -d "$install_dir" ]
+then
+  echo2 -n "$install_dir already exists. Remove it? [N/y] "
+  if [ "$(answer N)" = y ]
+  then
+    echo2 "Removing $install_dir..."
+    rm -rf $install_dir
+    [ $? -ne 0 ] && exit 1
+  fi
+fi
+
+echo2 "Creating $install_dir:"
+mkdir -p "$install_dir"
+if [ $? -ne 0 ]
+then
+  echo2 "I couldn't create the project directory \"$install_dir\". Quitting..."
+  exit 1
+fi
+
+project_name=$(basename $install_dir)
+echo2 -n "Specify the project name: [$project_name] "
+project_name=$(answer "$project_name")
+
+echo2 "Creating $install_dir/.stampederc:"
+cat $STAMPEDE_HOME/examples/stampederc | \
+  sed -e "s/.*STAMPEDE_PROJECT=.*/STAMPEDE_PROJECT=$project_name/" > $install_dir/.stampederc
+if [ $? -ne 0 ]
+then
+  echo2 "I couldn't create the .stampederc file! Quitting..."
+  exit 1
+fi
+
+echo2 "Creating $install_dir/Makefile:"
+cat $STAMPEDE_HOME/examples/Makefile | \
+  sed -e "s/XX/$project_name/" > $install_dir/Makefile
+if [ $? -ne 0 ]
+then
+  echo2 "I couldn't create the Makefile! Quitting..."
+  exit 1
+fi
+
+echo2 "Finished! Your project \"$project_name\" is in \"$install_dir\"."
+echo2 "Please see $STAMPEDE_HOME/examples for example projects."
