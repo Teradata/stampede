@@ -120,6 +120,7 @@ do
         --between-tries=*)
             let STAMPEDE_DEFAULT_SLEEP_INTERVAL=$($STAMPEDE_HOME/bin/to-seconds ${1#--between-tries=})
             export STAMPEDE_DEFAULT_SLEEP_INTERVAL
+            ;;
         --log-level=*)
             log_level=${1#--log-level=}
             ;;
