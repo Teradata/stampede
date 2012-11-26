@@ -8,9 +8,16 @@
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-send-email - Send an email message, typically to alert on errors.
-usage: send-email severity address subject < message_lines
-It reads the lines of the message from stdin.
+$0 - Send an email message, typically to alert on errors.
+
+Usage: $0 severity address subject < message_lines
+
+Where:
+  severity       A severity string, e.g., EMERGENCY.
+  address        A valid email address.
+  subject        The email subject. Don't forget to quote spaces!
+  message_lines  The message body is read from stdin.
+
 The command-line mail program must be configured and enabled.
 EOF
 exit 0

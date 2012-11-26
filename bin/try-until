@@ -8,19 +8,25 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-try-until - Wait for an expression to succeed until a specified time.
-usage: try-until time Mx
-The first argument is the point in time when waiting will stop, specified
-in epoch seconds. 
-The second argument is how long to wait between attempts in seconds specified
-as "Mx", where the optional x is one of 'h', 'm', or 's' (default).
-The remaining arguments are the bash expression to try on every iteration. 
-It must return a status of 0 when evaluated to indicate success and nonzero for
-failure. For example, "ls foo" returns 1 unless "foo" exists, in which case
-it returns 0.
-If the wait times out, 1 is returned. Contrast with bin/try-until-or-die.
-NOTE: The process will sleep between attempts.
-See also the other try-* scripts.
+$0 - Wait for an expression to succeed until a specified time.
+
+Usage: $0 N Mx expression
+Usage: $0 end_timestamp time_between_attempts expression
+
+Where:
+  end_timestamp          The timestamp, in Unix epoch seconds, when it should give up.
+                         After this point in time, it returns the failure status of 1.
+  time_between_attempts  How long to wait between attempts. Format is "Nx".
+                         See "to-seconds --help" for the required format.
+  expression             The remaining arguments are the bash expression to try on
+                         every iteration. It must return a status of 0 when evaluated
+                         to indicate success and nonzero for failure. For example,
+                         "ls foo" returns 0 if "foo" exists, otherwise it returns 1.
+
+Contrast with "try-until-or-die", "try-for", and "try-for-or-die".
+NOTES: 
+  1) The process will sleep between attempts.
+  2) If you don't want the expression's output, redirect to "/dev/null".
 EOF
 exit 0
 fi

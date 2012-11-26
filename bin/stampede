@@ -23,14 +23,17 @@ export STAMPEDE_HOME
 
 function help {
     cat <<-EOF
-usage: [env ENV_VAR_DEFS] stampede [-h | --help] \ 
+$0 - Creates or invoked a "stampede"; a workflow process.
+
+Usage: [env ENV_VAR_DEFS] stampede [-h | --help] \ 
          [--year=YYYY] [--month=MM | --mon=MM] [--day=DD] \ 
          [--hour=HH] [--minute=MM | --min=MM] \ 
          [--second=SS | --sec=SS] [--epoch=seconds] \ 
          [--force-rerun] [--tries=N] [--between-tries=N] \ 
          [-v | --verbose[=N]] [-n | noexec] \ 
          [create | makefile [make_options] [targets]]
-where:
+
+Where:
   -h | --help        Print this message and exit.
   ENV_VAR_DEFS       One-time overrides of env. vars defined in bin/env.sh.
   --year=YYYY        Use YYYY (4 digits!) as the year. All time-related values
@@ -63,7 +66,8 @@ where:
                      (default: \$PWD/makefile).
   make_options       Pass these options to make.
   targets            Build these targets (default: first on in makefile).
-Note on time-related arguments: The purpose of these arguments is to enable
+
+NOTE on time-related arguments: The purpose of these arguments is to enable
 specifying time-stamped resources, defaulting to those with the current date
 and time. If you specify any of the time-related arguments, WITH THE EXCEPTION OF
 "--epoch=seconds", it only affects that field. All other time-related fields that

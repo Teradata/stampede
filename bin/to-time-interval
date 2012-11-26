@@ -8,16 +8,22 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-to-time-interval - Compute the a time-interval string specified by the argument.
-Accepts an argument "Nx", where "x" is optional and can be one of the
-characters 'h', 'm', or 's', interpreted as follows:
-    'h' means "N" is interpreted as hours. Returns "N hours".
-    'm' means "N" is interpreted as minutes. Returns "N minutes".
-    's' means "N" is interpreted as seconds (the default). Returns "N seconds".
-However, if N=1, then the singular is returned.
-Note: days, months, and years aren't supported, because then you would have 
+$0 - Compute the a time-interval string specified by the argument.
+
+Usage: $0 Nx
+
+Where:
+  Nx      The time argument, where "N" is an integer and "x" is optional, one of the
+          characters 'h', 'm', or 's', interpreted as follows:
+            'h' means "N" is interpreted as hours. Returns "N hours".
+            'm' means "N" is interpreted as minutes. Returns "N minutes".
+            's' means "N" is interpreted as seconds (the default). Returns "N seconds".
+          However, if N=1, then the singular of the units is returned.
+
+NOTE: days, months, and years aren't supported, because then you would have 
 to specify a date to know the context, e.g., for daylight savings time,
-leap years, etc! 
+leap years, etc. 
+
 See also "bin/to-seconds" and "bin/dates" instead for the more general case.
 EOF
 exit 0

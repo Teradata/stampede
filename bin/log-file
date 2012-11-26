@@ -8,7 +8,9 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-log-file - Return the log file being used or the string "SYSLOG".
+$0 - Return the log file being used or the string "SYSLOG".
+
+Usage: $0
 EOF
 exit 0
 fi

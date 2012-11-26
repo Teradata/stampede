@@ -8,13 +8,21 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-to-seconds - Compute the seconds specified by the argument.
-Accepts an argument "Nx", where "x" is optional and can be one of the
-characters 'h', 'm', or 's', where 'h' means "N" is interpreted as hours,
-'m' implies minutes, and 's' implies seconds (the default).
-Note: days, months, and years aren't supported, because then you would have 
+$0 - Compute the seconds specified by the argument. Returns an integer.
+
+Usage: $0 Nx
+
+Where:
+  Nx      The time argument, where "N" is an integer and "x" is optional, one of the
+          characters 'h', 'm', or 's', interpreted as follows:
+            'h' means "N" is interpreted as hours. Returns N*3600.
+            'm' means "N" is interpreted as minutes. Returns N*60.
+            's' means "N" is interpreted as seconds (the default). Simply returns N.
+
+NOTE: days, months, and years aren't supported, because then you would have 
 to specify a date to know the context, e.g., for daylight savings time,
-leap years, etc! 
+leap years, etc. 
+
 See also "bin/to-time-interval" and "bin/dates" instead for the more general case.
 EOF
 exit 0

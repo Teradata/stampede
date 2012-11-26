@@ -8,13 +8,15 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-yesterday-ymd - Return a YYYYMMDD string for YESTERDAY's date
-Uses the values for $YEAR, $MONTH, and $DAY as TODAY's date.
-usage: yesterday-ymd [delimiter | --as-args]
-An optional delimiter can be specified as the single argument.
-Or, if "--as-args" is specified, the output is
-    --year=YYYY --month=MM --day=DD
-which can be used to invoke stampede.
+$0 - Return a YYYYMMDD string for YESTERDAY's date, where the values
+     for \$YEAR, \$MONTH, and \$DAY are used for TODAY's date.
+
+Usage: $0 [delimiter | --as-args]
+
+Where:
+  delimiter  A string to insert between the fields (default: "").
+  --as-args  Format the output as "--year=YYYY --month=MM --day=DD",
+             which can be used in the invocation flags for "stampede".
 EOF
 exit 0
 fi

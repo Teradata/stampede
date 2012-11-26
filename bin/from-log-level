@@ -9,6 +9,7 @@ if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
 $0 - Convert a log level to the corresponding number.
+
 Usage: $0 NAME [default]
 
 Where:

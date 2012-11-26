@@ -8,12 +8,16 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-waiting - Used to sleep for a specified period of time and logging
-messages that you're waiting...
-usage: tries_so_far sleep_interval
-Where the tries_so_far is just a number and the sleep_interval is "Nx",
-where N is a number and x is optional, one of 'h' (hours), 'm' (minutes),
-or 's' (seconds, the default).
+$0 - Sleep for a period of time and (occasionally) log a message that you're waiting.
+
+Usage: $0 tries_so_far sleep_interval [text]
+
+Where:
+  tries_so_far    The number of times that $0 has been called. 
+                  Used to format the log message.
+  sleep_interval  The time to sleep. Format is "Nx".
+                  See "to-seconds --help" for the required format.
+  text            All other arguments are part of the text that is logged.
 EOF
 exit 0
 fi
@@ -25,7 +29,7 @@ shift
 
 if [ $tries -le 5 -o $(expr $tries % 5) = 0 ]
 then
-  let seconds=$tries*$($thisdir/to-seconds $sleep_interval)
+  let seconds=$tries*$(to-seconds $sleep_interval)
   info "$@ (waiting $seconds seconds so far)"
 fi
 sleep $sleep_interval

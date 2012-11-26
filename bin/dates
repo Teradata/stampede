@@ -7,9 +7,12 @@
 
 function help {
 		cat <<EOF
-usage: $0 [--help] [--verbose] \ 
+$0 - Perform data arithmetic and/or format dates
+
+Usage: $0 [--help] [--verbose] \ 
   [--today | --date=date [--informat=fmt]] [--format=fmt] [--sep=separator] [M:N [units]]"
-where:"
+
+Where:"
   --help          This message.
   --verbose       Echo the *nix date commands to stderr.
   --today         Use today's date as the starting date.
@@ -29,12 +32,15 @@ where:"
                   Also, if the N < M, the results "count down".
   units           How to interpret the the M:N range. An optional number (default: 1),
                   followed by one of the characters in ymdHMS. ('w' is also allowed for Mac OS X)
-  If "M:N units" are omitted, the script just reformats the input or today's date.
-See also the tests of this script in test/test-dates.sh for examples.
-See also "man date" for more information about the *nix date command format options.
+
+If "M:N units" are omitted, the script just reformats the input or today's date.
+
 WARNING: The Linux date command often fails to return valid results when doing arithmetic
 on an input date that is not RFC-3999 format! There are exceptions, such as using the %Y-%m-%d
 format when calculating day deltas. We recommend using RFC-3999 for this reason.
+
+See also the tests of this script in test/test-dates.sh for examples.
+See also "man date" for more information about the *nix date command format options.
 EOF
 }
 
