@@ -117,25 +117,21 @@ The `example` directory contains several example *stampedes* that you can adapt 
 * `Makefile` - A sample `makefile`.
 * `crontab` - A sample `crontab` file.
 * `stampederc` - A sample file that overrides environment variable definitions to customize the environment or a particular project. See `bin/env.sh` for recommendations on where to install one or more of these `rc` files and for the complete list of variables available.
-* `hadoop-example` - A small example using a typical Hadoop job.
-* `pig-example` - A small example using a typical Pig job.
-* `hive-example` - A small example using a typical Hive job.
-* `big-example` - A larger, more realistic example of a workflow joining several different tools and steps.
+* `hadoop-example` - An example sequencing several Hadoop jobs into a typical ETL and analytics workflow.
  
 ### Test Directory
 
-Tests of *Stampede* itself are in the `test` directory.
-
+Tests of *Stampede* itself are in the `test` directory. The tests provide good examples of the individual tools in action.
 
 ## TODO
 
 * Copyright notices.
-* Fill in examples.
+* Fill in example content.
 * Installer.
-* Create project support.
+* Create project feature in the stampede driver.
 * Test email support.
 * Test all the stampede CLI options.
-* man pages
+* Provide man pages.
 
 ## Notes
 
