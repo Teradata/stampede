@@ -114,10 +114,9 @@ We intend for `contrib` to be a place where as-is, community-contributed tools w
 
 The `example` directory contains several example *stampedes* that you can adapt for your purposes as well as a sample configuration file.
 
-* `Makefile` - A sample `makefile`.
 * `crontab` - A sample `crontab` file.
 * `stampederc` - A sample file that overrides environment variable definitions to customize the environment or a particular project. See `bin/env.sh` for recommendations on where to install one or more of these `rc` files and for the complete list of variables available.
-* `hadoop-example` - An example sequencing several Hadoop jobs into a typical ETL and analytics workflow.
+* `hadoop` - An example sequencing several Hadoop jobs into a typical ETL and analytics workflow.
  
 ### Test Directory
 
