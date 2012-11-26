@@ -130,8 +130,7 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 * Test email support.
 * Test all the stampede CLI options.
 * Provide man pages.
-* Better use of NOOP.
-* 
+ 
 ## Notes
 
 * Supporting both Linux and Mac "date" commands added a lot of complication to the code. 
