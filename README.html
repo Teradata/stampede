@@ -23,44 +23,40 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#x64;&#101;&#x61;&#110;&#x2e;&#119;&#97;&#x6d;&#x70;&#x6c;&#101;&#114;&#64;&#116;&#104;&#x69;&#x6e;&#x6b;&#98;&#x69;&#103;&#97;&#110;&#x61;&#x6c;&#x79;&#x74;&#105;&#99;&#115;&#x2e;&#x63;&#x6f;&#109;">&#100;&#101;&#x61;&#x6e;&#46;&#x77;&#x61;&#x6d;&#112;&#108;&#x65;&#114;&#x40;&#x74;&#104;&#105;&#110;&#107;&#x62;&#105;&#103;&#97;&#x6e;&#97;&#108;&#x79;&#116;&#105;&#99;&#115;&#x2e;&#99;&#111;&#109;</a><br/>
+<a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#x6f;&#x3a;&#100;&#x65;&#x61;&#110;&#46;&#x77;&#x61;&#109;&#112;&#108;&#101;&#114;&#x40;&#116;&#104;&#105;&#x6e;&#x6b;&#98;&#105;&#103;&#x61;&#110;&#x61;&#108;&#121;&#116;&#105;&#99;&#x73;&#46;&#x63;&#x6f;&#x6d;">&#100;&#101;&#97;&#x6e;&#x2e;&#119;&#97;&#x6d;&#112;&#x6c;&#101;&#x72;&#64;&#x74;&#x68;&#105;&#x6e;&#x6b;&#x62;&#105;&#x67;&#97;&#x6e;&#x61;&#x6c;&#x79;&#x74;&#105;&#99;&#x73;&#x2e;&#99;&#x6f;&#x6d;</a><br/>
 November 21, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
 
-<p>Welcome to <em>Stampede</em>, the Hadoop-aware workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
+<p>Welcome to <em>Stampede</em>, the Hadoop-aware workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management and task seqeuencing, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
 
 <h2 id="installation">Installation</h2>
 
-<p>First, clone this repo or untar the distribution somewhere useful, e.g., <code>/usr/local/stampede</code>. Or, download and expand one of the releases.</p>
+<p>First, clone this repo or untar the distribution somewhere useful, e.g., <code>$HOME/stampede</code>. Or, download and expand one of the releases.</p>
 
-<p>Since <em>Stampede</em> uses <code>make</code> as part of its implementation, it&#8217;s only appropriate that it uses <code>make</code> to run its tests and install itself:</p>
+<p>Since <em>Stampede</em> uses <code>make</code> and <code>bash</code> its weapon&#8217;s of choice, run this <code>make</code> command to test and install <em>Stampede</em>:</p>
 
 <pre><code>make install
 </code></pre>
+
+<p>You&#8217;ll be asked for details, like the target installation directory (the default is <code>/usr/local/stampede</code>).</p>
 
 <p>If you <strong>don&#8217;t</strong> have <code>syslog</code> on your system, run this command instead, which will skip the <code>syslog</code>-related tests:</p>
 
 <pre><code>make install-no-syslog
 </code></pre>
 
-<ol>
-<li>Add <code>/usr/local/stampede/bin</code> (or whatever directory you used) to the <code>PATH</code> for any user who plans to use <em>Stampede</em>.</li>
-<li>Copy <code>/usr/local/stampede/examples/stampederc</code> to one of the following locations, choosing one of the first two options appropriate for your operating system or for individual use, to the <code>$HOME</code> directory.
+<p>Next, assuming you installed in <code>/usr/local/stampede/</code>, which we&#8217;ll call <code>$STAMPEDE_HOME</code> from now on, add <code>$STAMPEDE_HOME/bin</code> to the <code>PATH</code> for any user who plans to use <em>Stampede</em>.</p>
 
-<ul>
-<li><code>/etc/stampederc</code>.</li>
-<li><code>/etc/sysconfig/stampede</code>.</li>
-<li><code>$HOME/.stampederc</code>.</li>
-</ul></li>
-<li>Edit the properties in the copied <code>rc</code> file as appropriate for your environment.</li>
-</ol>
+<p>As part of the installation, the installer will ask you if you want a global <code>stampederc</code> file installed in <code>/etc</code>, <code>/etc/sysconfig</code>, or somewhere else. All statements in this file are commented out. If you want to make global changes to <em>Stampede&#8217;s</em> environment variables, edit this file appropriately. Note that it doesn&#8217;t contain all the possible environment variables, see <code>$STAMPEDE_HOME/bin/env.sh</code> for the complete list and the default values.</p>
+
+<p>Similarly, if you told the installer to copy <code>stampederc</code> file to <code>$HOME/.stampederc</code>, edit that file for your personal tasks.</p>
+
+<p>Whenever you create a new <em>Stampede</em> project, it will also get its own <code>$PROJECT_HOME/.stampederc</code> file, as we discuss next.</p>
 
 <h2 id="usage">Usage</h2>
 
 <p>An individual workflow definition is called a <em>stampede</em>. </p>
-
-<p>For users who wish to customize all their stampedes, copy <code>/usr/local/stampede/examples/stampederc</code> to <code>$HOME/.stampederc</code> and edit to taste.</p>
 
 <p>To create a stampede, run the following command:</p>
 
@@ -85,16 +81,18 @@ November 21, 2012</p>
 
 <ul>
 <li><code>bash</code> v3+ - Because OS X ships with an older bash version, all the scripts supplied are v3 compatible. You can use newer constructs if your version of bash supports them.</li>
-<li>GNU <code>make</code> v3.8+ - The template <code>makefile</code> generated by <code>stampede create</code> assumes GNU <code>make</code> syntax. You can adapt the <code>makefile</code> to any version of <code>make</code> you prefer.</li>
-<li><code>cron</code> - If you plan to use <code>cron</code> for scheduling workflows.</li>
-<li><code>syslog</code> - If you plan to use the *nix logging facility <code>syslog</code>. See also notes on building.</li>
-<li><em>Hadoop</em> - Recent versions of Hadoop and other tools you might use, such as <em>Hive</em> and <em>Pig</em>, are required, but <em>Stampede</em> is mostly agnostic to versions. For each tool, Stampede relies on finding the tool in the <code>PATH</code> in order to determine installation directories, such as when it needs to find property definitions, invoke the tool, etc. If a tool isn&#8217;t found on the <code>PATH</code>, <em>Stampede</em> will attempt to use the corresponding <code>$STAMPEDE_HOME</code> environment variable. If neither appropriate works, <em>Stampede</em> will exit with an error message.</li>
+<li>GNU <code>make</code> v3.8+ - The <code>Makefile</code> in this directory that&#8217;s used to test and install <em>Stampede</em> requires Gnu <code>make</code> v3.8+, as do the <code>examples</code>. However, you can adapt your project <code>Makefiles</code> to use any version of <code>make</code> you prefer.</li>
+<li><code>cron</code> - If you plan to use <code>cron</code> for scheduling workflows. In fact, <em>Stampede</em> doesn&#8217;t really do anything with <code>cron</code> itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. <em>Stampede</em> projects will work fine with any scheduling tool that can invoke shell commands.</li>
+<li><code>syslog</code> - If you plan to use the *nix logging facility <code>syslog</code>. See also <a href="#installation">Installation</a>.</li>
+<li><em>Hadoop</em> - <em>Stampede</em> was nominally designed as a flyweight replacement or <a href="http://oozie.apache.org">Oozie</a>. However, all the support consists of add-on scripts in <code>$STAMPEDE_HOME/bin/hadoop</code>.</li>
 </ul>
+
+<p><em>Stampede</em> is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user&#8217;s <code>PATH</code>.</p>
 
 <h2 id="supportedplatforms">Supported Platforms</h2>
 
 <ul>
-<li><strong>Linux</strong> - All recent Linux distributions with <code>bash</code> v3+.</li>
+<li><strong>Linux</strong> - All recent Linux distributions with <code>bash</code> v3+. However, we have not tested all possible Linux variants!</li>
 <li><strong>Mac OS X</strong> - All recent OS X versions.</li>
 </ul>
 
@@ -111,7 +109,9 @@ November 21, 2012</p>
 <ul>
 <li><code>README.md</code> - This file, as well as an HTML version of it.</li>
 <li><code>LICENSE</code> - The copyright and license (Apache 2.0).</li>
+<li><code>FAQs.md</code> - Frequently-asked Questions.</li>
 <li><code>Makefile</code> - The <code>makefile</code> used to test and install <em>Stampede</em>.</li>
+<li><code>VERSION</code> - The version number, used by the <code>Makefile</code> for building releases.</li>
 </ul>
 
 <h3 id="bindirectory">Bin Directory</h3>
@@ -122,8 +122,11 @@ November 21, 2012</p>
 
 <ul>
 <li><code>stampede</code> - The &#8220;stampede&#8221; (workflow) driver script. It can be invoked manually or by <code>cron</code>. It has several options to configure behavior. Run <code>stampede --help</code> for details.</li>
+<li><code>install</code> - Called by <code>make install</code> to install <em>Stampede</em>.</li>
+<li><code>create-project</code> - Called by the <code>stampede</code> script to create new projects.</li>
 <li><code>dates</code> - Format dates and perform date arithmetic in a cross-platform way.</li>
 <li><code>from-log-level</code> and <code>to-log-level</code> - Convert from a log-level string, e.g., <code>DEBUG</code> to the corresponding <code>syslog</code>-compatible number and back again.</li>
+<li><code>format-log-message</code> - Format messages that are logged. If you want to customize the format beyond what&#8217;s possible by editing the environment variables <code>STAMPEDE_LOG_TIME_FORMAT</code> and <code>STAMPEDE_LOG_MESSAGE_FORMAT_STRING</code>, you can create your own version of this script and drop it in <code>$STAMPEDE_HOME/custom</code>, which is on the <code>PATH</code> BEFORE <code>$STAMPEDE_HOME/bin</code>. See <a href="#custom">Custom</a> for more details.</li>
 <li><code>log-file</code> - Return the name of the log file used by <em>stampede</em> or <code>SYSLOG</code> if <code>syslog</code> is being used.</li>
 <li><code>send-email</code> - Use the *nux <code>mail</code> command (if configured) to send alerts.</li>
 <li><code>stampede-log</code> - Write your own messages to the log file (or <code>syslog</code>) configured for <em>Stampede</em>.</li>
@@ -148,7 +151,7 @@ November 21, 2012</p>
 <li><code>log.sh</code> - Support functions for logging.</li>
 </ul>
 
-<h3 id="customandcontribdirectories">Custom and Contrib Directories</h3>
+<h3 id="custom">Custom and Contrib Directories</h3>
 
 <p>If you want to override the behavior of any particular script, drop a new version in the <code>custom</code> directory (or a subdirectory), which are added to the <code>PATH</code> first.</p>
 
@@ -171,11 +174,10 @@ November 21, 2012</p>
 <h2 id="todo">TODO</h2>
 
 <ul>
-<li>Copyright notices.</li>
 <li>Fill in example content.</li>
-<li>Test email support.</li>
-<li>Test all the stampede CLI options.</li>
-<li>Provide man pages.</li>
+<li>Test email support with the Unix <code>mail</code> command.</li>
+<li>Finish testing all the stampede CLI options.</li>
+<li>Provide <code>man</code> pages.</li>
 </ul>
 
 <h2 id="notes">Notes</h2>
