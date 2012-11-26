@@ -27,13 +27,13 @@
 # Options to pass to logger(1) for syslog logging.
 # STAMPEDE_LOG_SYSLOG_OPTIONS=
 
-
 # How long to sleep a process while waiting for something, e.g., before
 # trying a step again. The default units are seconds, but you can append
 # one of 's', 'm', or 'h' for seconds, minutes, hours, respectively.
-: ${STAMPEDE_DEFAULT_SLEEP_INTERVAL:=60s}
-export STAMPEDE_DEFAULT_SLEEP_INTERVAL
+# STAMPEDE_DEFAULT_SLEEP_INTERVAL=60s
 
 # How many attempts to make for the workflow before giving up.
-: ${STAMPEDE_NUMBER_OF_TRIES:=5}
-export STAMPEDE_NUMBER_OF_TRIES
+# STAMPEDE_NUMBER_OF_TRIES=5
+
+# Options to pass to make.
+# STAMPEDE_MAKE_OPTIONS=

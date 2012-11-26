@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# installer - Used to install Stampede.
+
+thisdir=$(dirname $BASH_SOURCE)
+[ "$thisdir" = '.' ] && thisdir=$PWD
+thisdir_parent=$(dirname $thisdir)
+[ "$thisdir_parent" = '.' ] && thisdir_parent=$PWD
+. $thisdir/common.sh
+
+release_name=$(basename $thisdir_parent)
+echo $release_name
+
+export SUDO=
+
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+$0 - Install stampede. It will prompt you for information.
+
+Usage: $0
+EOF
+exit 0
+fi
+
+function echo2 {
+  echo "$@" 1>&2
+}
+
+function answer {
+  default=$1
+  read answ
+  if [ -z "$answ" ]
+  then
+    echo $default
+  else
+    echo $answ
+  fi
+}
+
+function use_sudo {
+  [ $# -gt 0 ] && echo2 "$@" 
+  echo2 -n "Use sudo? [N=quit/y] "
+  if [ "$(answer N)" = 'y' ] 
+  then
+    echo sudo
+  else
+    return 1
+  fi
+}
+
+# Copy to a target directory, if desired.
+
+leave_it=1
+echo2 "Install it somewhere else?"
+echo2 "  Y: Ask me for a location."
+echo2 "  n: Just leave it where it is."
+echo2 -n "[Y/n] "
+[ "$(answer Y)" = 'n' ] && leave_it=0
+
+install_dir="$STAMPEDE_HOME"
+ln_dir=$install_dir
+if [ $leave_it -ne 0 ]
+then
+  echo2 -n "Specify where stampede should be installed: [/usr/local] "
+  parent_dir=$(answer "/usr/local")
+  install_dir=$parent_dir/$release_name
+  ln_dir=$parent_dir/stampede
+  while [ ! -d "$parent_dir" ]
+  do
+    echo2 "Creating $parent_dir:"
+     $SUDO mkdir -p "$parent_dir"
+    if [ $? -ne 0 ]
+    then
+      SUDO=$(use_sudo "I couldn't create the parent directory \"$parent_dir\".")
+      [ $? -ne 0 ] && exit 1
+    fi
+  done
+  if [ -d "$install_dir" ]
+  then
+    echo2 "$install_dir already exists. I should delete it first. Okay?"
+    echo2 -n "[N=cancel/y=okay]: "
+    [ "$(answer N)" != y ] && exit 1
+
+    while [ -d "$install_dir" ]
+    do
+      echo2 "Removing $install_dir:"
+      $SUDO rm -rf "$install_dir"
+      if [ $? -ne 0 ]
+      then
+        SUDO=$(use_sudo "I couldn't delete the directory \"$install_dir\".")
+        [ $? -ne 0 ] && exit 1
+      fi
+    done
+  fi
+  while [ ! -d "$install_dir" ]
+  do
+    if [ ! -w "$install_dir" -a -z "$SUDO" ]
+    then
+      SUDO=$(use_sudo "I can't copy into the directory \"$install_dir\".")
+      [ $? -ne 0 ] && exit 1
+    fi
+    echo2 "Copying $STAMPEDE_HOME to $install_dir"
+    $SUDO cp -r $STAMPEDE_HOME $install_dir
+    if [ $? -ne 0 ]
+    then
+      echo2 "I couldn't copy into the directory \"$install_dir\"! Quitting..."
+      exit 1
+    fi
+    if [ "$install_dir" != "$ln_dir" ]
+    then
+      echo2 "Creating a symlink between $install_dir and $ln_dir:"
+      $SUDO ln -s $install_dir $ln_dir
+    fi
+  done
+fi
+
+# Copy the examples/stampederc to the appropriate system place.
+
+function copy_stampederc {
+  target=$1
+  parent_dir=$(dirname $target)
+  if [ ! -w "$parent_dir" -a -z "$SUDO" ]
+  then
+    SUDO=$(use_sudo "You don't have write permissino for the directory \"$install_dir\".")
+    [ $? -ne 0 ] && return 1
+  fi    
+  echo2 "Copying $STAMPEDE_HOME/examples/stampederc to $target:"
+  $SUDO cp $STAMPEDE_HOME/examples/stampederc $target
+  if [ $? -ne 0 ]
+  then
+    echo2 "I couldn't copy to $target"
+    return 1
+  fi
+  return 0
+}
+
+while [ 0 ]
+do
+  echo2 "Specify a directory where I'll copy a customizable \"stampederc\" file."
+  echo2 "(We'll loop, so you can specify more than one if you want...)"
+  echo2 "  1. /etc/stampederc"
+  echo2 "  2. /etc/sysconfig/stampede"
+  echo2 "  3. $HOME/.stampederc"
+  echo2 "  4. You specify a target directory/file."
+  echo2 "  5. Skip this step and continue (default)."
+  echo2 -n "[1/2/3/4/5/]: "
+  case $(answer) in
+    1) 
+      copy_stampederc /etc/stampederc
+      [ $? -ne 0 ] && exit 1
+      ;;
+    2) 
+      copy_stampederc /etc/sysconfig/stampede
+      [ $? -ne 0 ] && exit 1
+      ;;
+    3) 
+      copy_stampederc $HOME/.stampederc
+      [ $? -ne 0 ] && exit 1
+      ;;
+    4) 
+      echo "Target file name: "
+      dir=$(answer)
+      if [ "$dir" = "" ]
+      then
+        echo2 "Empty path specified. Skipping..."
+      else
+        copy_stampederc $dir
+        [ $? -ne 0 ] && exit 1
+      fi
+      ;;
+    *) 
+      break
+      ;;
+  esac
+done
+
+echo2 "Finished! Please add $ln_dir/bin to your PATH." 

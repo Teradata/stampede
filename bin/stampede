@@ -156,10 +156,10 @@ if [ "$command" = "create" ]
 then
   if [ -n "$NOOP" ]
   then
-    echo "exec $STAMPEDE_HOME/bin/create-project.sh"
+    echo "exec $STAMPEDE_HOME/bin/create-project"
     exit 0
   else
-    exec $STAMPEDE_HOME/bin/create-project.sh
+    exec $STAMPEDE_HOME/bin/create-project
   fi
 fi
 
@@ -231,7 +231,7 @@ do
   info running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
   if [ -z "$NOOP" ]
   then
-    make -ks -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
+    make -ks -f "$MAKEFILE" "$makefile_dir" $STAMPEDE_MAKE_OPTIONS $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
     do
       info "  output: $line"
     done

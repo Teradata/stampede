@@ -1,10 +1,10 @@
 # Makefile for Stampede itself
 
 STAMPEDE_HOME = ${PWD}
-VERSION       = 0.02
+VERSION       = $(shell cat VERSION)
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
-RELEASE_FILE_CONTENTS = README.md README.html LICENSE Makefile bin examples test
+RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin custom contrib examples test
 TESTS_LOGGING = test-format-log-message test-to-log-level test-from-log-level test-log
 TESTS_NO_SYSLOG = test-env test-dates ${TESTS_LOGGING} test-common test-waiting-try test-send-email
 TESTS           = ${TESTS_NO_SYSLOG} test-syslog
@@ -14,12 +14,10 @@ all: clean tests release
 all-no-syslog: clean tests-no-syslog release
 
 install: all
-	@echo "install is TODO"
-	@exit 1
+	bin/install
 
 install-no-syslog: all-no-syslog
-	@echo "install-no-syslog is TODO"
-	@exit 1
+	bin/install
 
 clean: clean-release clean-tests clean-logs
 	
