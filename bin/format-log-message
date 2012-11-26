@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#------------------------------------------
+# format-log-message - Return a message to write to the log.
+
+thisdir=$(dirname $BASH_SOURCE)
+. $thisdir/common.sh
+
+if [[ "$1" =~ --?h.* ]]
+then
+  cat <<EOF
+$0 - Return a message to write to the log.
+
+Usage: $0 "timestamp_string", level_string, app_name, message
+
+Where:
+  timestamp_string   The formatted timestamp. Since it's likely to contain spaces, 
+                     you should usually quote this argument.
+  level_string       One of EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, 
+                     INFO, or DEBUG, or a number between 0-7, inclusive, which 
+                     will be converted to the corresponding level.
+  app_name           The name of the "application" doing the logging.
+  message            All the rest of the arguments
+EOF
+exit 0
+fi
+
+timestamp=$1
+shift
+level_str=$1
+shift
+app_name=$1
+shift
+args="$@"  # Treat as a single string.
+
+[[ $level_str =~ [0-9]* ]] && level_str=$(to-log-level "$level_str" ERROR)
+
+printf "$STAMPEDE_LOG_MESSAGE_FORMAT_STRING\n" "$timestamp" "$level_str" "$app_name" "$args"
+
+

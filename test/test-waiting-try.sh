@@ -10,7 +10,7 @@ for i in {1..2}
 do
   let seconds=$i*2
   # extract just what we want to check:
-  msg=$(STAMPEDE_LOG_LEVEL=$(from-log-level INFO) waiting $i 2 "waiting test" 2>&1 | cut -d \( -f 2 | sed -e 's/)//')
+  msg=$(STAMPEDE_LOG_LEVEL=$(from-log-level INFO) waiting $i 2 "waiting test" 2>&1 | cut -d \( -f 3 | sed -e 's/)//')
   [ "$msg" = "waiting $seconds seconds so far" ] || die "waiting test failed! (msg = $msg)"
 done
 

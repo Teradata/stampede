@@ -11,7 +11,7 @@ echo "  die test:"
 msg=$(die 'LINE 1' 'LINE 2' 2>&1)
 EXIT="$save_exit"
 case "$msg" in
-	*ALERT*test-common.sh:?die?called:?LINE?1?LINE?2)
+	*ALERT*\(stampede:test-common.sh\):?die?called:?LINE?1?LINE?2)
 		;;
 	*)
 	  die "die test failed! (msg = <$msg>)"

@@ -157,6 +157,12 @@ export TIMEZONE_NAME
 export STAMPEDE_LOG_LEVEL_NAMES=(EMERGENCY ALERT CRITICAL ERROR WARNING NOTICE INFO DEBUG)
 export STAMPEDE_LOG_LEVELS=(0 1 2 3 4 5 6 7)
 
+
+let STAMPEDE_MIN_LOG_LEVEL=${STAMPEDE_LOG_LEVELS[0]}
+let STAMPEDE_MAX_LOG_LEVEL=${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}
+export STAMPEDE_MIN_LOG_LEVEL
+export STAMPEDE_MAX_LOG_LEVEL
+
 # Log files location.
 # On *nix systems, a more standard option is /var/logs/stampede.
 : ${STAMPEDE_LOG_DIR:=$STAMPEDE_HOME/logs}
@@ -176,12 +182,9 @@ export STAMPEDE_LOG_FILE
 # name of the application, and a %s into which all the remaining message
 # arguments will be formatted.
 # If you need more flexible formatting, define your own formatting function
-# and override STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION to reference it.
-: ${STAMPEDE_LOG_MESSAGE_FORMAT_STRING:="%s %-9s %s: %s"}
+# "format-log-message" and drop it in the "custom" directory.
+: ${STAMPEDE_LOG_MESSAGE_FORMAT_STRING:="%s %-9s (stampede:%s): %s"}
 export STAMPEDE_LOG_MESSAGE_FORMAT_STRING
-
-# Name of the function called to format log messages.
-: ${STAMPEDE_LOG_MESSAGE_FORMAT_FUNCTION:=format_log_message}
 
 # Set to 0 if you want to use SYSLOG for logging.
 if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
@@ -193,6 +196,16 @@ export STAMPEDE_LOG_USE_SYSLOG
 # Options to pass to logger(1) for syslog calls.
 : ${STAMPEDE_LOG_SYSLOG_OPTIONS:=}
 export STAMPEDE_LOG_SYSLOG_OPTIONS
+
+# What to-log-level should return if an invalid argument is specified
+# and no default argument is also specified. See "to-log-level --help"
+# for details.
+: ${STAMPEDE_LOG_DEFAULT_TO_LOG_LEVEL_VALUE:=ERROR}
+
+# What from-log-level should return if an invalid argument is specified
+# and no default argument is also specified. See "from-log-level --help"
+# for details.
+: ${STAMPEDE_LOG_DEFAULT_FROM_LOG_LEVEL_VALUE:=3}
 
 # -- Miscellaneous variables:
 

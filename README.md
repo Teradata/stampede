@@ -104,6 +104,12 @@ The following "helper" files are used by these scripts:
 * `common.sh` - Many "common" `bash` functions used in several scripts.
 * `log.sh` - Support functions for logging.
 
+### Custom and Contrib Directories
+
+If you want to override the behavior of any particular script, drop a new version in the `custom` directory (or a subdirectory), which are added to the `PATH` first.
+
+We intend for `contrib` to be a place where as-is, community-contributed tools will go. This directory and any subdirectories will also be added to the path, after `custom` and `bin`.
+
 ### Example Directory
 
 The `example` directory contains several example *stampedes* that you can adapt for your purposes as well as a sample configuration file.

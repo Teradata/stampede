@@ -8,32 +8,43 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-from-log-level - Convert a log level to the corresponding number.
-usage: from-log-level NAME
-where the NAME must be one of (case ignored)
-${STAMPEDE_LOG_LEVEL_NAMES[@]}. 
-Or, if you provide a number, it will return the number, as long as it is one of
-${STAMPEDE_LOG_LEVELS[@]}. 
+$0 - Convert a log level to the corresponding number.
+Usage: $0 NAME [default]
+
+Where:
+  NAME     Must be one of the following (case ignored):
+           ${STAMPEDE_LOG_LEVEL_NAMES[@]}.
+           However, if you happen to provide a number, it will be returned, 
+           as long as it is one of ${STAMPEDE_LOG_LEVELS[@]}. 
+
+  default  What to return if an invalid name (or number) is specified. It can 
+           be any number you want. If not specified the invalid name will be 
+           logged as a WARNING and the number 3 (for ERROR) will be returned.
 EOF
 exit 0
 fi
 
-function err_str {
-  echo "from-log-level: Unrecognized log level name or number \"$1\" given!"
+function handle_error {
+  input=$1
+  default=$2
+  if [ "$default" = "" ]
+  then
+    default=$STAMPEDE_LOG_DEFAULT_FROM_LOG_LEVEL_VALUE
+    warning "$0: Unrecognized log level name or number \"$input\" given! Returning \"$default\"."
+  fi
+  echo $default
 }
-
-let min_log_level=${STAMPEDE_LOG_LEVELS[0]}
-let max_log_level=${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}
 
 level=$(echo $1 | tr "[:lower:]" "[:upper:]")
 case $level in
   [0-9]*)
     let l=$level
-    if [ $l -lt $min_log_level -o $l -gt $max_log_level ]
+    if [ $l -lt $STAMPEDE_MIN_LOG_LEVEL -o $l -gt $STAMPEDE_MAX_LOG_LEVEL ]
     then
-      $DIE $(err_str $1)
+      handle_error "$@"
+    else
+      echo $level
     fi
-    echo $level
     ;;
    *)
     for i in ${STAMPEDE_LOG_LEVELS[@]}
@@ -45,6 +56,6 @@ case $level in
         exit 0
       fi
     done
-    $DIE $(err_str $1)
+    handle_error "$@"
     ;;
 esac

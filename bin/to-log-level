@@ -8,29 +8,42 @@ thisdir=$(dirname $BASH_SOURCE)
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-to-log-level - Convert a log level number to the corresponding name.
-usage: to-log-level N
-Where N is a number between 0-7, inclusive (the valid SYSLOG levels.)
-Or, if you provide a name, it will be returned, as long as it is one of 
-${STAMPEDE_LOG_LEVEL_NAMES[@]}
-(case ignored).
+$0 - Convert a log level number to the corresponding name.
+
+Usage: $0 N [default]
+
+Where:
+  N        A number between 0-7, inclusive (the valid SYSLOG levels.)
+           Or, if you provide a name, it will be returned, as long as it is 
+           one of following (case ignored):
+           ${STAMPEDE_LOG_LEVEL_NAMES[@]}.
+           However, if you happen to provide a string, it will be returned, 
+           as long as it is one of the valid names.
+
+  default  What to return if an invalid number (or name) is specified. It can 
+           be any string you want. If not specified the invalid number will be 
+           logged as a WARNING and the string "$STAMPEDE_LOG_DEFAULT_TO_LOG_LEVEL_VALUE" will be returned.
 EOF
 exit 0
 fi
 
-let min_log_level=${STAMPEDE_LOG_LEVELS[0]}
-let max_log_level=${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}
-
-function err_str {
-  echo "to-log-level: Unrecognized log level number or name \"$1\" given!"
+function handle_error {
+  input=$1
+  default=$2
+  if [ "$default" = "" ]
+  then
+    default=$STAMPEDE_LOG_DEFAULT_TO_LOG_LEVEL_VALUE
+    warning "$0: Unrecognized log level number or name \"$input\" given! Returning \"$default\"."
+  fi
+  echo $default
 }
 
 case $1 in
   [0-9]*)
     let n=$1
-    if [ $n -lt $min_log_level -o $n -gt $max_log_level ]
+    if [ $n -lt $STAMPEDE_MIN_LOG_LEVEL -o $n -gt $STAMPEDE_MAX_LOG_LEVEL ]
     then
-      $DIE "$(err_str $1) Must be between $min_log_level and $max_log_level, inclusive."
+      handle_error "$@"
     else
       echo ${STAMPEDE_LOG_LEVEL_NAMES[$n]}
     fi
@@ -45,6 +58,6 @@ case $1 in
         exit 0;
       fi
     done
-    $DIE $(err_str $1)
+    handle_error "$@"
     ;;
 esac
