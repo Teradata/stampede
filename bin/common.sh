@@ -8,8 +8,23 @@
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/env.sh
 . $thisdir/log.sh
-export PATH=$thisdir:$PATH
 
+# Add custom, bin, and contrib under $STAMPEDE_HOME, plus any of their
+# subdirectories, to the PATH. 
+function path_elements {
+	for d in custom bin contrib 
+	do
+		if [ -d $STAMPEDE_HOME/$d ]
+		then
+			find $STAMPEDE_HOME/$d -type d | while read d2
+			do
+				echo -n "$d2:"
+			done
+		fi
+	done
+}
+
+export PATH=$(path_elements)$PATH
 
 function die {
 	alert "die called:" "$@"
