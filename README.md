@@ -14,13 +14,13 @@ First, clone this repo or untar the distribution somewhere useful, e.g., `$HOME/
 
 Since *Stampede* uses `make` and `bash` its weapon's of choice, run this `make` command to test and install *Stampede*:
 
-    make install
+    make tests install
 
-You'll be asked for details, like the target installation directory (the default is `/usr/local/stampede`).
+The `tests` target is not required, but we recommend it as a sanity check for your environment. The `install` target will ask you for details like the target installation directory (the default is `/usr/local/stampede`).
 
 If you **don't** have `syslog` on your system, run this command instead, which will skip the `syslog`-related tests:
 
-    make install-no-syslog
+    make tests install-no-syslog
 
 Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*.
 

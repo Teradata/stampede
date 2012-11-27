@@ -9,17 +9,17 @@ RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
 RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin custom contrib examples test
 TESTS_LOGGING = test-format-log-message test-to-log-level test-from-log-level test-log
-TESTS_NO_SYSLOG = test-env test-dates ${TESTS_LOGGING} test-common test-waiting-try test-send-email
+TESTS_NO_SYSLOG = test-env test-dates ${TESTS_LOGGING} test-common test-waiting-try test-send-email test-stampede
 TESTS           = ${TESTS_NO_SYSLOG} test-syslog
 
 all: clean tests release
 
 all-no-syslog: clean tests-no-syslog release
 
-install: all
+install:
 	bin/install
 
-install-no-syslog: all-no-syslog
+install-no-syslog:
 	bin/install
 
 clean: clean-release clean-tests clean-logs

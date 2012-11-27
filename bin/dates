@@ -96,6 +96,9 @@ do
 		--sep*)
 			separator=${1#--sep*=}
 			;;
+		--*)
+			die "Unrecognized argument \"$1\". Did you forget the \"=value\"?"
+			;;
 		*:*)
 			date_range=$1
 			;;

@@ -3,16 +3,7 @@
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
 # stampede - Creates or invoked a "stampede"; a workflow process.
-# The following options are supported:
-#   stampede [-h|--help] [options] [create | [makefile] [targets]]
-# Where,
-#   -h | --help   Describe the available options.
-#   create        Create a skeleton for a new stampede.
-#   makefile      The makefile to drive the stampede (default: current directory's).
-#   targets       Make targets to build (default: the first target).
-#
-# See the $STAMPEDE_HOME/README.md file for more information
-# on Stampede.
+# See "stampede --help" and the $STAMPEDE_HOME/README.md file for more information.
 
 if [ -z "$STAMPEDE_HOME" ]
 then
@@ -33,7 +24,7 @@ Usage: [env ENV_VAR_DEFS] stampede [-h | --help] \
          [--hour=HH] [--minute=MM | --min=MM] \ 
          [--second=SS | --sec=SS] [--epoch=seconds] \ 
          [--force-rerun] [--tries=N] [--between-tries=N] \ 
-         [-v | --verbose[=N]] [-n | noexec] \ 
+         [--log-level=N | --logging-level=N] [-n | noexec] \ 
          [create | makefile [make_options] [targets]]
 
 Where:
@@ -57,7 +48,8 @@ Where:
   --between-tries=N  How many seconds between tries to wait. If "N" ends with a
                      'h', 'm', or 's', then wait N hours, minutes, or seconds
                      (default: $STAMPEDE_DEFAULT_SLEEP_INTERVAL from STAMPEDE_DEFAULT_SLEEP_INTERVAL).
-  --log-level=N      Log more verbose output (useful for debugging w/ -n).
+  --log-level=N | --logging-level=N
+                     Log more verbose output (useful for debugging w/ -n).
                      SYSLOG log levels are used, so LARGER N results in LESS
                      verbose output (default: $STAMPEDE_LOG_LEVEL - ${STAMPEDE_LOG_LEVEL_NAMES[$STAMPEDE_LOG_LEVEL]} - from STAMPEDE_LOG_LEVEL).
                      For N, you can also use EMERGENCY, ALERT, CRITICAL, ERROR,
@@ -82,77 +74,194 @@ very confusing.
 EOF
 }
 
+function validate_number {
+  # Strip off any trailing characters for time span args.
+  n=$1
+  number=$(echo $n | sed -e 's/[^0-9]$//')
+  if [[ $number =~ ^- ]]
+  then
+    echo "$0: Negative numbers not allowed: $n."
+    return 1
+  fi
+  size=$2
+  if [ -z "$size" ]
+  then
+    if [[ ! $number =~ ^[0-9]*$ ]]
+    then
+      echo "$0: $n is not a number." 1>&2
+      return 1
+    fi
+  else
+    if [[ ! $number =~ ^[0-9]{$size}$ ]]
+    then
+      echo "$0: $n is not a number or isn't $size digits." 1>&2
+      return 1
+    fi
+  fi
+  return 0
+}
+
 # defaults:
 command=make 
 makefile=
 makeopts=()
 while [ $# -ne 0 ]
 do
-    case $1 in
-        -h|--he*)
-            help
-            exit 0
-            ;;
-        --year=*)
-            export YEAR=${1#--year=}
-            ;;
-        --mon*=*)
-            export MONTH=${1#--mon*=}
-            ;;
-        --day=*)
-            export DAY=${1#--day=}
-            ;;
-        --hour=*)
-            export HOUR=${1#--hour=}
-            ;;
-        --min*=*)
-            export MINUTE=${1#--min*=}
-            ;;
-        --sec*=*)
-            export SECOND=${1#--sec*=}
-            ;;
-        --epoch=*)
-            # Although it looks like we're just setting yet another time field,
-            # like the others. In fact, this value is used to calculate all the
-            # others if they aren't specified explicitly.
-            export EPOCH_SECOND=${1#--epoch=}
-            ;;
-        --force-rerun)
-            force_rerun="--always-make"
-            ;;
-        --tries=*)
-            let STAMPEDE_NUMBER_OF_TRIES=${1#--tries=}
-            export STAMPEDE_NUMBER_OF_TRIES
-            ;;
-        --between-tries=*)
-            let STAMPEDE_DEFAULT_SLEEP_INTERVAL=$($STAMPEDE_HOME/bin/to-seconds ${1#--between-tries=})
-            export STAMPEDE_DEFAULT_SLEEP_INTERVAL
-            ;;
-        --log-level=*)
-            log_level=${1#--log-level=}
-            ;;
-        -n|--n*)
-            noexec="--dry-run"
-            NOOP=echo
-            ;;
-        -*)
-            echo "Unrecognized option: $1" 1>&2
-            echo "See stampede \"--help\" for more details." 1>&2
-            exit 1
-            ;;
-        create)
-            command=$1
-            ;;
-        *)
-            if [ -z "$makefile" ]
-            then
-              makefile=$1
-            else
-              make_opts[${#make_opts[*]}]=$1
-            fi
-            ;;
-    esac        
-    shift
+  case $1 in
+    -h|--he*)
+      help
+      exit 0
+      ;;
+    --year=*)
+      export YEAR=${1#--year=}
+      validate_number $YEAR 4
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --year)
+      shift
+      export YEAR=$1
+      validate_number $YEAR 4
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --mon*=*)
+      export MONTH=${1#--mon*=}
+      validate_number $MONTH 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --mon*)
+      shift
+      export MONTH=$1
+      validate_number $MONTH 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --day=*)
+      export DAY=${1#--day=}
+      validate_number $DAY 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --day)
+      shift
+      export DAY=$1
+      validate_number $DAY 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --hour=*)
+      export HOUR=${1#--hour=}
+      validate_number $HOUR 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --hour)
+      shift
+      export HOUR=$1
+      validate_number $HOUR 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --min*=*)
+      export MINUTE=${1#--min*=}
+      validate_number $MINUTE 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --min*)
+      shift
+      export MINUTE=$1
+      validate_number $MINUTE 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --sec*=*)
+      export SECOND=${1#--sec*=}
+      validate_number $SECOND 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --sec*)
+      shift
+      export SECOND=$1
+      validate_number $SECOND 2
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --epoch=*)
+      # Although it looks like we're just setting yet another time field,
+      # like the others. In fact, this value is used to calculate all the
+      # others if they aren't specified explicitly.
+      export EPOCH_SECOND=${1#--epoch=}
+      validate_number $EPOCH_SECOND 
+      [ $? -eq 0 ] || exit 1
+      # hack to work around the limitations of the Linux utility.
+      let delta=$(date +%s)-$EPOCH_SECOND
+      now=$(date +"$STAMPEDE_TIME_FORMAT")
+      export STAMPEDE_START_TIME=$($STAMPEDE_HOME/bin/dates --date="$now" -1:-1 $delta S)
+      # Force re-initialization when we source common.sh (and env.sh) below:
+      unset YEAR MONTH DAY HOUR MINUTE SECOND DAY_OF_WEEK_NUMBER 
+      unset DAY_OF_WEEK_ABBREV DAY_OF_WEEK TIMEZONE TIMEZONE_NAME
+      ;;
+    --epoch)
+      shift
+      export EPOCH_SECOND=$1
+      validate_number $EPOCH_SECOND 
+      [ $? -eq 0 ] || exit 1
+      let delta=$(date +%s)-$EPOCH_SECOND
+      now=$(date +"$STAMPEDE_TIME_FORMAT")
+      export STAMPEDE_START_TIME=$($STAMPEDE_HOME/bin/dates --date="$now" -1:-1 $delta S)
+      unset YEAR MONTH DAY HOUR MINUTE SECOND DAY_OF_WEEK_NUMBER 
+      unset DAY_OF_WEEK_ABBREV DAY_OF_WEEK TIMEZONE TIMEZONE_NAME
+      ;;
+    --force-rerun)
+      force_rerun="--always-make"
+      ;;
+    --tries=*)
+      let STAMPEDE_NUMBER_OF_TRIES=${1#--tries=}
+      export STAMPEDE_NUMBER_OF_TRIES
+      validate_number $STAMPEDE_NUMBER_OF_TRIES
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --tries)
+      shift
+      let STAMPEDE_NUMBER_OF_TRIES=$1
+      export STAMPEDE_NUMBER_OF_TRIES
+      validate_number $STAMPEDE_NUMBER_OF_TRIES
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --between-tries=*)
+      let STAMPEDE_DEFAULT_SLEEP_INTERVAL=$($STAMPEDE_HOME/bin/to-seconds ${1#--between-tries=})
+      export STAMPEDE_DEFAULT_SLEEP_INTERVAL
+      validate_number $STAMPEDE_DEFAULT_SLEEP_INTERVAL
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --between-tries)
+      shift
+      let STAMPEDE_DEFAULT_SLEEP_INTERVAL=$($STAMPEDE_HOME/bin/to-seconds $1)
+      export STAMPEDE_DEFAULT_SLEEP_INTERVAL
+      validate_number $STAMPEDE_DEFAULT_SLEEP_INTERVAL
+      [ $? -eq 0 ] || exit 1
+      ;;
+    --log*-level=*)
+      log_level=${1#--log*-level=}
+      ;;
+    --log*-level)
+      shift
+      log_level=$1
+      ;;
+    -n|--n*)
+      noexec="--dry-run"
+      NOOP=echo
+      ;;
+    -*)
+      echo "Unrecognized option \"$1\"." 1>&2
+      echo "See stampede \"--help\" for more details." 1>&2
+      exit 1
+      ;;
+    create)
+      command=$1
+      ;;
+    *)
+      if [ -z "$makefile" ]
+      then
+        makefile=$1
+      else
+        make_opts[${#make_opts[*]}]=$1
+      fi
+      ;;
+  esac        
+  shift
 done
 
 if [ "$command" = "create" ]
@@ -238,6 +347,14 @@ function keep_trying {
   fi
 }
 
+# Hacky handling of output and the returned status...
+function run_make {
+  make -ks -f "$MAKEFILE" $opts "${make_opts[@]}" 2>&1
+  let status=$?
+  echo "status = <$status>" 2>&1
+  echo $? 1>&2
+}
+
 let count=0
 while [ $(keep_trying $count) = true ]
 do
@@ -248,19 +365,22 @@ do
   fi
 
   let count=$count+1
-  notice running: make -f "$MAKEFILE" "$makefile_dir" "$STAMPEDE_MAKE_OPTIONS" $noexec $force_rerun "${make_opts[@]}"
+  opts="$makefile_dir $STAMPEDE_MAKE_OPTIONS $noexec $force_rerun"
+  notice running: make -f "$MAKEFILE" $opts "${make_opts[@]}"
   if [ -z "$NOOP" ]
   then
-    make -ks -f "$MAKEFILE" "$makefile_dir" $STAMPEDE_MAKE_OPTIONS $noexec $force_rerun "${make_opts[@]}" 2>&1 | while read line
+    status=$(run_make | while read line
     do
       notice "  output: $line"
-    done
-  fi
-  if [ $? -eq 0 ]
-  then
-    notice "Finished!"
-    echo2 "Finished!"
-    exit 0
+    done 2>&1)
+    #if [ $status -eq 0 ]
+    echo "status = <$status>" 1>&2
+    if [ $status = "0" ]
+    then
+      notice "Finished!"
+      echo2 "Finished!"
+      exit 0
+    fi
   fi
 done
 

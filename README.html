@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#x6f;&#x3a;&#100;&#x65;&#x61;&#110;&#46;&#x77;&#x61;&#109;&#112;&#108;&#101;&#114;&#x40;&#116;&#104;&#105;&#x6e;&#x6b;&#98;&#105;&#103;&#x61;&#110;&#x61;&#108;&#121;&#116;&#105;&#99;&#x73;&#46;&#x63;&#x6f;&#x6d;">&#100;&#101;&#97;&#x6e;&#x2e;&#119;&#97;&#x6d;&#112;&#x6c;&#101;&#x72;&#64;&#x74;&#x68;&#105;&#x6e;&#x6b;&#x62;&#105;&#x67;&#97;&#x6e;&#x61;&#x6c;&#x79;&#x74;&#105;&#99;&#x73;&#x2e;&#99;&#x6f;&#x6d;</a><br/>
+<a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x64;&#101;&#97;&#110;&#x2e;&#119;&#97;&#x6d;&#x70;&#x6c;&#x65;&#114;&#64;&#116;&#104;&#x69;&#110;&#x6b;&#98;&#105;&#x67;&#97;&#110;&#97;&#x6c;&#121;&#116;&#105;&#x63;&#x73;&#x2e;&#x63;&#x6f;&#x6d;">&#x64;&#x65;&#x61;&#x6e;&#x2e;&#119;&#x61;&#109;&#112;&#x6c;&#x65;&#114;&#x40;&#x74;&#x68;&#x69;&#x6e;&#107;&#x62;&#105;&#103;&#x61;&#x6e;&#97;&#x6c;&#x79;&#x74;&#105;&#x63;&#115;&#46;&#x63;&#111;&#109;</a><br/>
 November 21, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
@@ -36,14 +36,14 @@ November 21, 2012</p>
 
 <p>Since <em>Stampede</em> uses <code>make</code> and <code>bash</code> its weapon&#8217;s of choice, run this <code>make</code> command to test and install <em>Stampede</em>:</p>
 
-<pre><code>make install
+<pre><code>make tests install
 </code></pre>
 
-<p>You&#8217;ll be asked for details, like the target installation directory (the default is <code>/usr/local/stampede</code>).</p>
+<p>The <code>tests</code> target is not required, but we recommend it as a sanity check for your environment. The <code>install</code> target will ask you for details like the target installation directory (the default is <code>/usr/local/stampede</code>).</p>
 
 <p>If you <strong>don&#8217;t</strong> have <code>syslog</code> on your system, run this command instead, which will skip the <code>syslog</code>-related tests:</p>
 
-<pre><code>make install-no-syslog
+<pre><code>make tests install-no-syslog
 </code></pre>
 
 <p>Next, assuming you installed in <code>/usr/local/stampede/</code>, which we&#8217;ll call <code>$STAMPEDE_HOME</code> from now on, add <code>$STAMPEDE_HOME/bin</code> to the <code>PATH</code> for any user who plans to use <em>Stampede</em>.</p>
