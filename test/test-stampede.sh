@@ -94,7 +94,7 @@ echo2 "  --tries and --between-tries tests:"
 
 for sep in ' ' '='
 do
-  msg=$(dotest tries --tries${sep}2 --between-tries${sep}2s | grep 'Failed after 2 attempts')
+  msg=$(dotest tries --tries${sep}2 --between-tries${sep}2s) # | grep 'Failed after 2 attempts')
   expected="Failed after 2 attempts"
   [[ $msg =~ $expected ]] || die "Unexpected message for --tries option (separator=<$sep>): <$msg> ?= <$expected>"
 done
