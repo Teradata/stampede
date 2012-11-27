@@ -347,13 +347,6 @@ function keep_trying {
   fi
 }
 
-# Hacky handling of output and the returned status...
-function run_make {
-  make -ks -f "$MAKEFILE" $opts "${make_opts[@]}" 2>&1
-  let status=$?
-  echo "status = <$status>" 2>&1
-  echo $? 1>&2
-}
 
 let count=0
 while [ $(keep_trying $count) = true ]
@@ -369,13 +362,11 @@ do
   notice running: make -f "$MAKEFILE" $opts "${make_opts[@]}"
   if [ -z "$NOOP" ]
   then
-    status=$(run_make | while read line
+    make -ks -f "$MAKEFILE" $opts "${make_opts[@]}" 2>&1 | while read line
     do
       notice "  output: $line"
-    done 2>&1)
-    #if [ $status -eq 0 ]
-    echo "status = <$status>" 1>&2
-    if [ $status = "0" ]
+    done
+    if [ ${PIPESTATUS[0]} -eq 0 ]
     then
       notice "Finished!"
       echo2 "Finished!"

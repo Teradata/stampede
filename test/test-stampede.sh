@@ -19,51 +19,37 @@ function dotest {
 
 echo2 "  timestamp settings tests:"
 
-let tscount=1
 msg=$(dotest timestamp)
 expected="2012-11-20 01:02:03"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
+[[ $msg =~ $expected ]] || die "Unexpected message for timestamp and no arguments: $msg"
 
-msg=$(dotest timestamp --year=2010 --month=01 --day=02)
-expected="2010-01-02 01:02:03"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
+for sep in ' ' '='
+do
+  for mon in mon month
+  do
+    args="--year${sep}2010 --${mon}${sep}01 --day${sep}02"
+    msg=$(dotest timestamp $args)
+    expected="2010-01-02 01:02:03"
+    [[ $msg =~ $expected ]] || die "Unexpected message for args \"$args\": $msg"
+  done
 
-msg=$(dotest timestamp --year 2010 --month 01 --day 02)
-expected="2010-01-02 01:02:03"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
+  for min in min minute
+  do
+    for sec in sec second
+    do
+      args="--hour${sep}05 --${min}${sep}06 --${sec}${sep}07"
+      msg=$(dotest timestamp $args)
+      expected="2012-11-20 05:06:07"
+      [[ $msg =~ $expected ]] || die "Unexpected message for args \"$args\": $msg"
+    done
+  done
 
-msg=$(dotest timestamp --year=2010 --mon=01 --day=02)
-expected="2010-01-02 01:02:03"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
-
-msg=$(dotest timestamp --hour=05 --minute=06 --second=07)
-expected="2012-11-20 05:06:07"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
-
-msg=$(dotest timestamp --hour 05 --minute 06 --second 07)
-expected="2012-11-20 05:06:07"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
-
-msg=$(dotest timestamp --hour=05 --min=06 --sec=07)
-expected="2012-11-20 05:06:07"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
-
-msg=$(dotest timestamp --epoch=1319000462)
-expected="2011-10-19 00:01:02"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
-
-msg=$(dotest timestamp --epoch 1319000462)
-expected="2011-10-19 00:01:02"
-[[ $msg =~ $expected ]] || die "Unexpected message timestamp #$tscount: $msg"
-let tscount=$tscount+1
+  args="--epoch${sep}1319000462"
+  msg=$(dotest timestamp $args)
+  expected="2011-10-19 00:01:02"
+  [[ $msg =~ $expected ]] || die "Unexpected message for \"$args\": $msg"
+  let tscount=$tscount+1
+done
 
 msg=$(stampede --help 2>&1 | grep Usage)
 expected="Usage:.*stampede.*"
@@ -95,7 +81,7 @@ do
   done
 done
 
-echo2 "  --force-rerun test:"
+echo2 "  --force-rerun tests:"
 
 msg=$(dotest force-rerun --force-rerun | grep 'remaking')
 expected="remaking $STAMPEDE_HOME/test/Makefile"
@@ -104,8 +90,11 @@ expected="remaking $STAMPEDE_HOME/test/Makefile"
 msg=$(dotest force-rerun | grep 'remaking')
 [ -z "$msg" ] || die "Unexpected message for no --force-rerun option: <$msg> (should be empty)"
 
-stampede --tries=2  $TEST_DIR/Makefile tries
-echo2 "  --tries test:"
-msg=$(dotest tries --tries=2 | grep 'remaking')
-expected=""
-[[ $msg =~ $expected ]] || die "Unexpected message for no --force-rerun option: <$msg> ?= <$expected>"
+echo2 "  --tries and --between-tries tests:"
+
+for sep in ' ' '='
+do
+  msg=$(dotest tries --tries${sep}2 --between-tries${sep}2s | grep 'Failed after 2 attempts')
+  expected="Failed after 2 attempts"
+  [[ $msg =~ $expected ]] || die "Unexpected message for --tries option (separator=<$sep>): <$msg> ?= <$expected>"
+done
