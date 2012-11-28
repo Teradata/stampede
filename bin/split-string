@@ -94,7 +94,7 @@ do
       printf "%s%s" "$element_sep" "${array[$i]}"
     fi
     element_sep="$output_delim" # Now use the real separator...
+    let total_count=$total_count+1
   done
-  let total_count=$total_count+1
 done
 [ $do_newline -ne 0 ] && echo ""
