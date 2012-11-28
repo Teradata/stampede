@@ -16,30 +16,21 @@ do
   [ "$msg" = "waiting $seconds seconds so far" ] || die "waiting test failed! (msg = $msg)"
 done
 
-for cmd in "try-for" "try-for-or-die"
+echo "  try-for test:"
+for s in "" s m h
 do
-  echo "  $cmd test:"
-  for s in "" s m h
-  do
-    msg=$(eval $cmd 2 1$s "ls $0") 
-    [ $? -eq 0 ] || die "$cmd failed for arguments "2 1$s"! (msg = $msg)"
-  done
+  msg=$(eval try-for 2 1$s "ls $0") 
+  [ $? -eq 0 ] || die "try-for failed for arguments "2 1$s"! (msg = $msg)"
 done
+
 try-for 2 1 "ls foobar &> /dev/null"
 [ $? -ne 0 ] || die "try-for returned 0 even though it should have failed."
-DIE=fake-die try-for-or-die 2 1 "ls foobar &> /dev/null" &> /dev/null
-[ $? -ne 0 ] || die "try-for-or-die returned 0 even though it should have failed."
 
 let end=$(dates --format="%s" 1:1 5 S)
-for cmd in "try-until" "try-until-or-die"
-do
-  echo "  $cmd test:"
-  msg=$(eval $cmd $end 2s "ls $0 &> /dev/null")
-  [ $? -eq 0 ] || die "$cmd failed for arguments \"$end 1s\"! (msg = $msg)"
-done
+echo "  try-until test:"
+msg=$(eval try-until $end 2s "ls $0 &> /dev/null")
+[ $? -eq 0 ] || die "try-until failed for arguments \"$end 1s\"! (msg = $msg)"
 try-until $end 1 "ls foobar &> /dev/null"
 [ $? -ne 0 ] || die "try-until returned 0 even though it should have failed."
-DIE=fake-die try-until-or-die $end 1 "ls foobar &> /dev/null" &> /dev/null
-[ $? -ne 0 ] || die "try-until-or-die returned 0 even though it should have failed."
 
 

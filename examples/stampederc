@@ -37,7 +37,8 @@
 # STAMPEDE_DEFAULT_SLEEP_INTERVAL=60s
 
 # How many attempts to make for the workflow before giving up.
-# STAMPEDE_NUMBER_OF_TRIES=5
+# I.e., if make fails, how many times should I retry?
+# STAMPEDE_NUMBER_OF_TRIES=1
 
 # Options to pass to make.
 # STAMPEDE_MAKE_OPTIONS=

@@ -66,15 +66,11 @@ function handle_signal {
 
 trap "handle_signal" SIGHUP SIGINT 
 
-# Helper for try-for* and try_until*.
+# Helper for try-for and try_until.
 function _do_try {
-	name=$1
-	shift
 	let end=$1
 	shift
 	let retry_every=$(to-seconds $1)
-	shift
-	let die_on_timeout=$1
 	shift
 	start=$(date +"$STAMPEDE_TIME_FORMAT")
 
@@ -83,39 +79,8 @@ function _do_try {
 	while [ $? -ne 0 ]
 	do
 		let now=$(date +"%s")
-		if [ $now -gt $end ]
-		then
-			[ "$die_on_timeout" -ne 0 ] && $DIE "$name(): Waiting timed out!"
-			return 1
-		fi
+		[ $now -gt $end ] && return 1
 		sleep $retry_every 
 		eval "$@"
 	done
-}
-
-# Helper for the try-for*.
-function _do_try_for {
-  let should_die=$1
-  shift
-  let wait_time=$(to-seconds $1)
-  shift
-  retry_every=$1
-  shift
-  let end=$(dates --format="%s" 1:1 $wait_time S)
-  name=try-for
-  [ $should_die -eq 1 ] && name=${name}_or_die
-  _do_try $name $end $retry_every $should_die "$@"
-}
-
-# Helper for the try_until*.
-function _do_try_until {
-	let should_die=$1
-	shift
-	let end=$1
-	shift
-	retry_every=$1
-	shift
-	name=try_until
-	[ $should_die -eq 1 ] && name=${name}_or_die
-	_do_try $name $end $retry_every $should_die "$@"
 }

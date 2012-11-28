@@ -15,6 +15,9 @@ echo "  YEAR, MONTH, etc. tests:"
 [ "$HOUR"   = "01"   ] || die "HOUR: expected <01> != actual <$HOUR>"
 [ "$MINUTE" = "02"   ] || die "MINUTE: expected <02> != actual <$MINUTE>"
 [ "$SECOND" = "03"   ] || die "SECOND: expected <03> != actual <$SECOND>"
+[ "$YEAR_MINUS_1_DAY"  = "2012" ] || die "YEAR_MINUS_1_DAY: expected <2012> != actual <$YEAR_MINUS_1_DAY>"
+[ "$MONTH_MINUS_1_DAY" = "11"   ] || die "MONTH_MINUS_1_DAY: expected <11> != actual <$MONTH_MINUS_1_DAY>"
+[ "$DAY_MINUS_1_DAY"   = "19"   ] || die "DAY_MINUS_1_DAY: expected <19> != actual <$DAY_MINUS_1_DAY>"
 # Because of issue where we have to use the same timezone as the
 # current machine, we can't assume a particular value of the
 # epoch seconds, so we calculate it here:

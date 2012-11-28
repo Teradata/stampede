@@ -93,6 +93,11 @@ export STAMPEDE_LOG_TIME_FORMAT
 : ${STAMPEDE_START_TIME:=$(date +"$STAMPEDE_TIME_FORMAT")}
 export STAMPEDE_START_TIME
 
+# "Yesterday's" timestamp is useful for day-to-day workflows.
+: ${STAMPEDE_START_TIME_MINUS_1_DAY:=$($STAMPEDE_HOME/bin/dates --date="$STAMPEDE_START_TIME" \
+  --informat="$STAMPEDE_TIME_FORMAT" --format="$STAMPEDE_TIME_FORMAT" -1:-1 d)}
+export STAMPEDE_START_TIME_MINUS_1_DAY
+
 # The time this script started in epoch seconds (defaults to NOW).
 if [ -z "$EPOCH_SECOND" ]
 then
@@ -104,11 +109,16 @@ export EPOCH_SECOND
 function start_time {
   echo "$STAMPEDE_START_TIME"
 }
+function start_time_minus_1_day {
+  echo "$STAMPEDE_START_TIME_MINUS_1_DAY"
+}
 
 # Helper function to extract date fields from STAMPEDE_START_TIME.
 function time_fields {
   fields=$1
-  $this_dir/dates --date="$STAMPEDE_START_TIME" --informat="$STAMPEDE_TIME_FORMAT" --format="$fields"
+  date=$2
+  [ -z "$date" ] && date=$STAMPEDE_START_TIME
+  $this_dir/dates --date="$date" --informat="$STAMPEDE_TIME_FORMAT" --format="$fields"
 }
 
 # Year (YYYY) of STAMPEDE_START_TIME.
@@ -122,6 +132,20 @@ export MONTH
 # Day (DD) of STAMPEDE_START_TIME.
 : ${DAY:=$(time_fields "%d")}
 export DAY
+
+# Yesterday's YMD are also very useful.
+
+# Yesterday's Year (YYYY), based on STAMPEDE_START_TIME.
+: ${YEAR_MINUS_1_DAY:=$(time_fields "%Y" "$STAMPEDE_START_TIME_MINUS_1_DAY")}
+export YEAR_MINUS_1_DAY
+
+# Yesterday's Month (MM), based on STAMPEDE_START_TIME.
+: ${MONTH_MINUS_1_DAY:=$(time_fields "%m" "$STAMPEDE_START_TIME_MINUS_1_DAY")}
+export MONTH_MINUS_1_DAY
+
+# Yesterday's Day (DD), based on STAMPEDE_START_TIME.
+: ${DAY_MINUS_1_DAY:=$(time_fields "%d" "$STAMPEDE_START_TIME_MINUS_1_DAY")}
+export DAY_MINUS_1_DAY
 
 # Hour (HH) of STAMPEDE_START_TIME.
 : ${HOUR:=$(time_fields "%H")}
@@ -241,7 +265,8 @@ export STAMPEDE_ALERT_EMAIL_ADDRESS
 export STAMPEDE_DEFAULT_SLEEP_INTERVAL
 
 # How many attempts to make for the workflow before giving up.
-: ${STAMPEDE_NUMBER_OF_TRIES:=5}
+# I.e., if make fails, how many times should I retry?
+: ${STAMPEDE_NUMBER_OF_TRIES:=1}
 export STAMPEDE_NUMBER_OF_TRIES
 
 # Options that are always passed to make. 

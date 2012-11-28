@@ -12,7 +12,6 @@ then
   cat <<EOF
 $0 - Wait for an expression to succeed until a specified time.
 
-Usage: $0 N Mx expression
 Usage: $0 end_timestamp time_between_attempts expression
 
 Where:
@@ -25,7 +24,7 @@ Where:
                          to indicate success and nonzero for failure. For example,
                          "ls foo" returns 0 if "foo" exists, otherwise it returns 1.
 
-Contrast with "try-until-or-die", "try-for", and "try-for-or-die".
+Contrast with "try-for".
 NOTES: 
   1) The process will sleep between attempts.
   2) If you don't want the expression's output, redirect to "/dev/null".
@@ -33,4 +32,8 @@ EOF
 exit 0
 fi
 
-_do_try_until 0 "$@"
+let end=$1
+shift
+retry_every=$1
+shift
+_do_try $end $retry_every "$@"

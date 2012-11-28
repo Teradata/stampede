@@ -101,9 +101,7 @@ Briefly, here are the utilities in the `bin` directory. All support a `--help` o
 * `to-seconds` - Return the number of seconds specified for an input number of seconds, minutes, or hours.
 * `to-time-interval` - Like `to-seconds`, but returns a nicely formatted string.
 * `try-for` - Repeated attempt an operation for a specified duration of time, until success or timeout.
-* `try-for-or-die` - Like `try-for`, but fails the workflow on timeout.
 * `try-until` - Like `try-for`, but tries until a user-specified timestamp.
-* `try-until-or-die` - Like `try-for-or-die`, but tries until a user-specified timestamp.
 * `waiting` - A `sleep(1)` wrapper with logging for use in loops, like the one in the `try-*` scripts.
 * `ymd` - Return the year, month, and day for the workflow's start time, which defaults to today's date.
 * `yesterday-ymd` - Return the year, month, and day for the day before the workflow's start time, i.e., yesterday's date, by default. For example, if you need to process yesterday's data, this is a convenient way to compute the correct date.

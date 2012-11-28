@@ -26,7 +26,7 @@ Where:
                          to indicate success and nonzero for failure. For example,
                          "ls foo" returns 0 if "foo" exists, otherwise it returns 1.
 
-Contrast with "try-for-or-die", "try-until", and "try-until-or-die".
+Contrast with "try-until".
 NOTES: 
   1) The process will sleep between attempts.
   2) If you don't want the expression's output, redirect to "/dev/null".
@@ -34,4 +34,9 @@ EOF
 exit 0
 fi
 
-_do_try_for 0 "$@"
+let wait_time=$(to-seconds $1)
+shift
+retry_every=$1
+shift
+let end=$(dates --format="%s" 1:1 $wait_time S)
+_do_try $end $retry_every "$@"
