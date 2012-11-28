@@ -19,13 +19,9 @@ RECOMMENDER_DATA_DIR = /recommendation-engine/clicks-orders
 
 # Hack to determine the location for Hive's internal/managed tables,
 # given by the property: "hive.metastore.warehouse.dir".
-# The default value for Apache distributions is "/user/hive/warehouse"
-HIVE_WAREHOUSE_DIR = $(shell hive -e 'set;' | grep hive.metastore.warehouse | set -e 's/[^=]*=//')
-
-foo: foo-xx bar-xx
-	@echo try-for 2s 1s 'ls foo'
-foo-xx bar-xx:
-	@echo "$@ -> ${@:-xx=}"
+# The default value for Apache distributions is "/user/hive/warehouse".
+# We redirect warning messages written to stderr to /dev/null.
+HIVE_WAREHOUSE_DIR = $(shell hive -e 'set;' 2> /dev/null | grep hive.metastore.warehouse | set -e 's/[^=]*=//')
 
 all: etl analysis export
 	@echo Hadoop stampede finished!
@@ -38,11 +34,11 @@ ingest: from-production-db from-ftp-drop-zone
 from-production-db:
 	@echo "Ingesting clickstream data for yesterday: ${YESTERDAY_YMD} (today: ${YMD})
 	sqoop import \
-	  --connect jdbc:mysql://db-server:3306/clickstream-prod \ 
+	  --connect jdbc:mysql://db-server:3306/clickstream-prod \
 	  --username some_user -P \
 	  --table adclicks \
-	  --query "select * from adclicks where ymd = '${YESTERDAY_YMD}'" \ 
-	  --num-mappers 5	\ 
+	  --query "select * from adclicks where ymd = '${YESTERDAY_YMD}';" \
+	  --num-mappers 5	\
 	  --hive-import
 
 from-ftp-drop-zone: ${HDFS_FTP_YYMD_DIR} ${BM-FTP-FILE} ${EH-FTP-FILE}
@@ -77,7 +73,7 @@ analysis: reports-analysis recommendations-analysis
 # We'll also have the internal "adclicks" table 
 # created by Sqoop.
 reports-analysis:
-	@hive \
+	hive \
 		--define ORDERS_DIR=${HDFS_ORDERS} \
 		--define YMD=${YESTERDAY_YMD} \
 		-f clicks-orders-report.hql 
@@ -88,7 +84,7 @@ reports-analysis:
 # database (in a subdirectory named "finance.db"), and a
 # an "adclicks" subdirectory for the table data.
 recommendations-analysis:
-	@hadoop \
+	hadoop \
 		jar /usr/local/mycompany/clicks-orders-recommendations.jar \
 		--clicks=${HIVE_WAREHOUSE_DIR}/finance.db/adclicks \
 		--orders=${HDFS_ORDERS} \
@@ -102,16 +98,16 @@ export: reports-analysis-export recommendations-analysis-export
 
 reports-analysis-export:
 	sqoop export \
- 	  --connect jdbc:mysql://db-server:3306/orders-warehouse \ 
+ 	  --connect jdbc:mysql://db-server:3306/orders-warehouse \
 	  --username uname -P
 	  --table clicks_orders \
-	  --num-mappers 5	\ 
+	  --num-mappers 5	\
 	  --export-dir ${HIVE_WAREHOUSE_DIR}/finance.db/clicks_orders_analysis
 
 recommendations-analysis-export:
 	sqoop export \
- 	  --connect jdbc:mysql://db-server:3306/recommendations-prod \ 
+ 	  --connect jdbc:mysql://db-server:3306/recommendations-prod \
 	  --username uname -P
 	  --table clicks_orders_recommendations \
-	  --num-mappers 5	\ 
+	  --num-mappers 5	\
 	  --export-dir ${RECOMMENDER_DATA_DIR}

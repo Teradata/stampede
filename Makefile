@@ -9,7 +9,8 @@ RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
 RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin custom contrib examples test
 TESTS_LOGGING = format-log-message to-log-level from-log-level log
-TESTS_NO_SYSLOG = env dates split-string ${TESTS_LOGGING} common waiting-try send-email stampede
+TESTS_HADOOP    = hive-var
+TESTS_NO_SYSLOG = env dates split-string ${TESTS_LOGGING} common waiting-try send-email stampede ${TESTS_HADOOP}
 TESTS           = ${TESTS_NO_SYSLOG} syslog
 
 all: clean tests release
