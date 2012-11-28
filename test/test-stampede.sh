@@ -46,7 +46,8 @@ do
 
   args="--epoch${sep}1319000462"
   msg=$(dotest timestamp $args)
-  expected="2011-10-19 00:01:02"
+  # Due to timezones, the date and hour can vary.
+  expected="2011-10-.. ..:01:02"
   [[ $msg =~ $expected ]] || die "Unexpected message for \"$args\": $msg"
   let tscount=$tscount+1
 done
