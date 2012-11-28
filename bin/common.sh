@@ -6,11 +6,17 @@
 #  1) Variables like DIE and EXIT are used so it's easy to replace calls
 #     "die" and "exit" with test substitutes. See, e.g., test/test-common.sh
 
+# Prevent rescanning, if that happens...
+[ -n "$_STAMPEDE_COMMON_SH_READ" ] && return 0
+_STAMPEDE_COMMON_SH_READ=true
+
 # Pull in environment variable definitions. 
 # ASSUMES that STAMPEDE_HOME is defined.
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/env.sh
 . $thisdir/log.sh
+
+init_log_file
 
 # Like echo, but writes to stderr, instead of stdout.
 function echo2 {
@@ -42,7 +48,7 @@ function die {
 		send-email "ALERT" "$STAMPEDE_ALERT_EMAIL_ADDRESS" \
 			"$0 did not complete successfully." <<EOF
 Error message: $@.
-See $(log-file) for details.
+See $STAMPEDE_LOG_FILE for details.
 EOF
 	fi
   $EXIT
@@ -53,7 +59,7 @@ function handle_signal {
 	trap "" SIGHUP SIGINT 
 	status_name=$(kill -l $status >& /dev/null || echo "<unknown>")
 	alert "******* $0 failed, signal ($status - ) received."
-	alert "  See Log file $(log-file) for more in_formation."
+	alert "  See Log file $STAMPEDE_LOG_FILE for more in_formation."
 	alert "  (Current directory: $PWD)"
 	$DIE   "Exiting..."
 }

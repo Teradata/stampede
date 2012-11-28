@@ -33,6 +33,10 @@
 # You can define a particular value in an appropriate .stampederc file if you 
 # prefer. 
 
+# Prevent rescanning, if that happens...
+[ -n "$_STAMPEDE_ENV_SH_READ" ] && return 0
+_STAMPEDE_ENV_SH_READ=true
+
 [ -z "$PROJECT_DIR" ] && PROJECT_DIR=$PWD
 if [ -z "$STAMPEDE_PROJECT" ]
 then
@@ -152,6 +156,17 @@ export TIMEZONE_NAME
 
 # -- Logging variables:
 
+# Set to 0 if you want to use SYSLOG for logging.
+if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
+then
+  let STAMPEDE_LOG_USE_SYSLOG=1
+fi
+export STAMPEDE_LOG_USE_SYSLOG
+
+# Options to pass to logger(1) for syslog calls.
+: ${STAMPEDE_LOG_SYSLOG_OPTIONS:=}
+export STAMPEDE_LOG_SYSLOG_OPTIONS
+
 # The names and levels of the SYSLOG-compatible log levels.
 export STAMPEDE_LOG_LEVEL_NAMES=(EMERGENCY ALERT CRITICAL ERROR WARNING NOTICE INFO DEBUG)
 export STAMPEDE_LOG_LEVELS=(0 1 2 3 4 5 6 7)
@@ -170,8 +185,16 @@ export STAMPEDE_LOG_DIR
 # Log file for this run.
 # (Note: we can't use the ymd function defined in common.sh, because it 
 # hasn't been defined at this point in the execution!)
-: ${STAMPEDE_LOG_FILE:=$STAMPEDE_PROJECT-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log}
-export STAMPEDE_LOG_FILE
+: ${STAMPEDE_LOG_FILE_NAME:=$STAMPEDE_PROJECT-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log}
+export STAMPEDE_LOG_FILE_NAME
+
+# STAMPEDE_LOG_FILE is "SYSLOG" if we're using SYSLOG.
+if [ $STAMPEDE_LOG_USE_SYSLOG -eq 0 ] 
+then
+  export STAMPEDE_LOG_FILE="SYSLOG"
+else
+  export STAMPEDE_LOG_FILE="$STAMPEDE_LOG_DIR/$STAMPEDE_LOG_FILE_NAME"
+fi
 
 # Default logging level. See a description of the options in bin/log.sh.
 [ -z "$STAMPEDE_LOG_LEVEL" ] && let STAMPEDE_LOG_LEVEL=5
@@ -182,19 +205,8 @@ export STAMPEDE_LOG_FILE
 # arguments will be formatted.
 # If you need more flexible formatting, define your own formatting function
 # "format-log-message" and drop it in the "custom" directory.
-: ${STAMPEDE_LOG_MESSAGE_FORMAT_STRING:="%s %-9s (stampede:%s): %s"}
+: ${STAMPEDE_LOG_MESSAGE_FORMAT_STRING:="%s %-9s (%s): %s"}
 export STAMPEDE_LOG_MESSAGE_FORMAT_STRING
-
-# Set to 0 if you want to use SYSLOG for logging.
-if [ -z "$STAMPEDE_LOG_USE_SYSLOG" ] 
-then
-  let STAMPEDE_LOG_USE_SYSLOG=1
-fi
-export STAMPEDE_LOG_USE_SYSLOG
-
-# Options to pass to logger(1) for syslog calls.
-: ${STAMPEDE_LOG_SYSLOG_OPTIONS:=}
-export STAMPEDE_LOG_SYSLOG_OPTIONS
 
 # What to-log-level should return if an invalid argument is specified
 # and no default argument is also specified. See "to-log-level --help"

@@ -16,7 +16,7 @@ do
   name=$(echo $n | tr "[:upper:]" "[:lower:]")
   msg=$(DATE=$TEST_DIR/fake-date eval $name "$name message" 2>&1)
   case $msg in
-    2012-11-20?01:02:03-[0-9]*?$n*\(stampede:test-log.sh\):?$name?message)
+    2012-11-20?01:02:03-[0-9]*?$n*\(test-log.sh\):?$name?message)
       ;;
     *)
       die "message was \"$msg\""

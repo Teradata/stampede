@@ -3,6 +3,7 @@
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
 # log-file - Return the log file being used or "SYSLOG".
+# NOTE: This script now just returns the definition of $STAMPEDE_LOG_FILE.
 
 thisdir=$(dirname $BASH_SOURCE)
 . $thisdir/common.sh
@@ -17,9 +18,4 @@ EOF
 exit 0
 fi
 
-if [ $STAMPEDE_LOG_USE_SYSLOG -eq 0 ]
-then
-  echo "SYSLOG"
-else
-  echo "$STAMPEDE_LOG_DIR/$STAMPEDE_LOG_FILE"
-fi
+echo $STAMPEDE_LOG_FILE

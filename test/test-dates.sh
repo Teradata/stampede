@@ -106,8 +106,8 @@ results=$($DATES --date="$INDATE" --informat="$INFORMAT" --format="%m" -1:1 m)
 
 if [ $(uname) = "Darwin" ]
 then
-results=$($DATES --date="$INDATE" --informat="$INFORMAT" --format="%d" -1:1 w)
-[ "$results" = "13 20 27" ] || die "failed! returned <$results>"
+  results=$($DATES --date="$INDATE" --informat="$INFORMAT" --format="%d" -1:1 w)
+  [ "$results" = "13 20 27" ] || die "failed! returned <$results>"
 fi
 
 results=$($DATES --date="$INDATE" --informat="$INFORMAT" --format="%d" -1:1 d)

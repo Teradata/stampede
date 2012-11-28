@@ -85,16 +85,54 @@ echo2 "  --force-rerun tests:"
 
 msg=$(dotest force-rerun --force-rerun | grep 'remaking')
 expected="remaking $STAMPEDE_HOME/test/Makefile"
-[[ $msg =~ $expected ]] || die "Unexpected message for --force-rerun option: $msg ?= $expected"
+[[ $msg =~ $expected ]] || die "Unexpected message for \"$args\": $msg ?= $expected"
 
 msg=$(dotest force-rerun | grep 'remaking')
-[ -z "$msg" ] || die "Unexpected message for no --force-rerun option: <$msg> (should be empty)"
+[ -z "$msg" ] || die "Unexpected message for \"$args\": <$msg> (should be empty)"
 
 echo2 "  --tries and --between-tries tests:"
 
 for sep in ' ' '='
 do
-  msg=$(dotest tries --tries${sep}2 --between-tries${sep}2s) # | grep 'Failed after 2 attempts')
+  args="--tries${sep}2 --between-tries${sep}2s"
   expected="Failed after 2 attempts"
-  [[ $msg =~ $expected ]] || die "Unexpected message for --tries option (separator=<$sep>): <$msg> ?= <$expected>"
+  msg=$(EXIT=: stampede $args $TEST_DIR/Makefile tries 2>&1 | grep "$expected")
+  [[ $msg =~ $expected ]] || die "Unexpected message for \"$args\": <$msg> ?= <$expected>"
 done
+
+echo2 "  --log-level tests:"
+
+for sep in ' ' '='
+do
+  for ll in log logging
+  do
+    for level in DEBUG 7 EMERGENCY 0
+    do
+      args="--${ll}-level${sep}${level}"
+      msg=$(EXIT=: stampede $args $TEST_DIR/Makefile timestamp 2>&1 | grep $(to-log-level $level))
+      if [ "$level" = "EMERGENCY" -o "$level" = "0" ]
+      then
+        [ -z "$msg" ] || die "Unexpected message for \"$args\": <$msg> (should be empty)"
+      else
+        [[ $msg =~ DEBUG ]] || die "Unexpected message for \"$args\": <$msg> ?=~ <DEBUG>"
+      fi
+    done
+  done
+done
+
+echo2 "  --no-exec tests:"
+
+for n in -n --no --no-exec
+do
+  args="$n --tries=1 --log-level=NOTICE"
+  stampede $args $TEST_DIR/Makefile tries 2>&1 | while read line
+  do
+    [[ $line =~ failed ]] && die "Unexpected message for \"$args\" (make --dry-run not called?): <$line>"
+  done
+done
+
+echo2 "  create tests:"
+
+args="--no-exec create --log-level=NOTICE"
+msg=$(stampede $args 2>&1 | grep -i 'create')
+[[ $msg =~ create-project ]] || die "Unexpected message for \"$args\": <$line>"

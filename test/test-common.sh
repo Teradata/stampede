@@ -13,7 +13,7 @@ echo "  die test:"
 msg=$(die 'LINE 1' 'LINE 2' 2>&1)
 EXIT="$save_exit"
 case "$msg" in
-	*ALERT*\(stampede:test-common.sh\):?die?called:?LINE?1?LINE?2)
+	*ALERT*\(test-common.sh\):?die?called:?LINE?1?LINE?2)
 		;;
 	*)
 	  die "die test failed! (msg = <$msg>)"
@@ -66,7 +66,8 @@ yymd3=$(yesterday-ymd --as-args)
 
 echo "  log-file test:"
 logfile=$(log-file)
-expected="./logs/test-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log"
+expected=SYSLOG
+[ $STAMPEDE_LOG_USE_SYSLOG -ne 0 ] && expected="./logs/test-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log"
 [ "$logfile" = "$expected" ] || die "$logfile != $expected"
 
 echo "  to-seconds test:"

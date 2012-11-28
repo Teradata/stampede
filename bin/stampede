@@ -313,30 +313,37 @@ if [ -n "$log_level" ]
 then
   let STAMPEDE_LOG_LEVEL=$(determine_log_level $log_level)
 fi
-tries_string=$STAMPEDE_NUMBER_OF_TRIES
-[ $STAMPEDE_NUMBER_OF_TRIES -le 0 ] && tries_string="no limit"
 
-if [ $STAMPEDE_LOG_LEVEL -le $(from-log-level info) ]
+full_make_opts="$makefile_dir $STAMPEDE_MAKE_OPTIONS $noexec $force_rerun"
+
+if [ $STAMPEDE_LOG_LEVEL -ge $(from-log-level info) ]
 then
+  tries_string=$STAMPEDE_NUMBER_OF_TRIES
+  [ $STAMPEDE_NUMBER_OF_TRIES -le 0 ] && tries_string="no limit"
   info "Starting $0 $command (time: $STAMPEDE_START_TIME):"
   info "  makefile:                  $makefile_arg"
-  info "  make options/targets:      $STAMPEDE_MAKE_OPTIONS ${make_opts[@]}"
-  info "  log file:                  $(log-file)"
+  info "  make options/targets:      $full_make_opts ${make_opts[@]}"
+  info "  log file:                  $STAMPEDE_LOG_FILE"
   info "  force rerun?               $(true-or-false $force_rerun "on" "off")"
   info "  maximum attempts:          $tries_string"
   info "  interval between attempts: $STAMPEDE_DEFAULT_SLEEP_INTERVAL"
   info "  verbosity:                 $(to-log-level $STAMPEDE_LOG_LEVEL)"
   info "  no execute mode?           $(true-or-false "$NOOP" "true" "false")"
-  info " Environment variables:"
+  info "  Environment variables:"
   info "    YEAR-MONTH-DAY:HOUR:MINUTE:SECOND:   $YEAR-$MONTH-$DAY:$HOUR:$MINUTE:$SECOND"
   info "    EPOCH_SECOND:                        $EPOCH_SECOND"
+fi
+
+if [ $STAMPEDE_LOG_LEVEL -ge $(from-log-level debug) ]
+then
   env | grep '^STAMPEDE_' | while read line
   do
     str1=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\1:/')
     str2=$(echo $line | sed -e 's/\([^=]\+\)=\(.*\)/\2/')
-    debug "    $(printf "%-30s\t%s" "$str1" "$str2")"
+    debug "$(printf "    %-30s\t%s" "$str1" "$str2")"
   done
 fi
+
 function keep_trying {
   let count=$1
   if [ $STAMPEDE_NUMBER_OF_TRIES -le 0 -o $count -lt $STAMPEDE_NUMBER_OF_TRIES ]
@@ -358,20 +365,16 @@ do
   fi
 
   let count=$count+1
-  opts="$makefile_dir $STAMPEDE_MAKE_OPTIONS $noexec $force_rerun"
-  notice running: make -f "$MAKEFILE" $opts "${make_opts[@]}"
-  if [ -z "$NOOP" ]
+  notice running: make -f "$MAKEFILE" $full_make_opts "${make_opts[@]}"
+  make -f "$MAKEFILE" $full_make_opts "${make_opts[@]}" 2>&1 | while read line
+  do
+    notice "  output: $line"
+  done
+  if [ ${PIPESTATUS[0]} -eq 0 ]
   then
-    make -ks -f "$MAKEFILE" $opts "${make_opts[@]}" 2>&1 | while read line
-    do
-      notice "  output: $line"
-    done
-    if [ ${PIPESTATUS[0]} -eq 0 ]
-    then
-      notice "Finished!"
-      echo2 "Finished!"
-      exit 0
-    fi
+    notice "Finished!"
+    echo2 "Finished!"
+    exit 0
   fi
 done
 

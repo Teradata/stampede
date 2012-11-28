@@ -1,5 +1,8 @@
 # Makefile used in testing the "stampede" script itself.
 
+# Not used in the tests.
+all: timestamp force-rerun tries
+
 timestamp:
 	@echo "test-stampede output: ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}:${SECOND}"
 

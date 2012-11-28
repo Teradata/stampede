@@ -23,22 +23,23 @@ function format_log_message {
 }
 
 function init_log_file {
-  if [ $STAMPEDE_LOG_USE_SYSLOG -ne 0 ]
+  [ "$STAMPEDE_LOG_USE_SYSLOG" -eq 0 ] && return 0
+  if [ -z "$STAMPEDE_LOG_DIR" ]
   then
-    if [ -z "$STAMPEDE_LOG_DIR" ]
-    then
-      echo "WARNING: STAMPEDE_LOG_DIR not defined. Using \".logs\"."
-      STAMPEDE_LOG_DIR=.logs
-    fi
-    [ -d $STAMPEDE_LOG_DIR ] || mkdir -p $STAMPEDE_LOG_DIR
+    echo "WARNING: STAMPEDE_LOG_DIR not defined. Using \".logs\"." 1>&2
+    STAMPEDE_LOG_DIR=.logs
   fi
+  [ -d $STAMPEDE_LOG_DIR ] || mkdir -p $STAMPEDE_LOG_DIR
 }
 
-# Log a message. Pass ${FUNCNAME[0]} and $LINENO as part of the arguments
-# to get the name and line number of the function you're logging from.
+# Cache the following for faster access...
+export APP_NAME=$(basename $0)
+
+# Log a message.
 function log {
   let level=$1
   shift
+
   if [ $level -le $STAMPEDE_LOG_LEVEL ]
   then
     level_str=$($thisdir/to-log-level $level)
@@ -49,15 +50,15 @@ function log {
       # The funky quoting is required to handle possible embedded spaces in the format.
       d=$(eval $DATE "\"$STAMPEDE_LOG_TIME_FORMAT\"")
     fi
-    msg=$(format-log-message "$d" "$level_str" "$(basename $0)" "$@")
+
+    msg=$(format-log-message "$d" "$level_str" "$APP_NAME" "$@")
     if [ "$STAMPEDE_LOG_USE_SYSLOG" -eq 0 ]
     then
-      logger $STAMPEDE_LOG_SYSLOG_OPTIONS -p $level "$@"
-      echo2 "$msg"
+      logger $STAMPEDE_LOG_SYSLOG_OPTIONS -p $level "($APP_NAME): $@"
     else
-      init_log_file
-      echo "$msg" | tee -a $(log-file) 1>&2
+      echo "$msg" >> "$STAMPEDE_LOG_FILE"
     fi
+    echo2 "$msg"
   fi
 }
 
@@ -70,4 +71,3 @@ function warn      { log 4 "$@"; }
 function notice    { log 5 "$@"; }
 function info      { log 6 "$@"; }
 function debug     { log 7 "$@"; }
-
