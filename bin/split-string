@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+# split-string - Split a string on a delimiter and return an array or write 
+# the elements.
+
+function help {
+  cat <<EOF
+$0 - Split a string on a delimiter and return an array or write the elements.
+
+Usage: $0 [-h | --help] \ 
+  [-d | --delimiter=delim] [-e | --echo [-w | --with-index[=delim2]]] string [string ...]
+
+Where:
+  -h | --help                 Show this message.
+  -d | --delimiter=delim      Split on "delim" (default: ' ').
+                              The "=" can be omitted.
+  -o | --outdelimiter=odelim  Echo elements separated by "odelim" (default: ' ').
+                              Use "--newline" if you want one per line.
+                              The "=" can be omitted.
+  -n | --newline              Echo each element to the screen, one per line.
+  -i | --index                Used if "--newline" is given; prefix each line with 
+                              the array index, followed by the output delimiter 
+                              "odelim" (default: ' '), followed by the element.
+  string                      One or more strings to split. Each will be processed
+                              separately.
+EOF
+}
+
+let do_newline=1
+let with_index=1
+input_delim=' '
+output_delim=' '
+strings=()
+while [ $# -gt 0 ]
+do
+  case $1 in
+    -h|--h*)
+      help
+      exit 0
+      ;;
+    -d=*|--d*=*)
+      input_delim=${1#-*d*=}
+      ;;
+    -d|--d*)
+      shift
+      input_delim=$1
+      ;;
+    -o=*|--o*=*)
+      output_delim=${1#-*o*=}
+      ;;
+    -o|--o*)
+      shift
+      output_delim=$1
+      ;;
+    -n|--n*)
+      let do_newline=0
+      ;;
+    -i|--i*)
+      let with_index=0
+      ;;
+    *)
+      strings[${#strings[@]}]="$1"
+      ;;
+  esac
+  shift
+done
+
+if [ $with_index -eq 0 -a $do_newline -ne 0 ]
+then
+  echo "$0: ERROR: Must specify --newline with --index." 1>&2
+  help
+  exit 1
+fi
+
+# For one-line output, to avoid a "bare" separator on either end,
+# we write the separator BEFORE each element, and the for the very
+# first output, we use '' as the separator.
+element_sep=''
+let total_count=0
+for s in ${strings[@]}
+do
+  IFS="$input_delim" read -a array <<< "$s"
+  for i in ${!array[@]}
+  do
+    if [ $with_index -eq 0 ]
+    then
+      printf "%s%s%s\n" "$total_count" "$output_delim" "${array[$i]}"
+    elif [ $do_newline -eq 0 ]
+    then
+      echo ${array[$i]}
+    else
+      printf "%s%s" "$element_sep" "${array[$i]}"
+    fi
+    element_sep="$output_delim" # Now use the real separator...
+  done
+  let total_count=$total_count+1
+done
+[ $do_newline -ne 0 ] && echo ""

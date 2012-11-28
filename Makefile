@@ -8,9 +8,9 @@ VERSION       = $(shell cat VERSION)
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
 RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin custom contrib examples test
-TESTS_LOGGING = test-format-log-message test-to-log-level test-from-log-level test-log
-TESTS_NO_SYSLOG = test-env test-dates ${TESTS_LOGGING} test-common test-waiting-try test-send-email test-stampede
-TESTS           = ${TESTS_NO_SYSLOG} test-syslog
+TESTS_LOGGING = format-log-message to-log-level from-log-level log
+TESTS_NO_SYSLOG = env dates split-string ${TESTS_LOGGING} common waiting-try send-email stampede
+TESTS           = ${TESTS_NO_SYSLOG} syslog
 
 all: clean tests release
 
@@ -42,16 +42,16 @@ stage-release-file-contents:
 # Run the tests in this order, as the later tests
 # assume the features tested by the previous tests 
 # are valid!
-tests: clean-tests ${TESTS}
+tests: clean-tests ${TESTS:%=test-%}
 	@echo "Successful!!"
 
-tests-no-syslog: clean-tests ${TESTS_NO_SYSLOG}
+tests-no-syslog: clean-tests ${TESTS_NO_SYSLOG:%=test-%}
 	@echo "Successful!!"
 
 clean-tests:
 	rm -rf test/logs
 
-${TESTS_NO_SYSLOG}:
+${TESTS_NO_SYSLOG:%=test-%}:
 	@cd test; \
 	echo "Running $@:"; \
 	STAMPEDE_HOME=${STAMPEDE_HOME} ./$@.sh; \
