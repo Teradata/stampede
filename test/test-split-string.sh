@@ -45,7 +45,7 @@ done
 
 echo2 "  multi-line output with index tests:"
 
-expected=(a b c)
+expected=(a b c d e f)
 for sep in '' ':'
 do 
   let i=0
@@ -56,7 +56,7 @@ do
     args="--newline --index"
     expected_sep=' '
   fi
-  split-string $args "a b c" | while read line 
+  split-string $args "a b c" "d e" "f" | while read line 
   do
     expected_string="${i}${expected_sep}${expected[$i]}"
     [ "$line" = "$expected_string" ] || die "Expected \"$expected_string\", got \"$line\" (args: $args)."
