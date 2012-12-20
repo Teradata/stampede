@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+# mapreduce-prop - Show the value for one or more Hadoop MapReduce properties.
+# The "hadoop" command must be on your path. 
+
+. "$STAMPEDE_HOME/bin/common.sh"
+
+jar="$STAMPEDE_HOME/bin/hadoop/mr-config.jar"
+
+function find_hadoop {
+  hadoop=$(which hadoop)
+  if [ $? -eq 0 ]
+  then
+    echo $hadoop
+    return 0
+  fi
+  for hadoop in "$HADOOP_HOME/bin/hadoop" /usr/local/bin/hadoop /usr/bin/hadoop /bin/hadoop
+  do
+    if [ -x "$hadoop" ]
+    then
+      echo "$hadoop"
+      return 0
+    fi
+  done
+  return 1
+}
+
+hadoop=$(find_hadoop)
+if [ $? -ne 0 ]
+then
+  echo "The hadoop command was not found on your path, several system directories."
+  echo "Define \$HADOOP_HOME or add hadoop to your path."
+  exit 1
+fi
+
+$NOOP "$hadoop" jar "$jar" "$@"

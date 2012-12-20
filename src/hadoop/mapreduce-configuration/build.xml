@@ -1,0 +1,47 @@
+<!-- Build the deployable jar. -->
+<project name="MapReduceConfiguration" default="main">
+
+  <property environment="env"/>
+
+	<property name="src.dir"        value="src/main/java" />
+
+	<property name="build.dir"      value="bin" />
+	<property name="classes.dir"    value="${build.dir}/classes" />
+	<property name="jar.file"       value="mr-config.jar" />
+
+	<property name="main.class" value="com.thinkbiganalytics.hadoop.MapReduceConfiguration" />
+
+	<path id="hadoop.classpath">
+		<fileset dir="${env.HADOOP_HOME}" includes="hadoop-core-*.jar" />
+		<fileset dir="${env.HADOOP_HOME}/lib" includes="*cli*.jar" />
+	</path>
+
+	<target name="main" depends="clean,jar"/>
+
+	<target name="clean">
+		<delete dir="*output" />
+		<delete dir="${build.dir}" />
+		<delete file="${jar.file}" />
+	</target>
+
+	<target name="build-dirs">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${classes.dir}" />
+	</target>
+
+	<target name="compile" depends="build-dirs">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="hadoop.classpath" includeantruntime="false" debug="on"/>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}" excludes="**/*.java" />
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${jar.file}" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+			</manifest>
+		</jar>
+	</target>
+</project>

@@ -2,13 +2,13 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# hive-var - Show the value for one or more Hive variables or properties.
+# hive-prop - Show the value for one or more Hive variables or properties.
 
-. $STAMPEDE_HOME/bin/common.sh
+. "$STAMPEDE_HOME/bin/common.sh"
 
 function help {
   cat <<EOF
-$0 - Show the value for one or more Hive environment variables.
+$0 - Show the value for one or more Hive variables or properties.
      It determines the property values by running the command "hive -e 'set -v;'".
 
 Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
@@ -21,8 +21,8 @@ Where:
                  (default: print the full "key=value").
   --print-values Print only the values for the matching keys.
                  (Confusing for multiple matches!)
-  --all          Show ALL variables.
-  string         Regular expression matching all or part of the variable name.
+  --all          Show ALL variables and properties.
+  string         Regular expression matching all or part of the name.
 EOF
 }
 
@@ -46,7 +46,7 @@ function find_hive {
 
 export VERBOSE=
 
-function show_vars {
+function show_props {
   hive="$1"
   shift
   let print_kv=$1   # 0 => key=value, -1 => key, 1 => value
@@ -124,4 +124,4 @@ then
   exit 1
 fi
 
-$NOOP show_vars "$hive" $print_kv $all "${args[@]}"
+$NOOP show_props "$hive" $print_kv $all "${args[@]}"

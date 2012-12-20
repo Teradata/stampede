@@ -5,7 +5,7 @@
 # pig-prop - Show the value for one or more Pig properties from the 
 # $PIG_HOME/conf/pig.properties file.
 
-. $STAMPEDE_HOME/bin/common.sh
+. "$STAMPEDE_HOME/bin/common.sh"
 
 function help {
   cat <<EOF

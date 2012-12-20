@@ -22,7 +22,7 @@ RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile b
 
 TESTS_LOGGING = format-log-message to-log-level from-log-level log
 TESTS_CORE    = env abs-path dates split-string ${TESTS_LOGGING} common waiting-try send-email stampede
-TESTS_HADOOP  = hive-var pig-prop
+TESTS_HADOOP  = hive-prop pig-prop mapreduce-prop
 TESTS_SYSLOG  = syslog
 
 TESTS         = ${TESTS_CORE} ${TESTS_SYSLOG} 
@@ -96,3 +96,18 @@ ${TESTS_CORE:%=test-%} ${TESTS_HADOOP:%=hadoop/test-%}:
 clean-logs:
 	rm -rf logs
 
+# Compile the Java source apps, build the jars, and put them where they belong.
+
+java: clean-jars make-jars copy-jars
+
+clean-jars:
+	rm -f src/hadoop/mapreduce-configuration/mr-config.jar
+
+make-jars:
+	st_home=$$PWD; \
+	cd src/hadoop/mapreduce-configuration; \
+	ant
+
+copy-jars:
+	cp src/hadoop/mapreduce-configuration/mr-config.jar bin/hadoop
+	
