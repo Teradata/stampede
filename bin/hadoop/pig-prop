@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+# pig-prop - Show the value for one or more Pig properties from the 
+# $PIG_HOME/conf/pig.properties file.
+
+. $STAMPEDE_HOME/bin/common.sh
+
+function help {
+  cat <<EOF
+$0 - Show the value for one or more Pig properties from pig.properties.
+
+Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
+          [-f file | --prop-file=file] [--all | string [string ...]]
+
+Where:
+  -h | --help      Show this message.
+  -v | --verbose   Echo the path to the Pig properties file read.
+  --print-keys     Print all matching keys in the "key=value" pairs
+                   (default: print the full "key=value").
+  --print-values   Print only the values for the matching keys.
+                   (Confusing for multiple matches!)
+  -f file
+  --prop-file=file Use "file" instead of searching for the properties file.
+  --all            Show ALL properties.
+  string           Regular expression matching all or part of the property name.
+
+NOTE: Only reads the first property file it finds. Unlike Hive, we can't return
+Pig and have it dump the properties.
+EOF
+}
+
+function find_prop_file {
+  dirs=()
+  pig=$(which pig)
+  [ $? -eq 0 ] && dirs[0]=${pig%/bin/pig}
+  dirs=(${dirs[@]}
+    /usr/lib/pig
+    /etc/pig 
+    /usr/local/lib/pig
+    /usr/local/etc/pig
+    "$PIG_HOME/conf/pig.properties")
+
+  for dir in ${dirs[@]}
+  do
+    if [ -f $dir/conf/pig.properties ]
+    then
+      echo $dir/conf/pig.properties
+      return 0
+    fi
+  done
+  return 1
+}
+
+function show_props {
+  conf_file="$1"
+  shift
+  let print_kv=$1   # 0 => key=value, -1 => key, 1 => value
+  shift
+  let all=$1
+  shift
+  cat "$conf_file" | grep -v '^#' | grep -v '^[ \t]*$' | while read line
+  do
+    for s in "$@"
+    do
+      if [[ $all -eq 0 || $line =~ $s ]]
+      then 
+        if [ $print_kv -eq 0 ] 
+        then
+          echo $line
+        elif [ $print_kv -eq -1 ]   # just the keys!
+        then
+          echo $line | sed -e 's/=.*//' 
+        else
+          echo $line | sed -e 's/[^=]*=//' 
+        fi
+      fi
+    done
+  done
+}
+
+function verify_prop_file {
+  if [ ! -f "$1" ]
+  then
+    echo "The specified property file \"$1\" does not exist."
+    exit 1
+  fi
+}
+
+VERBOSE=
+args=()
+let print_kv=0
+let all=1
+while [ $# -ne 0 ]
+do
+  case $1 in
+    -h*|--h*)
+      help
+      exit 0
+      ;;
+    -v*|--v*)
+      VERBOSE=true
+      ;;
+    --a*)
+      all=0
+      args[${#args[@]}]=all
+      ;;
+    --print-k*)
+      let print_kv=-1
+      ;;
+    --prop*-file=*)
+      prop_file=${1#--prop*-file=}
+      verify_prop_file "$prop_file"
+      ;;
+    -f)
+      shift
+      prop_file=$1
+      verify_prop_file "$prop_file"
+      ;;
+    --print-v*)
+      let print_kv=1
+      ;;
+    -*)
+      echo "$0: ERROR: Unrecognized argument \"$1\"."
+      help
+      exit 1
+      ;;
+    *)
+      args[${#args[@]}]=$(echo $1 | sed -e 's/\./\\./g')
+      ;;
+  esac
+  shift
+done
+
+if [ ${#args[@]} -eq 0 ]
+then
+  echo "$0: ERROR: Must specify one or more names or --all"
+  help
+  exit 1
+fi
+
+[ -n "$prop_file" ] || prop_file=$(find_prop_file)
+if [ $? -ne 0 ]
+then
+  echo "The Pig properties file was not found using your path and several system directories."
+  echo "Define \$PIG_HOME or add pig to your path."
+  exit 1
+fi
+[ -n "$VERBOSE" ] && echo "Using pig properties file: $prop_file"
+ 
+$NOOP show_props "$prop_file" $print_kv $all "${args[@]}"
