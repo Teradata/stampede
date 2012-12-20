@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# abs-path - Show the absolute path for the input file or directory.
+# usage:  abs-path path1 [path2 ...]
+# example: abs-path ${BASH_file[0]}
+# Each resolved path with be written on a separate line, to avoid ambiguities
+# from nested whitespace! If any of the input "paths" doesn't actually exist,
+# 1 will be used as the exit status and the unmodified "path" is echoed. The
+# other paths will be treated normally. That is, the script doesn't exit when
+# a path doesn't exist.
+# Adapted from http://stackoverflow.com/a/246128/385104
+
+function help {
+  cat <<EOF
+$0 - Show the absolute path for the input file or directory.
+
+Usage:   abs-path path1 [path2 ...]
+
+Example: abs-path \${BASH_file[0]}
+
+Where each resolved path will be written on a separate line, to avoid ambiguities
+from nested whitespace! If any of the input "paths" doesn't actually exist, the
+exit status will be 1 and the unmodified "path" will be echoed. The other paths
+will be treated normally. That is, the script doesn't exit when one or more paths
+doesn't exist.
+EOF
+}
+
+if [[ $1 =~ --?h.* ]]
+then
+  help
+  exit 0
+fi
+
+let status=0
+abs_paths=()
+for file in "$@"
+do
+  case $file in
+    -h|--h*)
+      help
+      exit 0
+      ;;
+    -*)
+      echo "$0: ERROR: Unrecognized argument \"$file\"."
+      help
+      exit 1
+      ;;
+    *)
+      dir="$( dirname "$file" )"
+      f="$( basename "$file" ) "
+      while [ -h "$file" ]
+      do 
+        file="$(readlink "$file")"
+        [[ $file != /* ]] && file="$dir/$file"
+        dir="$( cd -P "$( dirname "$file"  )" && pwd )"
+      done
+      if [ -e "$file" ]
+      then
+        abs_paths[${#abs_paths[@]}]="$( cd -P "$( dirname "$file" )" && pwd )/$f"
+      else
+        abs_paths[${#abs_paths[@]}]="$file"
+        let status=1
+      fi
+      ;;
+  esac
+  shift
+done
+for p in ${abs_paths[@]}
+do
+  echo $p
+done
+exit $status
