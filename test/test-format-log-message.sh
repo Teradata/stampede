@@ -4,8 +4,10 @@
 #------------------------------------------------------------------------------
 # test-format-log-message.sh - Tests log message formatting.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
+
+echo "  error message format tests:"
 
 msg=$(format-log-message 1234 ERROR my_app this is a message 2>&1)
 [[ $msg =~ 1234.ERROR.*\(my_app\):.this.is.a.message ]] || die "Unexpected message 1: $msg"

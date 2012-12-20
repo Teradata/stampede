@@ -12,9 +12,8 @@ _STAMPEDE_COMMON_SH_READ=true
 
 # Pull in environment variable definitions. 
 # ASSUMES that STAMPEDE_HOME is defined.
-thisdir=$(dirname $BASH_SOURCE)
-. $thisdir/env.sh
-. $thisdir/log.sh
+. $STAMPEDE_HOME/bin/env.sh
+. $STAMPEDE_HOME/bin/log.sh
 
 init_log_file
 

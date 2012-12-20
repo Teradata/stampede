@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-log.sh - Tests of the logging functionality.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 echo "  emergency, alert, ..., function tests:"

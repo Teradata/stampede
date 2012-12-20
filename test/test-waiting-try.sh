@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-waiting-try.sh - Tests of waiting and the try-* scripts.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 echo "  waiting test:"

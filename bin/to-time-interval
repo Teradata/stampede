@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # to-time-interval - Compute the a time-interval string specified by the argument.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

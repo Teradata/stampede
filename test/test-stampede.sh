@@ -5,7 +5,7 @@
 # test-stampede.sh - Tests the stampede driver script itself, mostly the 
 # command-line options.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 function dotest {

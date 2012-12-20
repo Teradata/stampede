@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # yesterday-ymd - Return a YYYYMMDD string for YESTERDAY's date
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

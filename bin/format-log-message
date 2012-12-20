@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # format-log-message - Return a message to write to the log.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # create-project - Create a new Stampede project.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 [ "$thisdir" = '.' ] && thisdir=$PWD
 thisdir_parent=$(dirname $thisdir)
 [ "$thisdir_parent" = '.' ] && thisdir_parent=$PWD

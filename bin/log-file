@@ -5,7 +5,7 @@
 # log-file - Return the log file being used or "SYSLOG".
 # NOTE: This script now just returns the definition of $STAMPEDE_LOG_FILE.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

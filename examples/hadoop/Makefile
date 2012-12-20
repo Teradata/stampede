@@ -17,11 +17,9 @@ EH_FTP_FILE  = ${DROP_ZONE}/${EH_FILE}
 
 RECOMMENDER_DATA_DIR = /recommendation-engine/clicks-orders
 
-# Hack to determine the location for Hive's internal/managed tables,
-# given by the property: "hive.metastore.warehouse.dir".
-# The default value for Apache distributions is "/user/hive/warehouse".
-# We redirect warning messages written to stderr to /dev/null.
-HIVE_WAREHOUSE_DIR = $(shell hive -e 'set;' 2> /dev/null | grep hive.metastore.warehouse | set -e 's/[^=]*=//')
+# The location for Hive's internal/managed tables, given by the property:
+#   hive.metastore.warehouse.dir
+HIVE_WAREHOUSE_DIR = $(shell hive-var hive.metastore.warehouse.dir)
 
 all: etl analysis export
 	@echo Hadoop stampede finished!

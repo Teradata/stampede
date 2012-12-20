@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # stampede-log - Write to the stampede log.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 function help {

@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # from-log-level - Convert a log level to the corresponding number.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

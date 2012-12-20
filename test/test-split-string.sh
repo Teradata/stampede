@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-split-string.sh - Tests the split-string script.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 echo2 "  single-line output tests:"

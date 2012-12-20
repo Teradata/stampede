@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-env.sh - Tests of the environment variables.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 echo "  YEAR, MONTH, etc. tests:"
@@ -33,3 +33,8 @@ echo "  time_fields test:"
 actual=$(time_fields %s)
 expected=$($STAMPEDE_HOME/bin/dates --date="$STAMPEDE_START_TIME" --informat="$STAMPEDE_TIME_FORMAT" --format="%s")
 [ "$actual" = "$expected" ] || die "time_fields: expected <$expected> != actual <$actual>"
+
+
+echo "  calling a script outside the context of 'stampede' test:"
+( e=$STAMPEDE_HOME/bin/env.sh; STAMPEDE_HOME= bash $e) | ( read line
+  [[ $line =~ STAMPEDE_HOME.is.not.defined ]] || die "env.sh should have died when STAMPEDE_HOME is not defined! line = <$line>" )

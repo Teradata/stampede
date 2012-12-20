@@ -37,6 +37,7 @@
 [ -n "$_STAMPEDE_ENV_SH_READ" ] && return 0
 _STAMPEDE_ENV_SH_READ=true
 
+
 [ -z "$PROJECT_DIR" ] && PROJECT_DIR=$PWD
 if [ -z "$STAMPEDE_PROJECT" ]
 then
@@ -49,10 +50,9 @@ export STAMPEDE_PROJECT
 # the stampede driver script, but not from other support scripts.
 if [ -z "$STAMPEDE_HOME" ]
 then
-  _sdir=$(dirname $0)
-  [ "$_sdir" = '.' ] && _sdir=$PWD
-  STAMPEDE_HOME=$(dirname $_sdir)
-  [ "$STAMPEDE_HOME" = '.' ] && STAMPEDE_HOME=$PWD
+  echo "$0: STAMPEDE_HOME is not defined. This is done automatically by the 'stampede' driver script."
+  echo "If you are calling this script outside of 'stampede' please define STAMPEDE_HOME yourself."
+  exit 1
 fi
 export STAMPEDE_HOME
 
@@ -61,7 +61,7 @@ do
   [ -f "$f" ] && . "$f"
 done
 
-this_dir=$(dirname $BASH_SOURCE)
+this_dir=$(dirname ${BASH_SOURCE[0]})
 
 # -- Date/time variables:
 

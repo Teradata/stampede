@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-dates.sh - Tests of bin/dates.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 # Dates is fairly complicated. This test is not as comprehensive as it could be.

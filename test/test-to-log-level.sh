@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-to-log-level.sh 
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 echo "  invalid input numbers and names test:"

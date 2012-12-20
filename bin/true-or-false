@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # true_or_false - Helper function used to generate either/or text.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

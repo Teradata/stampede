@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-common.sh - Tests of common.sh and other support scripts.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 save_exit="$EXIT"
@@ -67,8 +67,8 @@ yymd3=$(yesterday-ymd --as-args)
 echo "  log-file test:"
 logfile=$(log-file)
 expected=SYSLOG
-[ $STAMPEDE_LOG_USE_SYSLOG -ne 0 ] && expected="./logs/test-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log"
-[ "$logfile" = "$expected" ] || die "$logfile != $expected"
+[ $STAMPEDE_LOG_USE_SYSLOG -ne 0 ] && expected="logs/test-$YEAR$MONTH$DAY-$HOUR$MINUTE$SECOND.log"
+[[ $logfile =~ $expected ]] || die "$logfile != $expected"
 
 echo "  to-seconds test:"
 to_seconds_strings=('' 0 0s 0m 0h 1 1s 1m 1h 20 20s 20m 20h)

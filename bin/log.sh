@@ -8,7 +8,7 @@
 # option, which is the default. See the settings in
 # bin/env.sh.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 
 function format_log_message {
   date=$1

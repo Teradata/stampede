@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # waiting - Used to sleep for a specified period of time and logging
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

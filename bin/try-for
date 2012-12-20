@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # try-for - Wait for an expression to succeed for a specified time period from now.
 
-thisdir=$(dirname $BASH_SOURCE)
+thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
 
 if [[ "$1" =~ --?h.* ]]

@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # test-send-email - Tests the send-email script.
 
-TEST_DIR=$(dirname $BASH_SOURCE)
+TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh
 
 function dotest {
@@ -13,6 +13,8 @@ one
 two
 EOF
 }
+
+echo "  error email tests:"
 
 expected=("alert: Stampede failure: test1 deanwampler" "one" "two")
 let count=0
