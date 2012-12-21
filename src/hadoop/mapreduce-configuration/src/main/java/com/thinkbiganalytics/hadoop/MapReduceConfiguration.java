@@ -69,8 +69,6 @@ public class MapReduceConfiguration extends Configured implements Tool {
 				printValuesOnly = true;
 			} else if (arg.equals("--all")) {
 				printAll = true;
-			} else if (arg.equals("--all")) {
-				printAll = true;
 			} else if (arg.startsWith("--regex=")) {
 				regexStrings.add(arg.substring("--regex=".length()));
 			} else if (arg.startsWith("-")) {
@@ -81,7 +79,7 @@ public class MapReduceConfiguration extends Configured implements Tool {
 			}
 		}
 
-		if (strings.size() == 0 && regexStrings.size() == 0) {
+		if (printAll == false && strings.size() == 0 && regexStrings.size() == 0) {
 			usage("MapReduceConfiguration: ERROR: Must specify one or more names, regular expressions, or --all");
 			System.exit(1);
 		}

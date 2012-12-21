@@ -151,7 +151,7 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 
 * Fill in example content.
 * Test email support with the Unix `mail` command.
-* Finish testing all the stampede CLI options.
+* More tests, especially of command options.
 * Provide `man` pages.
  
 ## Notes

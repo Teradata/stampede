@@ -19,6 +19,9 @@ msg=$("$PIG_PROP" --print-values --props-file=$TEST_DIR/hadoop/pig.properties lo
 
 echo "  options tests:"
 
+"$PIG_PROP" --print-keys --props-file=$TEST_DIR/hadoop/pig.properties --all | grep log4jconf | ( read line
+[[ $line =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>" )
+
 "$PIG_PROP" 2>&1 | ( read line
 [[ $line =~ ERROR:.Must.specify.one.or.more.names.or.--all ]] || die "Expected error message: msg = <$line>" )
 

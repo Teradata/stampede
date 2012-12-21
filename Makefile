@@ -37,9 +37,6 @@ test-extras: test-hadoop
 install:
 	bin/install
 
-install-no-syslog:
-	bin/install
-
 clean: clean-release clean-tests clean-logs
 	
 release: ${RELEASE_FILE}

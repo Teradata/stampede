@@ -15,9 +15,12 @@ msg=$("$HIVE_PROP" --print-keys metastore.warehouse.dir)
 [[ $msg =~ hive\.metastore\.warehouse\.dir ]] || die "Missing hive.metastore.warehouse.dir? msg = <$msg>"
 
 msg=$("$HIVE_PROP" --print-values system:user.name)
-[[ $msg = $USER ]] || die "Missing hive.metastore.warehouse.dir? msg = <$msg>"
+[[ $msg = $USER ]] || die "Missing system:user.name? actual = <$msg>, expected <$USER>"
 
 echo "  options tests:"
+
+"$HIVE_PROP" --print-keys --all | grep metastore.warehouse.dir | ( read line 
+[[ $line =~ hive\.metastore\.warehouse\.dir ]] || die "Missing hive.metastore.warehouse.dir? msg = <$msg>" )
 
 "$HIVE_PROP" 2>&1 | ( read line
 [[ $line =~ ERROR:.Must.specify.one.or.more.names.or.--all ]] || die "Expected error message: msg = <$line>" )

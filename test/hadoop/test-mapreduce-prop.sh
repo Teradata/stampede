@@ -25,6 +25,9 @@ msg=$($MAPREDUCE_PROP --regex='^mapred.*' | grep 'mapred.queue.names')
 
 echo "  options tests:"
 
+$MAPREDUCE_PROP --all | grep 'mapred.queue.names' | ( read line
+[[ $line =~ mapred\.queue\.names=default ]] || die "Missing mapred.queue.names=default? msg = <$msg>" )
+
 $MAPREDUCE_PROP 2>&1 | ( read line
 [[ $line =~ ERROR:.Must.specify.one.or.more.names,.regular.expressions,.or.--all ]] || die "Expected error message: msg = <$line>" )
 
