@@ -10,7 +10,7 @@ Welcome to *Stampede*, the workflow tool that works as [Cthulhu](http://en.wikip
 
 *Stampede* originated as an alternative workflow tool for [Hadoop](http://hadoop.apache.org), but it is not limited to Hadoop scenarios.
 
-## Installation [Installation]
+## Installation
 
 First, clone this repo or expand the distribution archive somewhere useful, e.g., `$HOME/stampede`. 
 
@@ -67,7 +67,7 @@ For help on the `stampede` options:
 * `bash` v3+ - Because OS X ships with an older bash version, all the scripts supplied are v3 compatible. You can use newer constructs if your version of bash supports them.
 * GNU `make` v3.8+ - The `Makefile` in this directory that's used to test and install *Stampede* requires Gnu `make` v3.8+, as do the `examples`. However, you can adapt your project `Makefiles` to use any version of `make` you prefer.
 * `cron` - If you plan to use `cron` for scheduling workflows. In fact, *Stampede* doesn't really do anything with `cron` itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. *Stampede* projects will work fine with any scheduling tool that can invoke shell commands.
-* `syslog` - If you plan to use the *nix logging facility `syslog`. See also [Installation][Installation].
+* `syslog` - If you plan to use the *nix logging facility `syslog`. See also the Installation section above.
 * [Hadoop](http://hadoop.apache.org) - *Stampede* was nominally designed as a flyweight replacement for [Oozie](http://oozie.apache.org). However, all the support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop`. 
 
 *Stampede* is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user's `PATH`.
