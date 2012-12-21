@@ -40,7 +40,7 @@ Whenever you create a new *Stampede* project, it will also get its own `$PROJECT
 
 ### Building Java Components
 
-As of this release, there is a small Hadoop application written in Java, in `src/hadop/mapreduce-configuration`. It is used by the `bin/hadoop/mapreduce-prop` command. For your convenience, a pre-built jar file is already provided. However, it is built with Java 1.7 and Hadoop v1.0.3. So, you may need to rebuild it if you use an older version of Java or a different version of Hadoop. See `src/hadop/mapreduce-configuration/README.md` for details.
+As of this release, there is a small Hadoop application written in Java, in `src/hadop/mapreduce-configuration`. It is used by the `bin/hadoop/mapreduce-prop` command. For your convenience, a pre-built jar file is already provided. However, it is built with Java 1.6 (for maximum portability) and Hadoop v1.0.3. So, you may need to rebuild it if you use a different version of Hadoop or you want to use a newer version of Java. See `src/hadop/mapreduce-configuration/README.md` for details.
 
 ## Usage
 
