@@ -105,7 +105,7 @@ Briefly, here are the utilities in the `bin` directory. All support a `--help` o
 * `create-project` - Called by the `stampede` script to create new projects.
 * `dates` - Format dates and perform date arithmetic in a cross-platform way.
 * `from-log-level` and `to-log-level` - Convert from a log-level string, e.g., `DEBUG` to the corresponding `syslog`-compatible number and back again.
-* `format-log-message` - Format messages that are logged. If you want to customize the format beyond what's possible by editing the environment variables `STAMPEDE_LOG_TIME_FORMAT` and `STAMPEDE_LOG_MESSAGE_FORMAT_STRING`, you can create your own version of this script and drop it in `$STAMPEDE_HOME/custom`, which is on the `PATH` BEFORE `$STAMPEDE_HOME/bin`. See [Custom][Custom] for more details.
+* `format-log-message` - Format messages that are logged. If you want to customize the format beyond what's possible by editing the environment variables `STAMPEDE_LOG_TIME_FORMAT` and `STAMPEDE_LOG_MESSAGE_FORMAT_STRING`, you can create your own version of this script and drop it in `$STAMPEDE_HOME/custom`, which is on the `PATH` BEFORE `$STAMPEDE_HOME/bin`. See the *Custom* section below for more details.
 * `log-file` - Return the name of the log file used by *stampede* or `SYSLOG` if `syslog` is being used.
 * `send-email` - Use the *nux `mail` command (if configured) to send alerts.
 * `stampede-log` - Write your own messages to the log file (or `syslog`) configured for *Stampede*.
@@ -133,7 +133,7 @@ The following "helper" files are used by these scripts:
 * `hive-prop` - Return one or more property definitions for [Hive](http://hive.apache.org).
 * `pig-prop` - Return one or more property definitions for [Pig](http://pig.apache.org).
 
-### Custom and Contrib Directories [Custom]
+### Custom and Contrib Directories
 
 If you want to override the behavior of any particular script, drop a new version in the `custom` directory (or a subdirectory), which are added to the `PATH` first.
 

@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#x3a;&#100;&#x65;&#x61;&#110;&#46;&#x77;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#114;&#x40;&#116;&#104;&#105;&#110;&#107;&#98;&#x69;&#x67;&#x61;&#x6e;&#x61;&#108;&#x79;&#116;&#105;&#x63;&#x73;&#x2e;&#x63;&#x6f;&#109;">&#x64;&#x65;&#x61;&#110;&#x2e;&#119;&#x61;&#x6d;&#x70;&#108;&#x65;&#114;&#64;&#116;&#104;&#105;&#x6e;&#x6b;&#98;&#x69;&#103;&#97;&#110;&#x61;&#x6c;&#121;&#116;&#x69;&#x63;&#115;&#x2e;&#99;&#x6f;&#x6d;</a><br/>
+<a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#x64;&#x65;&#97;&#110;&#46;&#119;&#x61;&#x6d;&#112;&#x6c;&#x65;&#114;&#64;&#x74;&#x68;&#x69;&#x6e;&#x6b;&#x62;&#x69;&#x67;&#x61;&#x6e;&#x61;&#108;&#x79;&#116;&#x69;&#x63;&#x73;&#46;&#99;&#x6f;&#x6d;">&#100;&#101;&#x61;&#110;&#46;&#119;&#x61;&#109;&#112;&#108;&#101;&#114;&#64;&#116;&#104;&#x69;&#x6e;&#x6b;&#x62;&#x69;&#x67;&#97;&#x6e;&#x61;&#x6c;&#x79;&#116;&#105;&#x63;&#115;&#x2e;&#99;&#x6f;&#109;</a><br/>
 December 30, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
@@ -140,7 +140,7 @@ December 30, 2012</p>
 <li><code>create-project</code> - Called by the <code>stampede</code> script to create new projects.</li>
 <li><code>dates</code> - Format dates and perform date arithmetic in a cross-platform way.</li>
 <li><code>from-log-level</code> and <code>to-log-level</code> - Convert from a log-level string, e.g., <code>DEBUG</code> to the corresponding <code>syslog</code>-compatible number and back again.</li>
-<li><code>format-log-message</code> - Format messages that are logged. If you want to customize the format beyond what&#8217;s possible by editing the environment variables <code>STAMPEDE_LOG_TIME_FORMAT</code> and <code>STAMPEDE_LOG_MESSAGE_FORMAT_STRING</code>, you can create your own version of this script and drop it in <code>$STAMPEDE_HOME/custom</code>, which is on the <code>PATH</code> BEFORE <code>$STAMPEDE_HOME/bin</code>. See <a href="#custom">Custom</a> for more details.</li>
+<li><code>format-log-message</code> - Format messages that are logged. If you want to customize the format beyond what&#8217;s possible by editing the environment variables <code>STAMPEDE_LOG_TIME_FORMAT</code> and <code>STAMPEDE_LOG_MESSAGE_FORMAT_STRING</code>, you can create your own version of this script and drop it in <code>$STAMPEDE_HOME/custom</code>, which is on the <code>PATH</code> BEFORE <code>$STAMPEDE_HOME/bin</code>. See the <em>Custom</em> section below for more details.</li>
 <li><code>log-file</code> - Return the name of the log file used by <em>stampede</em> or <code>SYSLOG</code> if <code>syslog</code> is being used.</li>
 <li><code>send-email</code> - Use the *nux <code>mail</code> command (if configured) to send alerts.</li>
 <li><code>stampede-log</code> - Write your own messages to the log file (or <code>syslog</code>) configured for <em>Stampede</em>.</li>
@@ -173,7 +173,7 @@ December 30, 2012</p>
 <li><code>pig-prop</code> - Return one or more property definitions for <a href="http://pig.apache.org">Pig</a>.</li>
 </ul>
 
-<h3 id="custom">Custom and Contrib Directories</h3>
+<h3 id="customandcontribdirectories">Custom and Contrib Directories</h3>
 
 <p>If you want to override the behavior of any particular script, drop a new version in the <code>custom</code> directory (or a subdirectory), which are added to the <code>PATH</code> first.</p>
 
