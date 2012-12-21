@@ -24,11 +24,11 @@ If you **don't** have `syslog` on your system, run this command instead, which w
 
     make test-core install
 
-Finally, the `test` target does *not* test the "extras" included with *Stampede*, currently limited to [Hadoop-specific](http://hadoop.apache.org) tools. To test these tools, first ensure that `$HADOOP_HOME` is defined, then run 
+Finally, the `test` target does *not* test the "extras" included with *Stampede*, currently limited to [Hadoop-specific](http://hadoop.apache.org) tools. To test these tools, first ensure that `$HADOOP_HOME` is defined, then run this command: 
 
-    make test-hadoop
+    make test-extras install
 
-The `install` target installs everything, whether you want to use `syslog` and the Hadoop tools or not. They are small and harmless, if left alone ;^)
+The `install` target installs everything, whether you want to use `syslog` and the "extras" or not. They are small and harmless, if left alone ;^)
 
 Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*.
 
@@ -37,6 +37,10 @@ As part of the installation, the installer will ask you if you want a global `st
 Similarly, if you told the installer to copy `stampederc` file to `$HOME/.stampederc`, edit that file for your personal tasks.
 
 Whenever you create a new *Stampede* project, it will also get its own `$PROJECT_HOME/.stampederc` file, as we discuss next.
+
+### Building Java Components
+
+As of this release, there is a small Hadoop application written in Java, in `src/hadop/mapreduce-configuration`. It is used by the `bin/hadoop/mapreduce-prop` command. For your convenience, a pre-built jar file is already provided. However, it is built with Java 1.7 and Hadoop v1.0.3. So, you may need to rebuild it if you use an older version of Java or a different version of Hadoop. See `src/hadop/mapreduce-configuration/README.md` for details.
 
 ## Usage
 
@@ -156,4 +160,4 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
  
 ## Notes
 
-* Supporting both Linux and Mac "date" commands added a lot of complication to the code. 
+* Supporting both Linux and Mac `date` commands added a lot of complication to the code. 

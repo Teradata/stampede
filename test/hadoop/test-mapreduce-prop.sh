@@ -11,22 +11,22 @@ MAPREDUCE_PROP="$STAMPEDE_HOME/bin/hadoop/mapreduce-prop"
 
 echo "  specific strings tests:"
 
-msg=$($MAPREDUCE_PROP --print-keys mapred.queue.names)
-[[ $msg =~ mapred\.queue\.names ]] || die "Missing mapred.queue.names? msg = <$msg>"
+msg=$($MAPREDUCE_PROP -D foo.bar=baz --print-keys foo.bar)
+[[ $msg =~ foo\.bar ]] || die "Missing foo.bar key? msg = <$msg>"
 
-msg=$($MAPREDUCE_PROP --print-values mapred.queue.names)
-[[ $msg =~ default ]] || die "Missing default? msg = <$msg>"
+msg=$($MAPREDUCE_PROP -D foo.bar=baz --print-values foo.bar)
+[[ $msg =~ baz ]] || die "Missing value for foo.bar (expecting baz)? msg = <$msg>"
 
-msg=$($MAPREDUCE_PROP mapred.queue.names)
-[[ $msg =~ mapred\.queue\.names=default ]] || die "Missing mapred.queue.names=default? msg = <$msg>"
+msg=$($MAPREDUCE_PROP -D foo.bar=baz foo.bar)
+[[ $msg =~ foo\.bar=baz ]] || die "Missing foo.bar=baz? msg = <$msg>"
 
-msg=$($MAPREDUCE_PROP --regex='^mapred.*' | grep 'mapred.queue.names')
-[[ $msg =~ mapred\.queue\.names=default ]] || die "Missing mapred.queue.names=default? msg = <$msg>"
+msg=$($MAPREDUCE_PROP -D foo.bar=baz --regex='^foo.*' | grep 'foo.bar')
+[[ $msg =~ foo\.bar=baz ]] || die "Missing foo.bar=baz? msg = <$msg>"
 
 echo "  options tests:"
 
-$MAPREDUCE_PROP --all | grep 'mapred.queue.names' | ( read line
-[[ $line =~ mapred\.queue\.names=default ]] || die "Missing mapred.queue.names=default? msg = <$msg>" )
+$MAPREDUCE_PROP -D foo.bar=baz --all | grep 'foo.bar' | ( read line
+[[ $line =~ foo\.bar=baz ]] || die "Missing foo.bar=baz? msg = <$msg>" )
 
 $MAPREDUCE_PROP 2>&1 | ( read line
 [[ $line =~ ERROR:.Must.specify.one.or.more.names,.regular.expressions,.or.--all ]] || die "Expected error message: msg = <$line>" )

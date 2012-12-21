@@ -42,7 +42,7 @@ public class MapReduceConfiguration extends Configured implements Tool {
 		System.err.println("  --regex=re     Match this regular expression. It must match the WHOLE string.");
 		System.err.println("  string         Match this WHOLE name.");
 		System.err.println("");
-		System.err.println("Generic Hadoop Options:");
+		System.err.println("Generic Hadoop Options: (You MUST specify these FIRST!)");
 		System.err.println("");
 
 		ToolRunner.printGenericCommandUsage(System.err);

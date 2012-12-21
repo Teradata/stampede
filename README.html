@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#111;&#58;&#x64;&#x65;&#x61;&#110;&#46;&#119;&#97;&#109;&#112;&#x6c;&#x65;&#x72;&#x40;&#x74;&#x68;&#x69;&#x6e;&#107;&#98;&#x69;&#x67;&#97;&#x6e;&#97;&#x6c;&#121;&#x74;&#105;&#x63;&#115;&#x2e;&#99;&#111;&#x6d;">&#x64;&#101;&#97;&#x6e;&#46;&#119;&#x61;&#x6d;&#x70;&#108;&#101;&#114;&#64;&#x74;&#104;&#x69;&#110;&#x6b;&#x62;&#105;&#103;&#97;&#110;&#97;&#x6c;&#x79;&#116;&#105;&#x63;&#x73;&#46;&#99;&#x6f;&#109;</a><br/>
+<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#x3a;&#x64;&#101;&#x61;&#110;&#46;&#119;&#97;&#109;&#112;&#x6c;&#101;&#114;&#x40;&#x74;&#104;&#105;&#x6e;&#x6b;&#98;&#105;&#x67;&#97;&#x6e;&#x61;&#x6c;&#x79;&#x74;&#105;&#x63;&#x73;&#46;&#99;&#x6f;&#109;">&#x64;&#101;&#x61;&#110;&#x2e;&#119;&#x61;&#x6d;&#x70;&#108;&#101;&#x72;&#64;&#116;&#104;&#x69;&#x6e;&#107;&#98;&#105;&#x67;&#x61;&#x6e;&#97;&#108;&#x79;&#x74;&#105;&#99;&#x73;&#x2e;&#x63;&#x6f;&#x6d;</a><br/>
 December 30, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
@@ -48,12 +48,12 @@ December 30, 2012</p>
 <pre><code>make test-core install
 </code></pre>
 
-<p>Finally, the <code>test</code> target does <em>not</em> test the &#8220;extras&#8221; included with <em>Stampede</em>, currently limited to <a href="http://hadoop.apache.org">Hadoop-specific</a> tools. To test these tools, first ensure that <code>$HADOOP_HOME</code> is defined, then run </p>
+<p>Finally, the <code>test</code> target does <em>not</em> test the &#8220;extras&#8221; included with <em>Stampede</em>, currently limited to <a href="http://hadoop.apache.org">Hadoop-specific</a> tools. To test these tools, first ensure that <code>$HADOOP_HOME</code> is defined, then run this command: </p>
 
-<pre><code>make test-hadoop
+<pre><code>make test-extras install
 </code></pre>
 
-<p>The <code>install</code> target installs everything, whether you want to use <code>syslog</code> and the Hadoop tools or not. They are small and harmless, if left alone ;^)</p>
+<p>The <code>install</code> target installs everything, whether you want to use <code>syslog</code> and the &#8220;extras&#8221; or not. They are small and harmless, if left alone ;^)</p>
 
 <p>Next, assuming you installed in <code>/usr/local/stampede/</code>, which we&#8217;ll call <code>$STAMPEDE_HOME</code> from now on, add <code>$STAMPEDE_HOME/bin</code> to the <code>PATH</code> for any user who plans to use <em>Stampede</em>.</p>
 
@@ -62,6 +62,10 @@ December 30, 2012</p>
 <p>Similarly, if you told the installer to copy <code>stampederc</code> file to <code>$HOME/.stampederc</code>, edit that file for your personal tasks.</p>
 
 <p>Whenever you create a new <em>Stampede</em> project, it will also get its own <code>$PROJECT_HOME/.stampederc</code> file, as we discuss next.</p>
+
+<h3 id="buildingjavacomponents">Building Java Components</h3>
+
+<p>As of this release, there is a small Hadoop application written in Java, in <code>src/hadop/mapreduce-configuration</code>. It is used by the <code>bin/hadoop/mapreduce-prop</code> command. For your convenience, a pre-built jar file is already provided. However, it is built with Java 1.7 and Hadoop v1.0.3. So, you may need to rebuild it if you use an older version of Java or a different version of Hadoop. See <code>src/hadop/mapreduce-configuration/README.md</code> for details.</p>
 
 <h2 id="usage">Usage</h2>
 
@@ -201,7 +205,7 @@ December 30, 2012</p>
 <h2 id="notes">Notes</h2>
 
 <ul>
-<li>Supporting both Linux and Mac &#8220;date&#8221; commands added a lot of complication to the code.</li>
+<li>Supporting both Linux and Mac <code>date</code> commands added a lot of complication to the code.</li>
 </ul>
     </div>
 </body>
