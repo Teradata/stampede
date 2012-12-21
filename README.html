@@ -23,32 +23,41 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x64;&#101;&#97;&#110;&#x2e;&#119;&#97;&#x6d;&#x70;&#x6c;&#x65;&#114;&#64;&#116;&#104;&#x69;&#110;&#x6b;&#98;&#105;&#x67;&#97;&#110;&#97;&#x6c;&#121;&#116;&#105;&#x63;&#x73;&#x2e;&#x63;&#x6f;&#x6d;">&#x64;&#x65;&#x61;&#x6e;&#x2e;&#119;&#x61;&#109;&#112;&#x6c;&#x65;&#114;&#x40;&#x74;&#x68;&#x69;&#x6e;&#107;&#x62;&#105;&#103;&#x61;&#x6e;&#97;&#x6c;&#x79;&#x74;&#105;&#x63;&#115;&#46;&#x63;&#111;&#109;</a><br/>
-November 21, 2012</p>
+<a href="&#109;&#x61;&#105;&#108;&#116;&#111;&#58;&#100;&#x65;&#x61;&#110;&#46;&#x77;&#x61;&#109;&#x70;&#108;&#101;&#114;&#x40;&#116;&#104;&#x69;&#110;&#107;&#x62;&#105;&#x67;&#x61;&#x6e;&#97;&#108;&#121;&#x74;&#x69;&#x63;&#115;&#x2e;&#99;&#111;&#109;">&#100;&#101;&#x61;&#110;&#x2e;&#119;&#x61;&#x6d;&#112;&#x6c;&#x65;&#x72;&#64;&#x74;&#104;&#x69;&#110;&#x6b;&#x62;&#x69;&#x67;&#x61;&#x6e;&#97;&#108;&#121;&#116;&#x69;&#x63;&#115;&#46;&#x63;&#111;&#109;</a><br/>
+December 30, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
 
-<p>Welcome to <em>Stampede</em>, the Hadoop-aware workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management and task seqeuencing, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
+<p>Welcome to <em>Stampede</em>, the workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management and task seqeuencing, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
+
+<p><em>Stampede</em> originated as an alternative workflow tool for <a href="http://hadoop.apache.org">Hadoop</a>, but it is not limited to Hadoop scenarios.</p>
 
 <h2 id="installation">Installation</h2>
 
-<p>First, clone this repo or untar the distribution somewhere useful, e.g., <code>$HOME/stampede</code>. Or, download and expand one of the releases.</p>
+<p>First, clone this repo or expand the distribution archive somewhere useful, e.g., <code>$HOME/stampede</code>. </p>
 
-<p>Since <em>Stampede</em> uses <code>make</code> and <code>bash</code> its weapon&#8217;s of choice, run this <code>make</code> command to test and install <em>Stampede</em>:</p>
+<p>Since <em>Stampede</em> uses <code>make</code> and <code>bash</code> as its weapon&#8217;s of choice, run this <code>make</code> command to test <em>Stampede</em> on your system and then install it:</p>
 
-<pre><code>make tests install
+<pre><code>make test install
 </code></pre>
 
 <p>The <code>tests</code> target is not required, but we recommend it as a sanity check for your environment. The <code>install</code> target will ask you for details like the target installation directory (the default is <code>/usr/local/stampede</code>).</p>
 
 <p>If you <strong>don&#8217;t</strong> have <code>syslog</code> on your system, run this command instead, which will skip the <code>syslog</code>-related tests:</p>
 
-<pre><code>make tests install-no-syslog
+<pre><code>make test-core install
 </code></pre>
+
+<p>Finally, the <code>test</code> target does <em>not</em> test the &#8220;extras&#8221; included with <em>Stampede</em>, currently limited to <a href="http://hadoop.apache.org">Hadoop-specific</a> tools. To test these tools, first ensure that <code>$HADOOP_HOME</code> is defined, then run </p>
+
+<pre><code>make test-hadoop
+</code></pre>
+
+<p>The <code>install</code> target installs everything, whether you want to use <code>syslog</code> and the Hadoop tools or not. They are small and harmless, if left alone ;^)</p>
 
 <p>Next, assuming you installed in <code>/usr/local/stampede/</code>, which we&#8217;ll call <code>$STAMPEDE_HOME</code> from now on, add <code>$STAMPEDE_HOME/bin</code> to the <code>PATH</code> for any user who plans to use <em>Stampede</em>.</p>
 
-<p>As part of the installation, the installer will ask you if you want a global <code>stampederc</code> file installed in <code>/etc</code>, <code>/etc/sysconfig</code>, or somewhere else. All statements in this file are commented out. If you want to make global changes to <em>Stampede&#8217;s</em> environment variables, edit this file appropriately. Note that it doesn&#8217;t contain all the possible environment variables, see <code>$STAMPEDE_HOME/bin/env.sh</code> for the complete list and the default values.</p>
+<p>As part of the installation, the installer will ask you if you want a global <code>stampederc</code> file installed in <code>/etc</code>, <code>/etc/sysconfig</code>, or somewhere else. All statements in this file are commented out. If you want to make global changes to <em>Stampede&#8217;s</em> environment variables, edit this file appropriately. Note these &#8220;rc&#8221; files won&#8217;t contain all the possible variables you can define, see <code>$STAMPEDE_HOME/bin/env.sh</code> for the complete list of variables, their default values, and comments that describe them.</p>
 
 <p>Similarly, if you told the installer to copy <code>stampederc</code> file to <code>$HOME/.stampederc</code>, edit that file for your personal tasks.</p>
 
@@ -84,7 +93,7 @@ November 21, 2012</p>
 <li>GNU <code>make</code> v3.8+ - The <code>Makefile</code> in this directory that&#8217;s used to test and install <em>Stampede</em> requires Gnu <code>make</code> v3.8+, as do the <code>examples</code>. However, you can adapt your project <code>Makefiles</code> to use any version of <code>make</code> you prefer.</li>
 <li><code>cron</code> - If you plan to use <code>cron</code> for scheduling workflows. In fact, <em>Stampede</em> doesn&#8217;t really do anything with <code>cron</code> itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. <em>Stampede</em> projects will work fine with any scheduling tool that can invoke shell commands.</li>
 <li><code>syslog</code> - If you plan to use the *nix logging facility <code>syslog</code>. See also <a href="#installation">Installation</a>.</li>
-<li><em>Hadoop</em> - <em>Stampede</em> was nominally designed as a flyweight replacement or <a href="http://oozie.apache.org">Oozie</a>. However, all the support consists of add-on scripts in <code>$STAMPEDE_HOME/bin/hadoop</code>.</li>
+<li><a href="http://hadoop.apache.org">Hadoop</a> - <em>Stampede</em> was nominally designed as a flyweight replacement for <a href="http://oozie.apache.org">Oozie</a>. However, all the support consists of helper scripts in <code>$STAMPEDE_HOME/bin/hadoop</code>.</li>
 </ul>
 
 <p><em>Stampede</em> is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user&#8217;s <code>PATH</code>.</p>
@@ -112,6 +121,7 @@ November 21, 2012</p>
 <li><code>FAQs.md</code> - Frequently-asked Questions.</li>
 <li><code>Makefile</code> - The <code>makefile</code> used to test and install <em>Stampede</em>.</li>
 <li><code>VERSION</code> - The version number, used by the <code>Makefile</code> for building releases.</li>
+<li><code>src</code> - The directory for tools implemented with Java. The corresponding jars are prebuilt and included in the distribution, but if you want to build them yourself, see the <code>README.md</code> files in the corresponding directories under <code>src</code>.</li>
 </ul>
 
 <h3 id="bindirectory">Bin Directory</h3>
@@ -135,9 +145,7 @@ November 21, 2012</p>
 <li><code>to-seconds</code> - Return the number of seconds specified for an input number of seconds, minutes, or hours.</li>
 <li><code>to-time-interval</code> - Like <code>to-seconds</code>, but returns a nicely formatted string.</li>
 <li><code>try-for</code> - Repeated attempt an operation for a specified duration of time, until success or timeout.</li>
-<li><code>try-for-or-die</code> - Like <code>try-for</code>, but fails the workflow on timeout.</li>
 <li><code>try-until</code> - Like <code>try-for</code>, but tries until a user-specified timestamp.</li>
-<li><code>try-until-or-die</code> - Like <code>try-for-or-die</code>, but tries until a user-specified timestamp.</li>
 <li><code>waiting</code> - A <code>sleep(1)</code> wrapper with logging for use in loops, like the one in the <code>try-*</code> scripts.</li>
 <li><code>ymd</code> - Return the year, month, and day for the workflow&#8217;s start time, which defaults to today&#8217;s date.</li>
 <li><code>yesterday-ymd</code> - Return the year, month, and day for the day before the workflow&#8217;s start time, i.e., yesterday&#8217;s date, by default. For example, if you need to process yesterday&#8217;s data, this is a convenient way to compute the correct date.</li>
@@ -149,6 +157,16 @@ November 21, 2012</p>
 <li><code>env.sh</code> - Defines global shell variables. Start here to find variables you can set in <code>rc</code> files to configure behavior.</li>
 <li><code>common.sh</code> - Many &#8220;common&#8221; <code>bash</code> functions used in several scripts.</li>
 <li><code>log.sh</code> - Support functions for logging.</li>
+</ul>
+
+<h3 id="binhadoopdirectory">Bin/Hadoop Directory</h3>
+
+<p><a href="http://hadoop.apache.org">Hadoop-specific</a> helper tools are in the <code>bin/hadoop</code> directory. As for the <code>bin</code> scripts, use <code>--help</code> for more information on each tool.</p>
+
+<ul>
+<li><code>mapreduce-prop</code> - Return one or more property definitions for Hadoop MapReduce jobs.</li>
+<li><code>hive-prop</code> - Return one or more property definitions for <a href="http://hive.apache.org">Hive</a>.</li>
+<li><code>pig-prop</code> - Return one or more property definitions for <a href="http://pig.apache.org">Pig</a>.</li>
 </ul>
 
 <h3 id="custom">Custom and Contrib Directories</h3>

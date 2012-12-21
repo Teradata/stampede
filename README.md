@@ -2,29 +2,37 @@
 
 Dean Wampler<br/>
 [dean.wampler@thinkbiganalytics.com](mailto:dean.wampler@thinkbiganalytics.com)<br/>
-November 21, 2012
+December 30, 2012
 
 *Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.*
 
-Welcome to *Stampede*, the Hadoop-aware workflow tool that works as [Cthulhu](http://en.wikipedia.org/wiki/Cthulhu) intended for *nix systems, using `make` for dependency management and task seqeuencing, `bash` for scripting, and `cron` for scheduling.
+Welcome to *Stampede*, the workflow tool that works as [Cthulhu](http://en.wikipedia.org/wiki/Cthulhu) intended for *nix systems, using `make` for dependency management and task seqeuencing, `bash` for scripting, and `cron` for scheduling.
+
+*Stampede* originated as an alternative workflow tool for [Hadoop](http://hadoop.apache.org), but it is not limited to Hadoop scenarios.
 
 ## Installation [Installation]
 
-First, clone this repo or untar the distribution somewhere useful, e.g., `$HOME/stampede`. Or, download and expand one of the releases.
+First, clone this repo or expand the distribution archive somewhere useful, e.g., `$HOME/stampede`. 
 
-Since *Stampede* uses `make` and `bash` its weapon's of choice, run this `make` command to test and install *Stampede*:
+Since *Stampede* uses `make` and `bash` as its weapon's of choice, run this `make` command to test *Stampede* on your system and then install it:
 
-    make tests install
+    make test install
 
 The `tests` target is not required, but we recommend it as a sanity check for your environment. The `install` target will ask you for details like the target installation directory (the default is `/usr/local/stampede`).
 
 If you **don't** have `syslog` on your system, run this command instead, which will skip the `syslog`-related tests:
 
-    make tests install-no-syslog
+    make test-core install
+
+Finally, the `test` target does *not* test the "extras" included with *Stampede*, currently limited to [Hadoop-specific](http://hadoop.apache.org) tools. To test these tools, first ensure that `$HADOOP_HOME` is defined, then run 
+
+    make test-hadoop
+
+The `install` target installs everything, whether you want to use `syslog` and the Hadoop tools or not. They are small and harmless, if left alone ;^)
 
 Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*.
 
-As part of the installation, the installer will ask you if you want a global `stampederc` file installed in `/etc`, `/etc/sysconfig`, or somewhere else. All statements in this file are commented out. If you want to make global changes to *Stampede's* environment variables, edit this file appropriately. Note that it doesn't contain all the possible environment variables, see `$STAMPEDE_HOME/bin/env.sh` for the complete list and the default values.
+As part of the installation, the installer will ask you if you want a global `stampederc` file installed in `/etc`, `/etc/sysconfig`, or somewhere else. All statements in this file are commented out. If you want to make global changes to *Stampede's* environment variables, edit this file appropriately. Note these "rc" files won't contain all the possible variables you can define, see `$STAMPEDE_HOME/bin/env.sh` for the complete list of variables, their default values, and comments that describe them.
 
 Similarly, if you told the installer to copy `stampederc` file to `$HOME/.stampederc`, edit that file for your personal tasks.
 
@@ -56,7 +64,7 @@ For help on the `stampede` options:
 * GNU `make` v3.8+ - The `Makefile` in this directory that's used to test and install *Stampede* requires Gnu `make` v3.8+, as do the `examples`. However, you can adapt your project `Makefiles` to use any version of `make` you prefer.
 * `cron` - If you plan to use `cron` for scheduling workflows. In fact, *Stampede* doesn't really do anything with `cron` itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. *Stampede* projects will work fine with any scheduling tool that can invoke shell commands.
 * `syslog` - If you plan to use the *nix logging facility `syslog`. See also [Installation][Installation].
-* *Hadoop* - *Stampede* was nominally designed as a flyweight replacement or [Oozie](http://oozie.apache.org). However, all the support consists of add-on scripts in `$STAMPEDE_HOME/bin/hadoop`. 
+* [Hadoop](http://hadoop.apache.org) - *Stampede* was nominally designed as a flyweight replacement for [Oozie](http://oozie.apache.org). However, all the support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop`. 
 
 *Stampede* is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user's `PATH`.
  
@@ -80,6 +88,7 @@ The top-level directory contains the following files, in addition to directories
 * `FAQs.md` - Frequently-asked Questions.
 * `Makefile` - The `makefile` used to test and install *Stampede*.
 * `VERSION` - The version number, used by the `Makefile` for building releases.
+* `src` - The directory for tools implemented with Java. The corresponding jars are prebuilt and included in the distribution, but if you want to build them yourself, see the `README.md` files in the corresponding directories under `src`.
 
 ### Bin Directory
 
@@ -111,6 +120,14 @@ The following "helper" files are used by these scripts:
 * `env.sh` - Defines global shell variables. Start here to find variables you can set in `rc` files to configure behavior.
 * `common.sh` - Many "common" `bash` functions used in several scripts.
 * `log.sh` - Support functions for logging.
+
+### Bin/Hadoop Directory
+
+[Hadoop-specific](http://hadoop.apache.org) helper tools are in the `bin/hadoop` directory.  As for the `bin` scripts, use `--help` for more information on each tool.
+
+* `mapreduce-prop` - Return one or more property definitions for Hadoop MapReduce jobs.
+* `hive-prop` - Return one or more property definitions for [Hive](http://hive.apache.org).
+* `pig-prop` - Return one or more property definitions for [Pig](http://pig.apache.org).
 
 ### Custom and Contrib Directories [Custom]
 
