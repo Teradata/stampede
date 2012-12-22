@@ -2,15 +2,17 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# send-email - Send alert on errors.
+# send-email - Send alert on errors. REQUIRES *nix email to be configured on 
+# the server running the stampede.
 
-# Override the following on the command line for testing.
+# Override the following on the command line for testing with a "mock".
 : ${MAIL:=mail}
 
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Send an email message, typically to alert on errors.
+$0 - Send an email message, typically to alert on errors. 
+     REQUIRES *nix email to be configured on the server running the stampede.
 
 Usage: $0 severity address subject < message_lines
 

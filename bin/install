@@ -173,4 +173,5 @@ do
   esac
 done
 
-echo2 "Finished! Please add $ln_dir/bin to your PATH." 
+echo2 "Finished! Please add $ln_dir/bin to your PATH and $ln_dir/man to your MANPATH."
+echo2 "Then, run \"stampede --help\" for more information." 

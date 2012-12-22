@@ -7,7 +7,7 @@
 
 function help {
 		cat <<EOF
-$0 - Perform data arithmetic and/or format dates
+$0 - Perform date arithmetic and/or format dates
 
 Usage: $0 [--help] [--verbose] \ 
   [--today | --date=date [--informat=fmt]] [--format=fmt] [--sep=separator] [M:N [units]]

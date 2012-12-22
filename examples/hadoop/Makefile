@@ -20,7 +20,7 @@ RECOMMENDER_DATA_DIR = /recommendation-engine/clicks-orders
 # The location for Hive's internal/managed tables, given by the property:
 #   hive.metastore.warehouse.dir
 HIVE_WAREHOUSE_DIR = $(shell hive-prop --print-value hive.metastore.warehouse.dir)
-HADOOP_NAMENODE =
+HADOOP_NAMENODE = $(shell mapreduce-prop --print-value )
 
 all: etl analysis export
 	@echo Hadoop stampede finished!

@@ -1,0 +1,110 @@
+.\"        Title: dates
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "DATES" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBdates\fR - Perform date arithmetic and/or format dates
+.SH "SYNOPSIS"
+\fBdates\fR [\fIOPTIONS\fR]
+.sp
+.SH "DESCRIPTION"
+The dates(1) command is a cross-platform tool for performing data arithmetic and/or formatting dates.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fB--verbose\fR
+.RS 4
+Echo the underlying *nix \fIdate(1)\fR commands that will be executed to \fIstderr\fR.
+.RE
+.PP
+\fB--today\fR
+.RS 4
+Use today's date as the starting date.
+.RE
+.PP
+\fB--date\fR=\fIdate\fR
+.RS 4
+Use \fIdate\fR as the starting date. Assumes RFC-3999 format unless you specify \fB--informat\bR.
+.RE
+.PP
+\fB--informat\fR=\fIfmt\fR
+.RS 4
+The format of the input date. It's an error to also specify \fB--today\fR. Defaults to RFC-3999 format. Specifying \fB--informat=rfc-3999\fR is equivalent. See the \fBWARNING\fR below about input formats on Linux. Omit the "+" at the beginning of the string, which the \fIdate(1)\fR command would require.
+.sp
+WARNING: The Linux \fIdate(1)\fR command often fails to return valid results when doing arithmetic on an input date that is not RFC-3999 format! There are exceptions, such as using the %Y-%m-%d format when calculating day deltas. We recommend using RFC-3999 for this reason.
+.RE
+.PP
+\fB--format\fR=\fIfmt\fR
+.RS 4
+Format the output dates using \fIfmt\fR. Specify \fB--format\fR=\fIrfc-3999\fR for RFC-3999 output.
+.RE
+.PP
+\fB--sep\fR=\fIseparator\fR
+.RS 4
+Separate output dates by \fIseparator\fR (default: \fI" "\fR). Use \fI\\n\fR for one per line.
+.RE
+.PP
+\fIM:N\fR
+.RS 4
+Calculate one or more "units" (default unit: \fI1\fR day), based on this interpretation of \fIM:N\fR:
+.RE
+.PP
+\fIM:N\fR
+.RS 4
+Return a range of dates from \fIM\fR days to \fIN\fR days \fBfrom\fR the starting date. Prefix \fIM\fR or \fIM\fR with a \fI-\fR to use days \fBago\fR. 
+.RE
+.PP
+\fI :N\fR
+.RS 4
+Start with the starting date, inclusive, i.e., \fIM=0\fR.
+.RE
+.PP
+\fIM: \fR
+.RS 4
+End with the starting date, inclusive, i.e., fBN=0\fR. Because the fBM\fR and fBN\fR are inclusive, the number of dates returned is abs(\fIN\fR-\fIM\fR)+1. Also, if the \fIN\fR < \fIM\fR, the results "count down".
+.RE
+.PP
+\fIunits\fR
+.RS 4
+How to interpret the the \fIM:N\fR range. An optional number (default: \fI1\fR), followed by one of the characters in \fIymdHMS\fR. (\fIw\fR is also allowed for Mac OS X)
+.sp
+If \fIM:N units\fR are omitted, the script just reformats the input or today's date.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if the input date and formats are valid.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if an invalid date or format specification is given.
+.RE
+.sp
+.SH "AUTHOR"
+Written by Dean Wampler, <dean.wampler@thinkbiganalytics.com>
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-dates.sh\fR for examples.
+.sp
+See also \fIdate(1)\fR for more information about the format options.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is granted under the terms of the Apache License, Version 2.0.
+.sp
+
+

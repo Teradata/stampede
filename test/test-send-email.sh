@@ -2,7 +2,9 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# test-send-email - Tests the send-email script.
+# test-send-email - Tests the send-email script. Note that it doesn't attempt to
+# use actual *nix mail, which may not be configured on your machine. In production,
+# the send-email script will be useless without mail configured.
 
 TEST_DIR=$(dirname ${BASH_SOURCE[0]})
 . $TEST_DIR/setup.sh

@@ -30,7 +30,7 @@ Finally, the `test` target does *not* test the "extras" included with *Stampede*
 
 The `install` target installs everything, whether you want to use `syslog` and the "extras" or not. They are small and harmless, if left alone ;^)
 
-Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*.
+Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*. Also, the installation will include *nix `man` pages, so add $STAMPEDE_HOME/man` to the `MANPATH`.
 
 As part of the installation, the installer will ask you if you want a global `stampederc` file installed in `/etc`, `/etc/sysconfig`, or somewhere else. All statements in this file are commented out. If you want to make global changes to *Stampede's* environment variables, edit this file appropriately. Note these "rc" files won't contain all the possible variables you can define, see `$STAMPEDE_HOME/bin/env.sh` for the complete list of variables, their default values, and comments that describe them.
 
@@ -96,18 +96,24 @@ The top-level directory contains the following files, in addition to directories
 
 ### Bin Directory
 
-*Stampede* supplies helper `bash` scripts in the `bin` directory. All the scripts that end with `.sh` are used internally by stampede. The files without this extension are user-callable utilities for building workflows.
+*Stampede* supplies helper `bash` scripts in the `bin` directory and "extras" for specific applications (e.g., [Hadoop](http://hadoop.apache.org)) in subdirectories. All the scripts that end with `.sh` are used internally by *Stampede*. The files without this extension are user-callable utilities for building workflows.
+
+*NOTE:* All of them assume that `$STAMPEDE_HOME` is defined. This is true when they are called in a *stampede* workflow, e.g., a `Makefile`.
+
+#### `bin` Utilities
 
 Briefly, here are the utilities in the `bin` directory. All support a `--help` option for more information:
 
 * `stampede` - The "stampede" (workflow) driver script. It can be invoked manually or by `cron`. It has several options to configure behavior. Run `stampede --help` for details.
 * `install` - Called by `make install` to install *Stampede*.
+* `abs-path` - Return the absolute value for the specified paths.
 * `create-project` - Called by the `stampede` script to create new projects.
-* `dates` - Format dates and perform date arithmetic in a cross-platform way.
+* `dates` - Format dates and perform date arithmetic in a platform-portable way.
 * `from-log-level` and `to-log-level` - Convert from a log-level string, e.g., `DEBUG` to the corresponding `syslog`-compatible number and back again.
-* `format-log-message` - Format messages that are logged. If you want to customize the format beyond what's possible by editing the environment variables `STAMPEDE_LOG_TIME_FORMAT` and `STAMPEDE_LOG_MESSAGE_FORMAT_STRING`, you can create your own version of this script and drop it in `$STAMPEDE_HOME/custom`, which is on the `PATH` BEFORE `$STAMPEDE_HOME/bin`. See the *Custom* section below for more details.
+* `format-log-message` - Format messages that are logged. If you want to customize the format beyond what's possible by editing the environment variables `STAMPEDE_LOG_TIME_FORMAT` and `STAMPEDE_LOG_MESSAGE_FORMAT_STRING` (see `env.sh`), you can create your own version of this script and drop it in `$STAMPEDE_HOME/custom`, which is on the `PATH` BEFORE `$STAMPEDE_HOME/bin`. See the *Custom* section below for more details.
 * `log-file` - Return the name of the log file used by *stampede* or `SYSLOG` if `syslog` is being used.
 * `send-email` - Use the *nux `mail` command (if configured) to send alerts.
+* `split-string` - Split a string on a delimiter and return an array or echo the elements to `stdout`.
 * `stampede-log` - Write your own messages to the log file (or `syslog`) configured for *Stampede*.
 * `success-or-failure` - Return one of two strings depending on a "success" flag.
 * `true-or-false` - Return one of two strings depending on a whether a variable is empty or not.
@@ -125,7 +131,7 @@ The following "helper" files are used by these scripts:
 * `common.sh` - Many "common" `bash` functions used in several scripts.
 * `log.sh` - Support functions for logging.
 
-### Bin/Hadoop Directory
+#### `bin/hadoop` Utilities
 
 [Hadoop-specific](http://hadoop.apache.org) helper tools are in the `bin/hadoop` directory.  As for the `bin` scripts, use `--help` for more information on each tool.
 
@@ -149,15 +155,16 @@ The `example` directory contains several example *stampedes* that you can adapt 
  
 ### Test Directory
 
-Tests of *Stampede* itself are in the `test` directory. The tests provide good examples of the individual tools in action.
+Tests of *Stampede* itself are in the `test` directory. The tests provide good examples of the individual tools in action. To execute the tests, run `make test`. This `make` target won't run the "extras" tests, e.g., for Hadoop. To run *all* tests, run `make test-with-extras`.
+
+## Notes
+
+* The `bin/send-email` script requires the *nix mail service to be running on the server hosting the stampede.
+* Supporting both Linux and Mac `date` commands added some complexity to the code.
 
 ## TODO
 
-* Fill in example content.
-* Test email support with the Unix `mail` command.
+* More examples.
+* Test email support with the *nix `mail` command.
 * More tests, especially of command options.
-* Provide `man` pages.
  
-## Notes
-
-* Supporting both Linux and Mac `date` commands added a lot of complication to the code. 

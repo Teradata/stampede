@@ -10,9 +10,10 @@ thisdir=$(dirname ${BASH_SOURCE[0]})
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Return a message to write to the log.
+$0 - Return a message to write to the log, formatted using 
+     "$STAMPEDE_LOG_MESSAGE_FORMAT_STRING" defined in "bin/env.sh".
 
-Usage: $0 "timestamp_string", level_string, app_name, message
+Usage: $0 "timestamp_string" level_string app_name message
 
 Where:
   timestamp_string   The formatted timestamp. Since it's likely to contain spaces, 
@@ -21,7 +22,7 @@ Where:
                      INFO, or DEBUG, or a number between 0-7, inclusive, which 
                      will be converted to the corresponding level.
   app_name           The name of the "application" doing the logging.
-  message            All the rest of the arguments
+  message            The rest of the arguments are interpreted as the message to log.
 EOF
 exit 0
 fi

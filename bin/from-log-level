@@ -18,11 +18,12 @@ Where:
   NAME     Must be one of the following (case ignored):
            ${STAMPEDE_LOG_LEVEL_NAMES[@]}.
            However, if you happen to provide a number, it will be returned, 
-           as long as it is one of ${STAMPEDE_LOG_LEVELS[@]}. 
+           as long as it is one of ${STAMPEDE_LOG_LEVELS[0]} - ${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}, inclusive. 
 
-  default  What to return if an invalid name (or number) is specified. It can 
-           be any number you want. If not specified the invalid name will be 
-           logged as a WARNING and the number 3 (for ERROR) will be returned.
+  default  Number to return if an invalid name (or number) is specified. It can 
+           be any number you want, even one not in the range ${STAMPEDE_LOG_LEVELS[0]} - ${STAMPEDE_LOG_LEVELS[${#STAMPEDE_LOG_LEVELS[@]}-1]}.
+           If not specified the invalid name will be logged as a WARNING and the value
+           Specified by \$STAMPEDE_LOG_DEFAULT_FROM_LOG_LEVEL_VALUE ($STAMPEDE_LOG_DEFAULT_FROM_LOG_LEVEL_VALUE) will be returned.
 EOF
 exit 0
 fi

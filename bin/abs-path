@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
 # abs-path - Show the absolute path for the input file or directory.
 # usage:  abs-path path1 [path2 ...]
 # example: abs-path ${BASH_file[0]}
@@ -12,11 +14,11 @@
 
 function help {
   cat <<EOF
-$0 - Show the absolute path for the input file or directory.
+$0 - Show the absolute path for one or more files or directories.
 
 Usage:   abs-path path1 [path2 ...]
 
-Example: abs-path \${BASH_file[0]}
+Example: abs-path \${BASH_FILE[0]}
 
 Where each resolved path will be written on a separate line, to avoid ambiguities
 from nested whitespace! If any of the input "paths" doesn't actually exist, the

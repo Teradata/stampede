@@ -1,0 +1,42 @@
+.\"        Title: abs-path
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "ABS-PATH" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBabs-path\fR - Show the absolute path for one or more files or directories.
+.SH "SYNOPSIS"
+\fBabs-path\fR \fIpath1\fR ...
+.sp
+.SH "DESCRIPTION"
+The abs-path(1) command resolves each input \fIpath\fR to an absolute path and writes each one to \fIstdout\fR on a separate line (to avoid potential ambiguities from nested whitespace!)\. If an input \fIpath\fR doesn't actually exist, the exit status will be 1 and the unmodified \fIpath\fR will be echoed. The other paths will be treated normally. That is, the script doesn't exit when one or more paths doesn't exist.
+.sp
+Example: \fBabs-path ${BASH_FILE[0]}\fR
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if all input paths exist and could be resolved.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if one or more input paths doesn't exist.
+.RE
+.sp
+.SH "AUTHOR"
+Written by Dean Wampler, <dean.wampler@thinkbiganalytics.com>
+.sp
+.SH "RESOURCES"
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-abs-path.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is granted under the terms of the Apache License, Version 2.0.
+.sp
