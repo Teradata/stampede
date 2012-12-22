@@ -28,12 +28,13 @@ public class MapReduceConfiguration extends Configured implements Tool {
 		if (message.length() > 0)
 			System.err.println(message);
 		System.err.println("Usage: hadoop jar .../mr-config.jar [generic_options] \\ ");
-		System.err.println("       [-h | --help] [--print-keys | --print-values] \\ ");
+		System.err.println("       [-h | --help] [-v | --verbose] [--print-keys | --print-values] \\ ");
 		System.err.println("       --all | [--regex=re1 [--regex=re2] string1 [string2] ...]");
 		System.err.println("");
 		System.err.println("Where:");
 		System.err.println("");
 		System.err.println("  -h | --help    Show this message.");
+		System.err.println("  -v | --verbose Currently does nothing. (Exists for consistency with other tools.)");
 		System.err.println("  --print-keys   Print all matching keys in the \"key=value\" pairs");
 		System.err.println("                 (default: print the full \"key=value\").");
 		System.err.println("  --print-values Print only the values for the matching keys.");
@@ -63,6 +64,8 @@ public class MapReduceConfiguration extends Configured implements Tool {
 			if (arg.matches("--?h.*")) {
 				usage("");
 				System.exit(exitCode);
+			} else if (arg.matches("--?v.*")) {
+				// does nothing
 			} else if (arg.matches("--print-k.*")) {
 				printKeysOnly = true;
 			} else if (arg.matches("--print-v.*")) {

@@ -1,0 +1,123 @@
+.\"        Title: mapreduce-prop
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "mapreduce-PROP" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBmapreduce-prop\fR - Show the values for one or more Hadoop MapReduce properties.
+.SH "SYNOPSIS"
+\fBmapreduce-prop\fR [\fI--help\fR] [\fIOPTIONS\fR]
+.sp
+.SH "DESCRIPTION"
+The mapreduce-prop(1) command returns the values for one or more Hadoop MapReduce properties, 
+as they exist inside a Java MapReduce program. It runs a simple MapReduce "job" using the \fIhadoop\fR
+command to determine the property values.
+.sp
+.SH "OPTIONS"
+\fBNOTE:\fR each of the first set of options, labeled \fBGeneric Hadoop option\fR, must 
+appear before the rest of the options, because of the way they are processed by the
+Hadoop API that is used. These options may or may not affect the values of the properties you want to see.
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fB-conf\fR \fIconfiguration_file\fR
+.RS 4
+ An application configuration file. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-D\fR \fIproperty=value\fR
+.RS 4
+Define the specified \fIproperty\fR with \fIvalue\fR. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-fs\fR \fBlocal\fR | \fInamenode:port\fR
+.RS 4
+Specify a namenode. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-jt\fR \fBlocal\fR | \fIjobtracker:port\fR
+.RS 4
+Specify a job tracker. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-files\fR \fIfile1[,file2,...]\fR
+.RS 4
+Specify a comma-separated list of files to be copied to the MapReduce cluster. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-libjars\fR \fIjar1[,jar2,...]\fR
+.RS 4
+Specify a comma-separated list of jar files to include in the classpath. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-archives\fR \fIarchive1[,archive2,...]\fR
+.RS 4
+Specify a comma-separated list of archives to unarchive on each node in the cluster. (\fBGeneric Hadoop option\fR)
+.RE
+.PP
+\fB-v\fR | \fB--verbose\fR
+.RS 4
+Currently does nothing. (Exists for consistency with other tools.)
+.RE
+.PP
+\fB--print-keys\fR
+.RS 4
+Print all matching keys in the \fIkey=value\fR pairs. Default: print the full \fIkey=value\fR strings.
+.RE
+.PP
+\fB--print-values\fR
+.RS 4
+Print only the values for the matching keys. Note: this will be confusing when there are multiple matches!
+.RE
+.PP
+\fB--all\fR
+.RS 4
+Show \fBall\fR variables and properties.
+Either \fB--all\fR or at least one \fB--regex\fR=\fIre\fR and/or \fIstring\fR is required.
+.RE
+.PP
+\fB--regex\fR=\fIre\fR
+.RS 4
+A regular expression matching the \fBwhole\fR key. Constrast with \fIhive-prop(1)\fR 
+and \fIpig-prop(1)\fR, where the specified regular expression string is \fBnot\fR required to match 
+the \fBwhole\fR key. The behavior in \fImapreduce-prop(1)\fR reflects the behavior of 
+Java's regular expression API, which \fImapreduce-prop(1)\fR uses.
+Either \fB--all\fR or at least one \fB--regex\fR=\fIre\fR and/or \fIstring\fR is required.
+.RE
+.PP
+\fIstring\fR
+.RS 4
+One or more strings that must exactly match keys.
+Either \fB--all\fR or at least one \fB--regex\fR=\fIre\fR and/or \fIstring\fR is required.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if no errors occur, as described next. If no matches are found, nothing is returned.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if the \fIhadoop\fR driver command is not found, \fB--all\fR or no regular expressions are specified, etc.
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/hadoop/test-mapreduce-prop.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
