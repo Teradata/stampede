@@ -13,7 +13,9 @@
 \fBformat-log-message\fR [\fI--help\fR] \fI"timestamp_string"\fR \fIlevel_string\fR \fIapp_name\fR \fImessage\fR
 .sp
 .SH "DESCRIPTION"
-The format-log-message(1) command return a formatted message to write to the log, formatted using \fB$STAMPEDE_LOG_MESSAGE_FORMAT_STRING\fR defined in \fI$STAMPEDE_HOME/bin/env.sh\fR or overridden by the user.
+The format-log-message(1) command return a formatted message to write to the log, 
+formatted using \fB$STAMPEDE_LOG_MESSAGE_FORMAT_STRING\fR defined in \fI$STAMPEDE_HOME/bin/env.sh\fR 
+or overridden by the user.
 .sp
 .SH "OPTIONS"
 .PP
@@ -29,7 +31,9 @@ The formatted timestamp. Since it's likely to contain spaces, you should usually
 .PP
 \fIlevel_string\fR
 .RS 4
-One of \fBEMERGENCY\fR, \fBALERT\fR, \fBCRITICAL\fR, \fBERROR\fR, \fBWARNING\fR, \fBNOTICE\fR, \fBINFO\fR, or \fBDEBUG\fR, or a number between \fB0-7\fR, inclusive, which will be converted to the corresponding level.
+One of \fBEMERGENCY\fR, \fBALERT\fR, \fBCRITICAL\fR, \fBERROR\fR, \fBWARNING\fR, 
+\fBNOTICE\fR, \fBINFO\fR, or \fBDEBUG\fR, or a number between \fB0-7\fR, inclusive, 
+which will be converted to the corresponding level.
 .RE
 .PP
 \fIapp_name\fR
@@ -50,11 +54,12 @@ Success if the string was formatted successfully.
 .PP
 \fB1\fR
 .RS 4
-Failure if an invalid \fB$STAMPEDE_LOG_MESSAGE_FORMAT_STRING\fR is defined in \fI$STAMPEDE_HOME/bin/env.sh\fR or overridden by the user.
+Failure if an invalid \fB$STAMPEDE_LOG_MESSAGE_FORMAT_STRING\fR is defined 
+in \fI$STAMPEDE_HOME/bin/env.sh\fR or overridden by the user.
 .RE
 .sp
 .SH "AUTHOR"
-Written by Dean Wampler, <dean.wampler@thinkbiganalytics.com>
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
 .sp
 .SH "RESOURCES"
 .sp
@@ -63,5 +68,6 @@ See also the tests of this script in \fI$STAMPEDE_HOME/test/test-format-log-mess
 Main web site: https://github.com/ThinkBigAnalytics/stampede.
 .sp
 .SH "COPYING"
-Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is granted under the terms of the Apache License, Version 2.0.
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
 .sp

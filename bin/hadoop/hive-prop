@@ -8,21 +8,21 @@
 
 function help {
   cat <<EOF
-$0 - Show the value for one or more Hive variables or properties.
+$0 - Show the values for one or more Hive variables or properties.
      It determines the property values by running the command "hive -e 'set -v;'".
 
 Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
-          [--all | string [string ...]]
+          [--all | regex [regex ...]]
 
 Where:
   -h | --help    Show this message.
   -v | --verbose Echo the path to the Hive CLI invoked.
   --print-keys   Print all matching keys in the "key=value" pairs
-                 (default: print the full "key=value").
+                 (default: print the full "key=value" strings).
   --print-values Print only the values for the matching keys.
                  (Confusing for multiple matches!)
   --all          Show ALL variables and properties.
-  string         Regular expression matching all or part of the name.
+  regex          Regular expression matching all or part of the key.
 EOF
 }
 

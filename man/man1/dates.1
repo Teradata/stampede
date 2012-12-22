@@ -39,9 +39,15 @@ Use \fIdate\fR as the starting date. Assumes RFC-3999 format unless you specify 
 .PP
 \fB--informat\fR=\fIfmt\fR
 .RS 4
-The format of the input date. It's an error to also specify \fB--today\fR. Defaults to RFC-3999 format. Specifying \fB--informat=rfc-3999\fR is equivalent. See the \fBWARNING\fR below about input formats on Linux. Omit the "+" at the beginning of the string, which the \fIdate(1)\fR command would require.
+The format of the input date. It's an error to also specify \fB--today\fR. 
+Defaults to RFC-3999 format. Specifying \fB--informat=rfc-3999\fR is equivalent. 
+See the \fBWARNING\fR below about input formats on Linux. Omit the "+" at the 
+beginning of the string, which the \fIdate(1)\fR command would require.
 .sp
-WARNING: The Linux \fIdate(1)\fR command often fails to return valid results when doing arithmetic on an input date that is not RFC-3999 format! There are exceptions, such as using the %Y-%m-%d format when calculating day deltas. We recommend using RFC-3999 for this reason.
+WARNING: The Linux \fIdate(1)\fR command often fails to return valid results 
+when doing arithmetic on an input date that is not RFC-3999 format! There are 
+exceptions, such as using the %Y-%m-%d format when calculating day deltas. 
+We recommend using RFC-3999 for this reason.
 .RE
 .PP
 \fB--format\fR=\fIfmt\fR
@@ -61,7 +67,8 @@ Calculate one or more "units" (default unit: \fI1\fR day), based on this interpr
 .PP
 \fIM:N\fR
 .RS 4
-Return a range of dates from \fIM\fR days to \fIN\fR days \fBfrom\fR the starting date. Prefix \fIM\fR or \fIM\fR with a \fI-\fR to use days \fBago\fR. 
+Return a range of dates from \fIM\fR days to \fIN\fR days \fBfrom\fR the starting date. 
+Prefix \fIM\fR or \fIM\fR with a \fI-\fR to use days \fBago\fR. 
 .RE
 .PP
 \fI :N\fR
@@ -71,12 +78,15 @@ Start with the starting date, inclusive, i.e., \fIM=0\fR.
 .PP
 \fIM: \fR
 .RS 4
-End with the starting date, inclusive, i.e., fBN=0\fR. Because the fBM\fR and fBN\fR are inclusive, the number of dates returned is abs(\fIN\fR-\fIM\fR)+1. Also, if the \fIN\fR < \fIM\fR, the results "count down".
+End with the starting date, inclusive, i.e., fBN=0\fR. Because the fBM\fR and fBN\fR 
+are inclusive, the number of dates returned is abs(\fIN\fR-\fIM\fR)+1. Also, if 
+the \fIN\fR < \fIM\fR, the results "count down".
 .RE
 .PP
 \fIunits\fR
 .RS 4
-How to interpret the the \fIM:N\fR range. An optional number (default: \fI1\fR), followed by one of the characters in \fIymdHMS\fR. (\fIw\fR is also allowed for Mac OS X)
+How to interpret the the \fIM:N\fR range. An optional number (default: \fI1\fR), 
+followed by one of the characters in \fIymdHMS\fR. (\fIw\fR is also allowed for Mac OS X)
 .sp
 If \fIM:N units\fR are omitted, the script just reformats the input or today's date.
 .sp
@@ -93,7 +103,7 @@ Failure if an invalid date or format specification is given.
 .RE
 .sp
 .SH "AUTHOR"
-Written by Dean Wampler, <dean.wampler@thinkbiganalytics.com>
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
 .sp
 .SH "RESOURCES"
 .sp
@@ -104,7 +114,8 @@ See also \fIdate(1)\fR for more information about the format options.
 Main web site: https://github.com/ThinkBigAnalytics/stampede.
 .sp
 .SH "COPYING"
-Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is granted under the terms of the Apache License, Version 2.0.
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
 .sp
 
 

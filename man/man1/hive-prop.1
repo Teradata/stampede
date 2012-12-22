@@ -1,0 +1,75 @@
+.\"        Title: hive-prop
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "HIVE-PROP" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBhive-prop\fR - Show the values for one or more Hive variables or properties.
+.SH "SYNOPSIS"
+\fBhive-prop\fR [\fI--help\fR] [\fIOPTIONS\fR]
+.sp
+.SH "DESCRIPTION"
+The hive-prop(1) command returns the values for one or more Hive variables or properties.
+It determines the property values by running the command "hive -e 'set -v;'".
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fB-v\fR | \fB--verbose\fR
+.RS 4
+Echo the path to the Hive CLI (command-line interface) command invoked.
+.RE
+.PP
+\fB--print-keys\fR
+.RS 4
+Print all matching keys in the \fIkey=value\fR pairs. Default: print the full \fIkey=value\fR strings.
+.RE
+.PP
+\fB--print-values\fR
+.RS 4
+Print only the values for the matching keys. Note: this will be confusing when there are multiple matches!
+.RE
+.PP
+\fB--all\fR
+.RS 4
+Show \fBall\fR variables and properties.
+Either \fB--all\fR or a \fIregex\fR is required.
+.RE
+.PP
+\fIregex\fR
+.RS 4
+A regular expression matching all or part of the key. You can specify one or more regular expressions.
+Either \fB--all\fR or a \fIregex\fR is required.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if no errors occur, as described next. If no matches are found, nothing is returned.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if the \fIhive\fR command is not found, \fB--all\fR or no regular expressions are specified, etc.
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/hadoop/test-hive-prop.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.

@@ -8,7 +8,7 @@
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-\fBfrom-log-level\fR - Convert a log level to the corresponding number.
+\fBfrom-log-level\fR - Convert a syslog-compatible level to the corresponding number.
 .SH "SYNOPSIS"
 \fBfrom-log-level\fR [\fI--help\fR] \fIname\fR [\fIdefault\fR]
 .sp
@@ -24,13 +24,18 @@ Show this help message.
 .PP
 \fIname\fR
 .RS 4
-Must be one of the \fIsyslog(1)\fR-compatible names, \fBEMERGENCY\fR, \fBALERT\fR, \fBCRITICAL\fR, \fBERROR\fR, \fBWARNING\fR, \fBNOTICE\fR, \fBINFO\fR, \fBDEBUG\fR, where case is ignored. However, if you provide a number, it will be returned, 
+Must be one of the \fIsyslog(1)\fR-compatible names, \fBEMERGENCY\fR, \fBALERT\fR, 
+\fBCRITICAL\fR, \fBERROR\fR, \fBWARNING\fR, \fBNOTICE\fR, \fBINFO\fR, \fBDEBUG\fR, 
+where case is ignored. However, if you provide a number, it will be returned, 
 as long as it is between \fB0 - 7\fR, inclusive.
 .RE
 .PP
 \fIdefault\fR
 .RS 4
-Number to return if an invalid name (or number) is specified. It can be any number you want, even one not in the range \fB0 - 7\fR. If not specified the invalid name will be logged as a \fBWARNING\fR and the number specified by \fB$STAMPEDE_LOG_DEFAULT_FROM_LOG_LEVEL_VALUE\fR will be returned.
+Number to return if an invalid name (or number) is specified. It can be any number you want,
+even one not in the range \fB0 - 7\fR. If a default is not specified, the invalid name will be logged as 
+a \fBWARNING\fR and the number specified by \fB$STAMPEDE_LOG_DEFAULT_FROM_LOG_LEVEL_VALUE\fR
+will be returned.
 .sp
 .SH "EXIT STATUS"
 .PP
@@ -40,7 +45,7 @@ Success; nonzero is never returned, but an error might be logged, as described a
 .RE
 .sp
 .SH "AUTHOR"
-Written by Dean Wampler, <dean.wampler@thinkbiganalytics.com>
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
 .sp
 .SH "RESOURCES"
 .sp
@@ -49,5 +54,5 @@ See also the tests of this script in \fI$STAMPEDE_HOME/test/test-from-log-level.
 Main web site: https://github.com/ThinkBigAnalytics/stampede.
 .sp
 .SH "COPYING"
-Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is granted under the terms of the Apache License, Version 2.0.
-.sp
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
