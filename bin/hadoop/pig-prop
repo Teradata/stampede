@@ -9,10 +9,11 @@
 
 function help {
   cat <<EOF
-$0 - Show the value for one or more Pig properties from pig.properties.
+$0 - Show the value for one or more Pig variables or properties as defined in "pig.properties".
 
 Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
-          [-f file | --prop-file=file] [--all | string [string ...]]
+          [-f file | --prop-file=file] 
+          [--all | --regex=re1 [--regex=re2] string1 [string2] ...]
 
 Where:
   -h | --help      Show this message.
@@ -24,10 +25,12 @@ Where:
   -f file
   --prop-file=file Use "file" instead of searching for the properties file.
   --all            Show ALL properties.
-  string           Regular expression matching all or part of the property name.
+  --regex=re       Regular expression matching all or part of the property name.
+  string           String matching the WHOLE the property name.
 
-NOTE: Only reads the first property file it finds. Unlike Hive, we can't return
-Pig and have it dump the properties.
+Either "-all" or one or more combinations of "--regex=re" and/or strings is required.
+NOTE: Only reads the first property file it finds. Eventually, we would like to call
+Pig with a custom UDF to determine the property values.
 EOF
 }
 
@@ -53,33 +56,6 @@ function find_prop_file {
   return 1
 }
 
-function show_props {
-  conf_file="$1"
-  shift
-  let print_kv=$1   # 0 => key=value, -1 => key, 1 => value
-  shift
-  let all=$1
-  shift
-  cat "$conf_file" | grep -v '^#' | grep -v '^[ \t]*$' | while read line
-  do
-    for s in "$@"
-    do
-      if [[ $all -eq 0 || $line =~ $s ]]
-      then 
-        if [ $print_kv -eq 0 ] 
-        then
-          echo $line
-        elif [ $print_kv -eq -1 ]   # just the keys!
-        then
-          echo $line | sed -e 's/=.*//' 
-        else
-          echo $line | sed -e 's/[^=]*=//' 
-        fi
-      fi
-    done
-  done
-}
-
 function verify_prop_file {
   if [ ! -f "$1" ]
   then
@@ -89,7 +65,8 @@ function verify_prop_file {
 }
 
 VERBOSE=
-args=()
+strings=()
+regexs=()
 let print_kv=0
 let all=1
 while [ $# -ne 0 ]
@@ -104,7 +81,6 @@ do
       ;;
     --a*)
       all=0
-      args[${#args[@]}]=all
       ;;
     --print-k*)
       let print_kv=-1
@@ -121,21 +97,24 @@ do
     --print-v*)
       let print_kv=1
       ;;
+    --regex=*)
+      regexs[${#regexs[@]}]=${1#--regex=}
+      ;;
     -*)
       echo "$0: ERROR: Unrecognized argument \"$1\"."
       help
       exit 1
       ;;
     *)
-      args[${#args[@]}]=$(echo $1 | sed -e 's/\./\\./g')
+      strings[${#strings[@]}]="$1"
       ;;
   esac
   shift
 done
 
-if [ ${#args[@]} -eq 0 ]
+if [ $all -ne 0 -a ${#regexs[@]} -eq 0 -a ${#strings[@]} -eq 0 ]
 then
-  echo "$0: ERROR: Must specify one or more names or --all"
+  echo "$0: ERROR: Must specify one or more names, --regex=re, or --all"
   help
   exit 1
 fi
@@ -149,4 +128,8 @@ then
 fi
 [ -n "$VERBOSE" ] && echo "Using pig properties file: $prop_file"
  
-$NOOP show_props "$prop_file" $print_kv $all "${args[@]}"
+thisdir=$(dirname ${BASH_SOURCE[0]})
+. $thisdir/prop-helper.sh
+
+# Cat the file and strip out comment and empty lines.
+$NOOP cat "$prop_file" | grep -v '^#' | grep -v '^[ \t]*$' | each_line

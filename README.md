@@ -139,6 +139,9 @@ The following "helper" files are used by these scripts:
 * `hive-prop` - Return one or more property definitions for [Hive](http://hive.apache.org).
 * `pig-prop` - Return one or more property definitions for [Pig](http://pig.apache.org).
 
+**Note:** While the `*-prop` utilities behave similarly and take similar arguments, there are some differences
+in the results they produce that reflect idiosyncrasies of the different implementations. See their help messages or `man` pages for details.
+
 ### Custom and Contrib Directories
 
 If you want to override the behavior of any particular script, drop a new version in the `custom` directory (or a subdirectory), which are added to the `PATH` first.

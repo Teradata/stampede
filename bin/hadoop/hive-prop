@@ -12,7 +12,7 @@ $0 - Show the values for one or more Hive variables or properties.
      It determines the property values by running the command "hive -e 'set -v;'".
 
 Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
-          [--all | regex [regex ...]]
+          [--all | --regex=re1 [--regex=re2] string1 [string2] ...]
 
 Where:
   -h | --help    Show this message.
@@ -22,7 +22,16 @@ Where:
   --print-values Print only the values for the matching keys.
                  (Confusing for multiple matches!)
   --all          Show ALL variables and properties.
-  regex          Regular expression matching all or part of the key.
+  -d | --define key=value
+  --hiveconf property=value
+  --hivevar key=value
+  -i include_file
+                 Hive options that are passed to the Hive CLI. All other Hive options
+                 are incompatible with this utility.
+  --regex=re     Regular expression matching all or part of the property name.
+  string         String matching the WHOLE the property name.
+
+Either "-all" or one or more combinations of "--regex=re" and/or strings is required.
 EOF
 }
 
@@ -46,35 +55,9 @@ function find_hive {
 
 export VERBOSE=
 
-function show_props {
-  hive="$1"
-  shift
-  let print_kv=$1   # 0 => key=value, -1 => key, 1 => value
-  shift
-  let all=$1
-  shift
-  [ -n "$VERBOSE" ] && echo "Using hive CLI: $hive"
-  "$hive" -e 'set -v;' 2> /dev/null | grep -v PREEXEC_CMD | while read line
-  do
-    for s in "$@"
-    do
-      if [[ $all -eq 0 || $line =~ $s ]]
-      then 
-        if [ $print_kv -eq 0 ] 
-        then
-          echo $line
-        elif [ $print_kv -eq -1 ]   # just the keys!
-        then
-          echo $line | sed -e 's/=.*//' 
-        else
-          echo $line | sed -e 's/[^=]*=//' 
-        fi
-      fi
-    done
-  done
-}
-
-args=()
+strings=()
+regexs=()
+hive_args=()
 let print_kv=0
 let all=1
 while [ $# -ne 0 ]
@@ -89,7 +72,6 @@ do
       ;;
     --a*)
       all=0
-      args[${#args[@]}]=all
       ;;
     --print-k*)
       let print_kv=-1
@@ -97,21 +79,29 @@ do
     --print-v*)
       let print_kv=1
       ;;
+    -d|--define|--hiveconf|--hivevar|-i)
+      hive_args[${#hive_args[@]}]=$1
+      shift
+      hive_args[${#hive_args[@]}]=$1
+      ;;
+    --regex=*)
+      regexs[${#regexs[@]}]=${1#--regex=}
+      ;;
     -*)
       echo "$0: ERROR: Unrecognized argument \"$1\"."
       help
       exit 1
       ;;
     *)
-      args[${#args[@]}]=$(echo $1 | sed -e 's/\./\\./g')
+      strings[${#strings[@]}]="$1"
       ;;
   esac
   shift
 done
 
-if [ ${#args[@]} -eq 0 ]
+if [ $all -ne 0 -a ${#regexs[@]} -eq 0 -a ${#strings[@]} -eq 0 ]
 then
-  echo "$0: ERROR: Must specify one or more names or --all"
+  echo "$0: ERROR: Must specify one or more names, --regex=re, or --all"
   help
   exit 1
 fi
@@ -124,4 +114,9 @@ then
   exit 1
 fi
 
-$NOOP show_props "$hive" $print_kv $all "${args[@]}"
+[ -n "$VERBOSE" ] && echo "Using hive CLI: $hive ${hive_args[@]} -e 'set -v;'"
+
+thisdir=$(dirname ${BASH_SOURCE[0]})
+. $thisdir/prop-helper.sh
+
+$NOOP "$hive" "${hive_args[@]}" -e 'set -v;' 2> /dev/null | grep -v PREEXEC_CMD | each_line

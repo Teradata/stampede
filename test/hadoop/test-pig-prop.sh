@@ -9,12 +9,20 @@ TEST_DIR="$STAMPEDE_HOME/test"
 
 PIG_PROP="$STAMPEDE_HOME/bin/hadoop/pig-prop"
 
-echo "  specific strings tests:"
+echo "  strings tests:"
 
 msg=$("$PIG_PROP" --print-keys --props-file=$TEST_DIR/hadoop/pig.properties log4jconf)
 [[ $msg =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>"
 
 msg=$("$PIG_PROP" --print-values --props-file=$TEST_DIR/hadoop/pig.properties log4jconf)
+[[ $msg =~ \./conf/log4j\.properties ]] || die "Missing ./conf/log4j.properties? msg = <$msg>"
+
+echo "  regular expressions tests:"
+
+msg=$("$PIG_PROP" --print-keys --props-file=$TEST_DIR/hadoop/pig.properties --regex=^log4j)
+[[ $msg =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>"
+
+msg=$("$PIG_PROP" --print-values --props-file=$TEST_DIR/hadoop/pig.properties --regex=^log4j)
 [[ $msg =~ \./conf/log4j\.properties ]] || die "Missing ./conf/log4j.properties? msg = <$msg>"
 
 echo "  options tests:"
@@ -23,7 +31,7 @@ echo "  options tests:"
 [[ $line =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>" )
 
 "$PIG_PROP" 2>&1 | ( read line
-[[ $line =~ ERROR:.Must.specify.one.or.more.names.or.--all ]] || die "Expected error message: msg = <$line>" )
+[[ $line =~ ERROR:.Must.specify.one.or.more.names,.--regex=re,.or.--all ]] || die "Expected error message: msg = <$line>" )
 
 # This test will fail if there is no pig.properties in your environment:
 "$PIG_PROP" -v --all 2>&1 | ( read line

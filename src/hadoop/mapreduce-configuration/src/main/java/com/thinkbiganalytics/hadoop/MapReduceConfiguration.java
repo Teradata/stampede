@@ -80,7 +80,7 @@ public class MapReduceConfiguration extends Configured implements Tool {
 		}
 
 		if (printAll == false && strings.size() == 0 && regexStrings.size() == 0) {
-			usage("MapReduceConfiguration: ERROR: Must specify one or more names, regular expressions, or --all");
+			usage("MapReduceConfiguration: ERROR: Must specify one or more names, --regex=re, or --all");
 			System.exit(1);
 		}
 		

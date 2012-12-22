@@ -9,7 +9,7 @@ TEST_DIR="$STAMPEDE_HOME/test"
 
 MAPREDUCE_PROP="$STAMPEDE_HOME/bin/hadoop/mapreduce-prop"
 
-echo "  specific strings tests:"
+echo "  strings tests:"
 
 msg=$($MAPREDUCE_PROP -D foo.bar=baz --print-keys foo.bar)
 [[ $msg =~ foo\.bar ]] || die "Missing foo.bar key? msg = <$msg>"
@@ -23,13 +23,21 @@ msg=$($MAPREDUCE_PROP -D foo.bar=baz foo.bar)
 msg=$($MAPREDUCE_PROP -D foo.bar=baz --regex='^foo.*' | grep 'foo.bar')
 [[ $msg =~ foo\.bar=baz ]] || die "Missing foo.bar=baz? msg = <$msg>"
 
+echo "  strings tests:"
+
+msg=$($MAPREDUCE_PROP -D foo.bar=baz --print-keys foo.bar)
+[[ $msg =~ foo\.bar ]] || die "Missing foo.bar key? msg = <$msg>"
+
+msg=$($MAPREDUCE_PROP -D foo.bar=baz --print-values foo.bar)
+[[ $msg =~ baz ]] || die "Missing value for foo.bar (expecting baz)? msg = <$msg>"
+
 echo "  options tests:"
 
 $MAPREDUCE_PROP -D foo.bar=baz --all | grep 'foo.bar' | ( read line
 [[ $line =~ foo\.bar=baz ]] || die "Missing foo.bar=baz? msg = <$msg>" )
 
 $MAPREDUCE_PROP 2>&1 | ( read line
-[[ $line =~ ERROR:.Must.specify.one.or.more.names,.regular.expressions,.or.--all ]] || die "Expected error message: msg = <$line>" )
+[[ $line =~ ERROR:.Must.specify.one.or.more.names,.--regex=re,.or.--all ]] || die "Expected error message: msg = <$line>" )
 
 $MAPREDUCE_PROP -x 2>&1 | ( read line
 [[ $line =~ ERROR:.Unrecognized.argument.\"-x\" ]] || die "Expected bad argument message: msg = <$line>" )

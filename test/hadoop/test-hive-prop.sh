@@ -9,13 +9,28 @@ TEST_DIR="$STAMPEDE_HOME/test"
 
 HIVE_PROP="$STAMPEDE_HOME/bin/hadoop/hive-prop"
 
-echo "  specific strings tests:"
+echo "  strings tests:"
 
-msg=$("$HIVE_PROP" --print-keys metastore.warehouse.dir)
+msg=$("$HIVE_PROP" --print-keys hive.metastore.warehouse.dir)
 [[ $msg =~ hive\.metastore\.warehouse\.dir ]] || die "Missing hive.metastore.warehouse.dir? msg = <$msg>"
 
 msg=$("$HIVE_PROP" --print-values system:user.name)
 [[ $msg = $USER ]] || die "Missing system:user.name? actual = <$msg>, expected <$USER>"
+
+# Note that if you use Hive's "--define x=y" feature, the actual key is "hivevar:x".
+msg=$("$HIVE_PROP" --define foo.bar=baz --print-values hivevar:foo.bar)
+[[ $msg = baz ]] || die "Missing hivevar:foo.bar? actual = <$msg>, expected baz"
+
+echo "  regular expressions tests"
+
+msg=$("$HIVE_PROP" --print-keys --regex=.*\.metastore\.warehouse)
+[[ $msg =~ hive\.metastore\.warehouse\.dir ]] || die "Missing --regex=.*\.metastore\.warehouse? msg = <$msg>"
+
+msg=$("$HIVE_PROP" --print-values --regex='s.*:user\.name')
+[[ $msg = $USER ]] || die "Missing --regex='s.*:user\.name'? actual = <$msg>, expected <$USER>"
+
+msg=$("$HIVE_PROP" --define foo.bar=baz --print-values --regex=foo)
+[[ $msg = baz ]] || die "Missing --regex=foo? actual = <$msg>, expected baz"
 
 echo "  options tests:"
 
@@ -23,7 +38,7 @@ echo "  options tests:"
 [[ $line =~ hive\.metastore\.warehouse\.dir ]] || die "Missing hive.metastore.warehouse.dir? msg = <$msg>" )
 
 "$HIVE_PROP" 2>&1 | ( read line
-[[ $line =~ ERROR:.Must.specify.one.or.more.names.or.--all ]] || die "Expected error message: msg = <$line>" )
+[[ $line =~ ERROR:.Must.specify.one.or.more.names,.--regex=re,.or.--all ]] || die "Expected error message: msg = <$line>" )
 
 "$HIVE_PROP" -v warehouse 2>&1 | ( read line
 [[ $line =~ Using.hive.CLI ]] || die "Expected verbose message about which Hive CLI: msg = <$line>" )
