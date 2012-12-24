@@ -7,7 +7,7 @@
 
 function help {
   cat <<EOF
-$0 - Split a string on a delimiter and return an array or write the elements.
+$0 - Split a string on a delimiter and return an array or write the elements to stdout.
 
 Usage: $0 [-h | --help] \ 
   [-d | --delimiter=delim] [-e | --echo [-w | --with-index[=delim2]]] string [string ...]
@@ -23,7 +23,7 @@ Where:
   -i | --index                Used if "--newline" is given; prefix each line with 
                               the array index, followed by the output delimiter 
                               "odelim" (default: ' '), followed by the element.
-  string                      One or more strings to split. Each will be processed
+  string                      Zero or more strings to split. Each will be processed
                               separately.
 EOF
 }

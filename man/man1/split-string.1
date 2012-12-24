@@ -1,0 +1,78 @@
+.\"        Title: split-string
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "SPLIT-STRING" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBsplit-string\fR - Split a string on a delimiter and return the substrings as an array or write the substrings to stdout.
+
+.SH "SYNOPSIS"
+\fBsplit-string\fR [\fB--help\fR] [\fIOPTIONS\fR]
+.sp
+.SH "DESCRIPTION"
+The split-string(1) command splits a string on a delimiter and either 
+returns an array of the substrings or writes the substrings to \fIstdout\fR.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fB-d\fR | \fB--delimiter\fR=\fIdelim\fR
+.RS 4
+Split on \fIdelim\fR (default: ' '). The "=" can be omitted.
+.RE
+.PP
+\fB-o\fR | \fB--outdelimiter\fR=\fIodelim\fR
+.RS 4
+Output the substrings separated by \fIodelim\fR (default: ' ').
+Use \fB--newline\fR if you want one per line.
+The "=" can be omitted.
+.RE
+.PP
+\fB-n\fR | \fB--newline\fR
+.RS 4
+Output the substrings one per line.
+.RE
+.PP
+\fB-i\fR | \fB--index\fR
+.RS 4
+Used with \fB--newline\fR (and \fB--newline\fR  is required if \fB--index\fR is specified).
+Prefix each output line with the array index, followed by the output delimiter,
+as given by \fB--outdelimiter\fR, followed by the substring.
+.RE
+.PP
+\fIstring\fR
+.RS 4
+Zero or more strings to split. Each will be processed separately.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success except when an invalid option combination is specified.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure only when you don't specify \fB--newline\fR when you specify \fB--index\fR. It's not an error to specify no strings to split!
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-split-string.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
