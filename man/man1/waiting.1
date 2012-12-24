@@ -1,0 +1,77 @@
+.\"        Title: waiting
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "WAITING" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBwaiting\fR - Sleep for a specified period of time.
+.SH "SYNOPSIS"
+\fBwaiting\fR [\fB--help\fR] \fItries_so_far\fR \fIsleep_interval\fR [\fItext\fR]
+.sp
+.SH "DESCRIPTION"
+The waiting(1) command occasionally logs a message that it's waiting,
+sleeps for a time interval and then returns. It's designed to be used in
+a loop that's waiting for something to happen, and it wants to sleep
+while waiting. 
+
+If you don't want any logging, just use \fIsleep(1)\fR.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fItries_so_far\fR
+.RS 4
+The number of times that \fIwaiting(1)\fR has been called. It is used in the
+occasionally log messages that are written (roughly every fifth iteration after
+the first few). Normally, a waiting loop would maintain a counter of the passes
+through the loop and pass the value into this script on each invocation.
+.RE
+.PP
+\fIsleep_interval\fR
+.RS 4
+How long to sleep.
+The allowed format is \fINs\fR, \fINm\fR, and \fINh\fR,
+for \fIN\fR seconds, minutes, and hours, respectively. If the letter
+suffix is omitted, it defaults to seconds. 
+.RE
+.PP
+\fItext\fR
+.RS 4
+The remaining arguments are optional text that's added to the log messages.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success unless sleep is interrupted with a control command (e.g., ^C).
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if sleep is interrupted with a control command (e.g., ^C).
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "SEE ALSO"
+\fItry-for(1)\fR, where you specify a command to try repeatedly and a window of time to keep trying it.
+\fItry-until(1)\fR, where you specify a command to try repeatedly and a timetamp for when to stop trying it.
+If you don't want any logging, just use \fIsleep(1)\fR.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-waiting.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.

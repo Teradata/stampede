@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# waiting - Used to sleep for a specified period of time and logging
+# waiting - Sleep for a specified period of time.
 
 thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
