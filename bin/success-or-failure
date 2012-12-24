@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# success_or_failure - Helper function used to generate either/or text.
+# success-or-failure - Helper function used to generate either/or texts.
 
 thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
@@ -10,22 +10,22 @@ thisdir=$(dirname ${BASH_SOURCE[0]})
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Helper function used to generate either/or text.
+$0 - Helper function used to generate either/or texts.
 
-Usage: $0 N "true_string" "false_string".
+Usage: $0 N "true_string" "false_string"
 
 Where:
   N             An integer, where 0 means success and nonzero means failure.
-  true_string   What to return on success.
-  false_string  What to return on failure.
+  true_string   What to echo on success.
+  false_string  What to echo on failure.
 
 Consider this example:
 
     do_something
     info 'succeeded?  \$($0 \$? "yes" "no")'
 
-The string "yes" is returned if \$? is 0 (the status result of "do_something"),
-otherwise "no". Contrast with "true_or_false".
+The string "yes" is echoed if \$? is 0 (the status result of "do_something"),
+otherwise "no". Contrast with "true-or-false".
 EOF
 exit 0
 fi
