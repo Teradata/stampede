@@ -8,17 +8,25 @@ thisdir=$(dirname ${BASH_SOURCE[0]})
 [ "$thisdir" = '.' ] && thisdir=$PWD
 thisdir_parent=$(dirname $thisdir)
 [ "$thisdir_parent" = '.' ] && thisdir_parent=$PWD
+[ -n "$STAMPEDE_HOME" ] || STAMPEDE_HOME=$thisdir_parent
+export STAMPEDE_HOME
+
 . $thisdir/common.sh
 
 release_name=$(basename $thisdir_parent)
-echo $release_name
 
+FILES_TO_INSTALL=( LICENSE README.md README.html VERSION FAQs.md Makefile
+  bin contrib examples man test custom src )
+
+# If sudo is required.
+# Override SUDO_CMD on the command line to mock it for testing.
 export SUDO=
+: ${SUDO_CMD=sudo}
 
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Install stampede. It will prompt you for information.
+$0 - Install Stampede. It will prompt you for information.
 
 Usage: $0
 EOF
@@ -27,10 +35,13 @@ fi
 
 function answer {
   default=$1
+  shift
+  lower_case=$1
   read answ
-  if [ -z "$answ" ]
+  [ -n "$answ" ] || answ="$default"
+  if [ -n "$lower_case" ]
   then
-    echo $default
+    echo $answ | tr '[:upper:]' '[:lower:]'
   else
     echo $answ
   fi
@@ -39,10 +50,12 @@ function answer {
 function use_sudo {
   [ $# -gt 0 ] && echo2 "$@" 
   echo2 -n "Use sudo? [N=quit/y] "
-  if [ "$(answer N)" = 'y' ] 
+  if [ "$(answer n lower_case)" = 'y' ] 
   then
+    echo2 "Using sudo."
     echo sudo
   else
+    echo2 "NOT using sudo."
     return 1
   fi
 }
@@ -50,11 +63,17 @@ function use_sudo {
 # Copy to a target directory, if desired.
 
 leave_it=1
-echo2 "Install it somewhere else?"
+echo2 "Stampede: installing $release_name:"
+echo2 "Install Stampede somewhere else?"
 echo2 "  Y: Ask me for a location."
 echo2 "  n: Just leave it where it is."
 echo2 -n "[Y/n] "
-[ "$(answer Y)" = 'n' ] && leave_it=0
+if [ "$(answer y lower_case)" = 'n' ]
+then
+  echo2 "Leaving the installation where it is."
+  leave_it=0
+fi
+
 
 install_dir="$STAMPEDE_HOME"
 ln_dir=$install_dir
@@ -63,11 +82,12 @@ then
   echo2 -n "Specify where stampede should be installed: [/usr/local] "
   parent_dir=$(answer "/usr/local")
   install_dir=$parent_dir/$release_name
+  echo2 "Installing in \"$install_dir\":"
   ln_dir=$parent_dir/stampede
   while [ ! -d "$parent_dir" ]
   do
     echo2 "Creating $parent_dir:"
-     $SUDO mkdir -p "$parent_dir"
+    $SUDO mkdir -p "$parent_dir"
     if [ $? -ne 0 ]
     then
       SUDO=$(use_sudo "I couldn't create the parent directory \"$parent_dir\".")
@@ -76,9 +96,9 @@ then
   done
   if [ -d "$install_dir" ]
   then
-    echo2 "$install_dir already exists. I should delete it first. Okay?"
+    echo2 "$install_dir already exists. Should I delete it first?"
     echo2 -n "[N=cancel/y=okay] "
-    [ "$(answer N)" != y ] && exit 1
+    [ "$(answer n lower_case)" != y ] && exit 1
 
     while [ -d "$install_dir" ]
     do
@@ -93,18 +113,28 @@ then
   fi
   while [ ! -d "$install_dir" ]
   do
-    if [ ! -w "$install_dir" -a -z "$SUDO" ]
+    if [ ! -w "$parent_dir" -a -z "$SUDO" ]
     then
-      SUDO=$(use_sudo "I can't copy into the directory \"$install_dir\".")
+      SUDO=$(use_sudo "I can't copy into the directory \"$parent_dir\".")
       [ $? -ne 0 ] && exit 1
     fi
     echo2 "Copying $STAMPEDE_HOME to $install_dir"
-    $SUDO cp -r $STAMPEDE_HOME $install_dir
+    $SUDO mkdir -p $install_dir
     if [ $? -ne 0 ]
     then
-      echo2 "I couldn't copy into the directory \"$install_dir\"! Quitting..."
+      echo2 "I couldn't create the root installation directory \"$install_dir\"! Quitting..."
       exit 1
     fi
+    for d in ${FILES_TO_INSTALL[@]}
+    do
+      echo2 "  Copying: $d"
+      $SUDO cp -r $STAMPEDE_HOME/$d $install_dir/$d
+      if [ $? -ne 0 ]
+      then
+        echo2 "I couldn't copy \"$STAMPEDE_HOME/$d\" into the directory \"$install_dir\"! Quitting..."
+        exit 1
+      fi
+    done
     if [ "$install_dir" != "$ln_dir" ]
     then
       echo2 "Creating a symlink between $install_dir and $ln_dir:"
@@ -142,7 +172,7 @@ do
   echo2 "  3. $HOME/.stampederc"
   echo2 "  4. You specify a target directory/file."
   echo2 "  5. Skip this step and continue (default)."
-  echo2 -n "[1/2/3/4/5/] "
+  echo2 -n "[1/2/3/4/5 (default)] "
   case $(answer) in
     1) 
       copy_stampederc /etc/stampederc
@@ -157,7 +187,7 @@ do
       [ $? -ne 0 ] && exit 1
       ;;
     4) 
-      echo "Target file name: "
+      echo2 "Target file name: "
       dir=$(answer)
       if [ "$dir" = "" ]
       then

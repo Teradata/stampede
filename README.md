@@ -111,6 +111,7 @@ Briefly, here are the utilities in the `bin` directory. All support a `--help` o
 * `dates` - Format dates and perform date arithmetic in a platform-portable way.
 * `from-log-level` and `to-log-level` - Convert from a log-level string, e.g., `DEBUG` to the corresponding `syslog`-compatible number and back again.
 * `format-log-message` - Format messages that are logged. If you want to customize the format beyond what's possible by editing the environment variables `STAMPEDE_LOG_TIME_FORMAT` and `STAMPEDE_LOG_MESSAGE_FORMAT_STRING` (see `env.sh`), you can create your own version of this script and drop it in `$STAMPEDE_HOME/custom`, which is on the `PATH` BEFORE `$STAMPEDE_HOME/bin`. See the *Custom* section below for more details.
+* `install` - Install *Stampede* on your system.
 * `log-file` - Return the name of the log file used by *stampede* or `SYSLOG` if `syslog` is being used.
 * `send-email` - Use the *nux `mail` command (if configured) to send alerts.
 * `split-string` - Split a string on a delimiter and return an array or echo the elements to `stdout`.

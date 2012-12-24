@@ -18,15 +18,20 @@ STAMPEDE_HOME = ${PWD}
 VERSION       = $(shell cat VERSION)
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
-RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin custom contrib examples test
+RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin src custom contrib man examples test
 
 TESTS_LOGGING = format-log-message to-log-level from-log-level log
-TESTS_CORE    = env abs-path dates split-string ${TESTS_LOGGING} common waiting-try send-email stampede
-TESTS_HADOOP  = hive-prop pig-prop mapreduce-prop
+TESTS_CORE1   = $(wildcard test/test-*.sh)
+TESTS_CORE    = $(TESTS_CORE1:test/test-%.sh=%)
+TESTS_HADOOP1 = $(wildcard test/hadoop/test-*.sh)
+TESTS_HADOOP  = $(TESTS_HADOOP1:test/hadoop/test-%.sh=%)
 TESTS_SYSLOG  = syslog
 
 TESTS         = ${TESTS_CORE} ${TESTS_SYSLOG} 
 TESTS_EXTRAS  = ${TESTS_HADOOP}
+
+JAVA_CLASS_DIRECTORIES = $(wildcard src/*/*/bin)
+JAVA_BUILT_JARS = $(wildcard src/*/*/*.jar)
 
 all: clean test release
 test: clean-tests test-core test-syslog 
@@ -37,7 +42,7 @@ test-extras: test-hadoop
 install:
 	bin/install
 
-clean: clean-release clean-tests clean-logs
+clean: clean-release clean-tests clean-logs clean-build-products
 	
 release: ${RELEASE_FILE}
 
@@ -91,7 +96,13 @@ ${TESTS_CORE:%=test-%} ${TESTS_HADOOP:%=hadoop/test-%}:
 	fi
 
 clean-logs:
-	rm -rf logs
+	rm -rf logs test/logs
+
+# We do the -z test because these variables will be "" when there are 
+# no contents, e.g., for a fresh git clone or in a release archive!
+clean-build-products:
+	[ -z "${JAVA_CLASS_DIRECTORIES}" ] || rm -rf ${JAVA_CLASS_DIRECTORIES}
+	[ -z "${JAVA_BUILT_JARS}" ] || rm -rf ${JAVA_BUILT_JARS}
 
 # Compile the Java source apps, build the jars, and put them where they belong.
 
