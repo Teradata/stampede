@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# to-seconds - Compute the seconds specified by the argument.
+# to-seconds - Compute the seconds for the input time period.
 
 thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
@@ -10,14 +10,14 @@ thisdir=$(dirname ${BASH_SOURCE[0]})
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Compute the seconds specified by the argument. Returns an integer.
+$0 - Compute the seconds for the input time period. Returns an integer.
 
 Usage: $0 Nx
 
 Where:
   Nx      The time argument, where "N" is an integer and "x" is optional, one of the
           characters 'h', 'm', or 's', interpreted as follows:
-            'h' means "N" is interpreted as hours. Returns N*3600.
+            'h' means "N" is interpreted as hours. Returns N*60*60 (N*3600).
             'm' means "N" is interpreted as minutes. Returns N*60.
             's' means "N" is interpreted as seconds (the default). Simply returns N.
 

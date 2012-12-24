@@ -1,0 +1,69 @@
+.\"        Title: to-seconds
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "TO-SECONDS" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBto-seconds\fR - Compute the seconds for the input time period.
+.SH "SYNOPSIS"
+\fBto-seconds\fR [\fB--help\fR] \fIN\fR | \fINs\fR | \fINm\fR | \fINh\fR 
+.sp
+.SH "DESCRIPTION"
+The to-seconds(1) command returns the number of seconds for the input time period, 
+which can be hours, minutes, or seconds.
+
+Days, months, and years aren't supported, because then you would have 
+to specify a date to know the context to account for potential daylight savings time changes,
+leap years, etc. 
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fIN\fR | \fIN\fR\fBs\fR
+.RS 4
+The time argument, \fIN\fR seconds. The value is simply echoed back.
+.RE
+.PP
+\fIN\fR\fBm\fR
+.RS 4
+The time argument, \fIN\fR minutes. The value \fIN\fR*\fB60\fR is echoed.
+.RE
+.PP
+\fIN\fR\fBh\fR
+.RS 4
+The time argument, \fIN\fR hours. The value \fIN\fR*\fB60\fR*\fB60\fR (\fIN\fR*\fB3600\fR) is echoed.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success as long as a valid time value is specified.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if an invalid time value is specified.
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "SEE ALSO"
+\fIto-time-interval(1)\fR. See \fIdates(1)\fR for more general handling.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-to-seconds.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
