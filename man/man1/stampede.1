@@ -1,0 +1,167 @@
+.\"        Title: stampede
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "STAMPEDE" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBstampede\fR - Creates or invokes a "stampede"; a workflow process.
+.SH "SYNOPSIS"
+\fBENV_VAR_DEFS stampede\fR [\fB--help\fR] [\fIOPTIONS\fR]
+.sp
+.SH "DESCRIPTION"
+The stampede(1) command is the driver for all "stampedes" (workflows). 
+It is also used to create new stampedes.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fBENV_VAR_DEFS\fR
+.RS 4
+One-time overrides of environment variables defined in \fB$STAMPEDE_HOME/bin/env.sh\fR.
+For example, \fBYEAR=2011\fR (but see the following options).
+.RE
+.PP
+\fB--year\fR=\fIYYYY\fR
+.RS 4
+Use \fIYYYY\fR (4 digits!) as the year. All time-related values
+default to the time that the stampede starts. See additional notes below.
+.RE
+.PP
+\fB--month\fR=\fIMM\fR | \fB--mon\fR=\fIMM\fR
+.RS 4
+Use \fIMM\fR (2 digits!) as the month.
+.RE
+.PP
+\fB--day\fR=\fIDD\fR
+.RS 4
+Use \fIDD\fR (2 digits!) as the day.
+.RE
+.PP
+\fB--hour\fR=\fIHH\fR
+.RS 4
+Use \fIHH\fR (2 digits!) as the hour.
+.RE
+.PP
+\fB--minute\fR=\fIMM\fR | \fB--min\fR=\fIMM\fR
+.RS 4
+Use \fIMMv\fR (2 digits!) as the minute.
+.RE
+.PP
+\fB--second\fR=\fISS\fR | \fB--sec\fR=\fISS\fR
+.RS 4
+Use \fISS\fR (2 digits!) as the second.
+.RE
+.PP
+\fB--epoch\fR=\fIseconds\fR
+.RS 4
+Set \fBall\fR time fields to correspond to the specified \fIseconds\fR
+since the Unix epoch. See the additional notes below.
+.RE
+.PP
+\fB--force-rerun\fR
+.RS 4
+Force a rerun, ignoring make's usual dependency checking.
+.RE
+.PP
+\fB--tries\fR=\fIN\fR
+.RS 4
+Make up to \fIN\fR attempts to succeed. 
+Default: the value specified by the environment variable \fB$STAMPEDE_NUMBER_OF_TRIES\fR.
+For no limit, specify \fB0\fR.
+.RE
+.PP
+\fB--between-tries\fR=\fIN\fR
+.RS 4
+How much time to wait between attempts. If \fIN\fR ends with a
+\fBh\fR, \fBm\fR, or \fBs\fR, then wait \fIN\fR hours, minutes, or seconds, respectively (defaults to seconds).
+Default: the value specified by the environment variable \fB$STAMPEDE_DEFAULT_SLEEP_INTERVAL\fR.
+.RE
+.PP
+\fB--log-level\fR=\fIN\fR | \fB--logging-level\fR=\fIN\fR
+.RS 4
+Log more verbose output (useful for debugging with \fB--noexec\fR).
+\fIsyslog(1)\fR log levels are used, so \fBlarger N\fR results in
+\fBless\fR verbose output. 
+Default: the value specified by the environment variable \fB$STAMPEDE_LOG_LEVEL\fR, a
+number from 7 to 0, inclusive, or the corresponding logging level name, one of 
+\fBEMERGENCY\fR, \fBALERT\fR, \fBCRITICAL\fR, 
+\fBERROR\fR, \fBWARNING\fR, \fBNOTICE\fR, \fBINFO\fR, or \fBDEBUG\fR. 
+.RE
+.PP
+\fB-n\fR | \fB--noexec\fR
+.RS 4
+Don't actually execute the commands in the script, 
+just \fIecho\fR the commands that would be executed. Useful for debugging.
+.RE
+.PP
+\fBcreate\fR
+.RS 4
+Create a new stampede workflow. This is usually the first step after installing Stampede.
+You will be prompted for information, such as the target directory. The directory will be created, 
+if necessary, and new \fBMakefile\fR and \fB.stampederc\fR files will be created in the directory,
+which you can then edit to create your "stampede" (workflow) and configure the environment.
+.RE
+.PP
+\fImakefile\fR
+.RS 4
+Use \fImakefile\fR, which defines the stampede to execute. Prefix with the
+directory, if not the current directory. 
+Default: tries one of \fBMakefile\fR, \fBmakefile\fR, \fBMkFile\fR, \fBmkfile\fR, or \fBmfile\fR.
+.RE
+.PP
+\fImake_options\fR
+.RS 4
+Options, to pass to \fImake(1)\fR.
+.RE
+.PP
+\fItargets\fR
+.RS 4
+Targets for \fImake(1)\fR to build.
+Default: the first target in the Makefile.
+.RE
+.PP
+\fBNOTE\fR On the time-related arguments, their purpose is to override the default values
+for time values that are used to specify time-stamped resources. The default values
+correspond to the current date and time. If you specify any of the time-related options,
+\fBwith the exception\fR of \fB--epoch\fR=\fIseconds\fR, it only affects the corresponding field.
+All other time-related fields that aren't specified will retain their default values.
+However, \fB--epoch\fR=\fIseconds\fR changes \fBall\fR time fields to the time corresponding
+to the specified epoch seconds date and time. In principle, you can mix
+\fB--epoch\fR=\fIseconds\fR with other time arguments; the latter will still override the 
+corresponding equivalent field values from the epoch seconds, but this could be
+very confusing.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if the options are valid, the make file specified exists (when running a stampede), or
+the new project can be created (when using \fBcreate\fR), etc.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if any of the success cases fail.
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-stampede.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
+

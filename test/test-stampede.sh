@@ -137,3 +137,10 @@ echo2 "  create tests:"
 args="--no-exec create --log-level=NOTICE"
 msg=$(stampede $args 2>&1 | grep -i 'create')
 [[ $msg =~ create-project ]] || die "Unexpected message for \"$args\": <$line>"
+
+
+echo2 "  invalid makefile tests:"
+
+args="foo/bar/Makefile"
+msg=$(stampede $args 2>&1 | grep -i 'die called')
+[[ $msg =~ The.specified.makefile."foo/bar/Makefile".does.not.exist ]] || die "Should have died with a bad makefile for \"$args\": <$line>"

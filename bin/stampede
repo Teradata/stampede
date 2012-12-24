@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# stampede - Creates or invoked a "stampede"; a workflow process.
+# stampede - Creates or invokes a "stampede"; a workflow process.
 # See "stampede --help" and the $STAMPEDE_HOME/README.md file for more information.
 
 if [ -z "$STAMPEDE_HOME" ]
@@ -14,10 +14,12 @@ then
 fi
 export STAMPEDE_HOME
 
+DEFAULT_MAKEFILES=(Makefile makefile MkFile mkfile mfile)
+
 function help {
   . $STAMPEDE_HOME/bin/common.sh
   cat <<-EOF
-$0 - Creates or invoked a "stampede"; a workflow process.
+$0 - Creates or invokes a "stampede"; a workflow process.
 
 Usage: [env ENV_VAR_DEFS] stampede [-h | --help] \ 
          [--year=YYYY] [--month=MM | --mon=MM] [--day=DD] \ 
@@ -57,10 +59,12 @@ Where:
   -n | --noexec      Don't actually execute the commands in the script, 
                      just "echo" them.
   create             Create a new stampede workflow.
-  makefile           Run "makefile", which defines the stampede 
-                     (default: \$PWD/makefile).
+  makefile           Run "makefile", which defines the stampede. Prefix with the
+                     directory, if not the current directory. 
+                     (default: one of "${DEFAULT_MAKEFILES[@]}" 
+                     in the current working directory).
   make_options       Pass these options to make.
-  targets            Build these targets (default: first on in makefile).
+  targets            Build these targets (default: the first target in the Makefile).
 
 NOTE on time-related arguments: The purpose of these arguments is to enable
 specifying time-stamped resources, defaulting to those with the current date
@@ -277,7 +281,35 @@ fi
 
 # Not creating a new project, but running make on the existing one.
 
-: ${makefile:=Makefile}  # if not explicitly set on the command line.
+function find_makefile {
+  makefile=$1
+  if [ -n "$makefile" ]
+  then
+    if [ ! -f "$makefile" ]
+    then
+      # Need die...
+      . $STAMPEDE_HOME/bin/common.sh
+
+      die "The specified makefile \"$makefile\" does not exist!"
+    else
+      echo $makefile
+      return 0
+    fi
+  else
+    for makefile in "${DEFAULT_MAKEFILES[@]}" 
+    do
+      if [ -f $makefile ]
+      then
+        echo $makefile
+        return 0
+      fi
+    done
+    . $STAMPEDE_HOME/bin/common.sh
+    die "None of the default makefiles exit! (${DEFAULT_MAKEFILES[@]})"
+  fi
+}
+
+makefile=$(find_makefile $makefile)
 MAKEFILE=$(basename $makefile)
 PROJECT_DIR=$(dirname $makefile)
 makefile_dir=$PROJECT_DIR
@@ -287,6 +319,8 @@ then
 else
   makefile_dir="--directory=$PROJECT_DIR"
 fi
+# Verify the Makefile exists.
+
 export MAKEFILE
 export PROJECT_DIR
 
@@ -321,7 +355,7 @@ then
   tries_string=$STAMPEDE_NUMBER_OF_TRIES
   [ $STAMPEDE_NUMBER_OF_TRIES -le 0 ] && tries_string="no limit"
   info "Starting $0 $command (time: $STAMPEDE_START_TIME):"
-  info "  makefile:                  $makefile_arg"
+  info "  makefile:                  $makefile"
   info "  make options/targets:      $full_make_opts ${make_opts[@]}"
   info "  log file:                  $STAMPEDE_LOG_FILE"
   info "  force rerun?               $(true-or-false $force_rerun "on" "off")"
