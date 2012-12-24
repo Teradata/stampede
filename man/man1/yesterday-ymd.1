@@ -1,0 +1,63 @@
+.\"        Title: yesterday-ymd
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "YESTERDAY-YMD" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fByesterday-ymd\fR - Return a \fBYYYYMMDD\fR string for \fByesterday's\fR date.
+.SH "SYNOPSIS"
+\fByesterday-ymd\fR [\fB--help\fR] \fIdelimiter\fR \fB--as-args\fR
+.sp
+.SH "DESCRIPTION"
+The yesterday-ymd(1) command returns a \fBYYYYMMDD\fR string for \fByesterday's\fR date, 
+where it uses the Stampede environment variables \fBYEAR\fR, \fBMONTH\fR, and \fBDAY\fR to 
+define \fBtoday's\fR date. It then computes the corresponding values for the day before,
+taking into account year boundaries, leap years, etc.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fIdelimiter\fR
+.RS 4
+A string to insert between the \fBYYYY\fR, \fBMM\fR, and \fBDD\fR fields (default: "").
+.RE
+.PP
+\fB--as-args\fR
+.RS 4
+Format the output as \fB--year=YYYY --month=MM --day=DD\fR,
+which can be used in the invocation flags for \fIstampede(1)\fR.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success as long as the \fIdate(1)\fR command succeeds.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if the \fIdate(1)\fR command fails.
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "SEE ALSO"
+\fIymd(1)\fR, which behaves the same, except for today's date.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-yesterday-ymd.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
