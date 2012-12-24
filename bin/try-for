@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# try-for - Wait for an expression to succeed for a specified time period from now.
+# try-for - Keep trying an expression until it succeeds or a time window expires.
 
 thisdir=$(dirname ${BASH_SOURCE[0]})
 . $thisdir/common.sh
@@ -10,7 +10,9 @@ thisdir=$(dirname ${BASH_SOURCE[0]})
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Wait for an expression to succeed for a specified time period from now.
+$0 - Keep trying an expression until it succeeds, sleeping between attempts
+     for a time delta and finally stopping with a failure after unsuccessfully
+     trying when a time window expires.
 
 Usage: $0 time_duration time_between_attempts expression
 
@@ -26,7 +28,8 @@ Where:
                          to indicate success and nonzero for failure. For example,
                          "ls foo" returns 0 if "foo" exists, otherwise it returns 1.
 
-Contrast with "try-until".
+Contrast with "try-until", where you specify a timestamp at which point it stops trying. 
+Here you specify a window of time.
 NOTES: 
   1) The process will sleep between attempts.
   2) If you don't want the expression's output, redirect to "/dev/null".

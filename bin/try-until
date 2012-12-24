@@ -24,7 +24,8 @@ Where:
                          to indicate success and nonzero for failure. For example,
                          "ls foo" returns 0 if "foo" exists, otherwise it returns 1.
 
-Contrast with "try-for".
+Contrast with "try-for", where you specify a window of time to try. Here, you specify
+a cutoff time.
 NOTES: 
   1) The process will sleep between attempts.
   2) If you don't want the expression's output, redirect to "/dev/null".

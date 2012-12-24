@@ -1,0 +1,80 @@
+.\"        Title: try-for
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "TRY-FOR" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBtry-for\fR - Keep trying an expression until it succeeds or a time window expires.
+.SH "SYNOPSIS"
+\fBtry-for\fR [\fB--help\fR] \fItime_duration\fR \fItime_between_attempts\fR \fIexpression\fR
+.sp
+.SH "DESCRIPTION"
+The try-for(1) command keeps trying an expression until it succeeds,
+sleeping between attempts for a time delta, and finally stopping with a 
+failure after unsuccessfully trying when a time window expires.
+
+If you don't want the output of the expression, redirect it to \fB/dev/null\fR.
+
+Contrast with \fItry-until(1)\fR, where you specify a timestamp at which point it stops trying. 
+Here you specify a window of time.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fItime_duration\fR
+.RS 4
+How much time to keep trying the expression before giving up. 
+After this point in time, a failure status of 1 is returned. 
+The allowed format is \fINs\fR, \fINm\fR, and \fINh\fR,
+for \fIN\fR seconds, minutes, and hours, respectively. If the letter
+suffix is omitted, it defaults to seconds. 
+.RE
+.PP
+\fItime_between_attempts\fR
+.RS 4
+How long to wait between attempts. The format is the same as for \fItime_duration\fR.
+.RE
+.PP
+\fIexpression\fR
+.RS 4
+The remaining arguments compose the bash expression to try on each
+iteration. It must return a status of 0 when evaluated
+to indicate success or nonzero to indicate failure. 
+For example, \fBls foo\fR returns 0 if \fBfoo\fR exists. Otherwise it returns 1.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if the \fIexpression\fR succeeds within the specified time window.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if invalid arguments are specified or the \fIexpression\fR never succeeds within
+the time window.
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "SEE ALSO"
+\fItry-until(1)\fR, where you specify a timestamp at which point it stops trying. 
+Here you specify a window of time.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-try-for.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
