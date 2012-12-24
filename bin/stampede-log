@@ -18,7 +18,7 @@ Where:
              ${STAMPEDE_LOG_LEVEL_NAMES[@]}.
   message    The rest of the arguments are treated as the message to log.
              Note that any stdout and stderr output written by your commands within
-             the stampede are also captured and logged as INFO messages.
+             the stampede is also captured and logged as INFO messages.
 EOF
 }
 

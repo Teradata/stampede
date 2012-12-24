@@ -1,0 +1,64 @@
+.\"        Title: stampede-log
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "STAMPEDE-LOG" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBstampede-log\fR - Write to the stampede log.
+
+.SH "SYNOPSIS"
+\fBstampede-log\fR [\fB--help\fR] \fIseverity\fR \fImessage\fR
+.sp
+.SH "DESCRIPTION"
+The stampede-log(1) command lets users write messages to the same log file (or \fIsyslog(1)\fR)
+that Stampede uses.
+
+Note that any \fIstdout\fR and \fIstderr\fR output written by your code
+within a workflow is also captured and logged as \fBINFO\fR messages.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fIseverity\fR
+.RS 4
+Either 0-7 or one of the following syslog-compatible strings (case ignored):
+\fBEMERGENCY\fR, \fBALERT\fR, \fBCRITICAL\fR, 
+\fBERROR\fR, \fBWARNING\fR, \fBNOTICE\fR, \fBINFO\fR, or \fBDEBUG\fR.
+.RE
+.PP
+\fImessage\fR
+.RS 4
+The rest of the arguments are treated as the message to log.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if the log call succeeded.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if you don't specify any arguments or the log call fails.
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-stampede-log.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
