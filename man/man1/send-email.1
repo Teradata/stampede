@@ -1,0 +1,69 @@
+.\"        Title: send-email
+.\"       Author: Dean Wampler
+.\"         Date: 12/22/2012
+.\"
+.TH "SEND-EMAIL" "1" "12/22/2012" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBsend-email\fR - Send an email message, typically to alert on errors. 
+.SH "SYNOPSIS"
+\fBsend-email\fR [\fB--help\fR] \fIseverity\fR \fIaddress\fR \fIsubject\fR < \fImessage_lines\fR
+.sp
+.SH "DESCRIPTION"
+The send-email(1) command sends an email message, typically to alert on errors. 
+It \fBrequires\fR *nix email to be configured on the server running Stampede.
+.sp
+.SH "OPTIONS"
+.PP
+\fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fIseverity\fR
+.RS 4
+One of the \fIsyslog(1)\fR compatible severity names is recommended: \fBEMERGENCY\fR, \fBALERT\fR, \fBCRITICAL\fR, 
+\fBERROR\fR, \fBWARNING\fR, \fBNOTICE\fR, \fBINFO\fR, or \fBDEBUG\fR. It will be used as part of the subject line.
+.RE
+.PP
+\fIaddress\fR
+.RS 4
+The email address of the recipient.
+.RE
+.PP
+\fIsubject\fR
+.RS 4
+The rest of the command-line arguments are interpreted as part of the subject (title) for the email message.
+.RE
+.PP
+\fImessage_lines\fR
+.RS 4
+The command reads the body of the message, if any, from \fIstdin\fR.
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if sending the email succeeds.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if sending the email fails, e.g., because \fImail(1)\fR is not configured on the server.
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+.sp
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-send-email.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
