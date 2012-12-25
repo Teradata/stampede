@@ -83,6 +83,11 @@ test-syslog:
 	fi
 	@echo "$@: Successful!!"
 
+list-tests:
+	@echo "Core tests:   ${TESTS_CORE}"
+	@echo "Syslog tests: ${TESTS_SYSLOG}"
+	@echo "Extras tests: ${TESTS_EXTRAS}"
+
 clean-tests:
 	rm -rf test/logs
 
@@ -101,8 +106,8 @@ clean-logs:
 # We do the -z test because these variables will be "" when there are 
 # no contents, e.g., for a fresh git clone or in a release archive!
 clean-build-products:
-	[ -z "${JAVA_CLASS_DIRECTORIES}" ] || rm -rf ${JAVA_CLASS_DIRECTORIES}
-	[ -z "${JAVA_BUILT_JARS}" ] || rm -rf ${JAVA_BUILT_JARS}
+	@[ -z "${JAVA_CLASS_DIRECTORIES}" ] || rm -rf ${JAVA_CLASS_DIRECTORIES}
+	@[ -z "${JAVA_BUILT_JARS}" ] || rm -rf ${JAVA_BUILT_JARS}
 
 # Compile the Java source apps, build the jars, and put them where they belong.
 
