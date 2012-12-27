@@ -59,7 +59,9 @@ Where:
                      WARNING, NOTICE, INFO, and DEBUG (case doesn't matter). 
   -n | --noexec      Don't actually execute the commands in the script, 
                      just "echo" them.
-  create             Create a new stampede workflow.
+  create             Create a new stampede workflow. Note, if you also use the 
+                     -f makefile argument, it will use "makefile" to determine the 
+                     project's directory and Makefile name, rather than ask you for them.
   -f makefile | --file=makefile | --makefile=makefile
                      Run "makefile", which defines the stampede. Prefix with the
                      directory, if not the current directory. The "-f" is optional

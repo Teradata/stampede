@@ -108,6 +108,8 @@ Create a new stampede workflow. This is usually the first step after installing 
 You will be prompted for information, such as the target directory. The directory will be created, 
 if necessary, and new \fBMakefile\fR and \fB.stampederc\fR files will be created in the directory,
 which you can then edit to create your "stampede" (workflow) and configure the environment.
+Note, if you also use the \fB-f\fR \fImakefile\fR argument, it will use \fImakefile\fR to determine the 
+project's directory and Makefile name, rather than ask you for them.
 .RE
 .PP
 \fB-f\fR \fImakefile\fR |
