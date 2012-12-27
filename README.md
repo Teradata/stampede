@@ -28,9 +28,9 @@ Finally, the `test` target does *not* test the "extras" included with *Stampede*
 
     make test-extras install
 
-The `install` target installs everything, whether you want to use `syslog` and the "extras" or not. They are small and harmless, if left alone ;^)
+The `install` target installs everything, whether you want to use `syslog` and the "extras" or not. They are small and harmless, if left alone in a cold, dark room... ;^)
 
-Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*. Also, the installation will include *nix `man` pages, so add $STAMPEDE_HOME/man` to the `MANPATH`.
+Next, assuming you installed in `/usr/local/stampede/`, which we'll call `$STAMPEDE_HOME` from now on, add `$STAMPEDE_HOME/bin` to the `PATH` for any user who plans to use *Stampede*. Also, the installation will include *nix `man` pages, so add `$STAMPEDE_HOME/man` to the `MANPATH`.
 
 As part of the installation, the installer will ask you if you want a global `stampederc` file installed in `/etc`, `/etc/sysconfig`, or somewhere else. All statements in this file are commented out. If you want to make global changes to *Stampede's* environment variables, edit this file appropriately. Note these "rc" files won't contain all the possible variables you can define, see `$STAMPEDE_HOME/bin/env.sh` for the complete list of variables, their default values, and comments that describe them.
 
@@ -68,7 +68,7 @@ For help on the `stampede` options:
 * GNU `make` v3.8+ - The `Makefile` in this directory that's used to test and install *Stampede* requires Gnu `make` v3.8+, as do the `examples`. However, you can adapt your project `Makefiles` to use any version of `make` you prefer.
 * `cron` - If you plan to use `cron` for scheduling workflows. In fact, *Stampede* doesn't really do anything with `cron` itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. *Stampede* projects will work fine with any scheduling tool that can invoke shell commands.
 * `syslog` - If you plan to use the *nix logging facility `syslog`. See also the Installation section above.
-* [Hadoop](http://hadoop.apache.org) - *Stampede* was nominally designed as a flyweight replacement for [Oozie](http://oozie.apache.org). However, all the support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop`. 
+* [Hadoop](http://hadoop.apache.org) - *Stampede* was originally designed as a flyweight replacement for [Oozie](http://oozie.apache.org). However, it is not restricted to Hadoop scenarios. All of the Hadoop support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop` (and corresponding tests and `man` pages). 
 
 *Stampede* is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user's `PATH`.
  
@@ -92,13 +92,16 @@ The top-level directory contains the following files, in addition to directories
 * `FAQs.md` - Frequently-asked Questions.
 * `Makefile` - The `makefile` used to test and install *Stampede*.
 * `VERSION` - The version number, used by the `Makefile` for building releases.
+* `bin` - See the following section.
 * `src` - The directory for tools implemented with Java. The corresponding jars are prebuilt and included in the distribution, but if you want to build them yourself, see the `README.md` files in the corresponding directories under `src`.
+* `man` - *nix `man` pages for all the tools.
+* `test` - Tests for the tools.
 
 ### Bin Directory
 
 *Stampede* supplies helper `bash` scripts in the `bin` directory and "extras" for specific applications (e.g., [Hadoop](http://hadoop.apache.org)) in subdirectories. All the scripts that end with `.sh` are used internally by *Stampede*. The files without this extension are user-callable utilities for building workflows.
 
-*NOTE:* All of them assume that `$STAMPEDE_HOME` is defined. This is true when they are called in a *stampede* workflow, e.g., a `Makefile`.
+*NOTE:* All of these tools assume that `$STAMPEDE_HOME` is defined. This is true when they are called in a *stampede* workflow, e.g., a `Makefile`.
 
 #### `bin` Utilities
 
@@ -141,17 +144,17 @@ The following "helper" files are used by these scripts:
 * `pig-prop` - Return one or more property definitions for [Pig](http://pig.apache.org).
 
 **Note:** While the `*-prop` utilities behave similarly and take similar arguments, there are some differences
-in the results they produce that reflect idiosyncrasies of the different implementations. See their help messages or `man` pages for details.
+in the results they produce that reflect differences in how they were implemented. See their `*-prop --help` messages or `man` pages for details.
 
 ### Custom and Contrib Directories
 
 If you want to override the behavior of any particular script, drop a new version in the `custom` directory (or a subdirectory), which are added to the `PATH` first.
 
-We intend for `contrib` to be a place where as-is, community-contributed tools will go. This directory and any subdirectories will also be added to the path, after `custom` and `bin`.
+We intend for `contrib` to be a place where unsupported, community-contributed tools will go. This directory and any subdirectories will also be added to the path, after `custom` and `bin`.
 
 ### Example Directory
 
-The `example` directory contains several example *stampedes* that you can adapt for your purposes as well as a sample configuration file.
+The `example` directory contains example *stampedes* that you can adapt for your purposes as well as a sample configuration file.
 
 * `crontab` - A sample `crontab` file.
 * `stampederc` - A sample file that overrides environment variable definitions to customize the environment or a particular project. See `bin/env.sh` for recommendations on where to install one or more of these `rc` files and for the complete list of variables available.

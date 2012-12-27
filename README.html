@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#100;&#101;&#97;&#110;&#46;&#x77;&#x61;&#x6d;&#x70;&#108;&#101;&#114;&#x40;&#116;&#104;&#105;&#110;&#x6b;&#x62;&#105;&#103;&#97;&#x6e;&#97;&#108;&#x79;&#x74;&#x69;&#x63;&#115;&#46;&#99;&#111;&#109;">&#100;&#x65;&#x61;&#x6e;&#x2e;&#119;&#97;&#109;&#x70;&#108;&#101;&#x72;&#x40;&#x74;&#x68;&#105;&#110;&#107;&#x62;&#105;&#103;&#x61;&#x6e;&#x61;&#108;&#121;&#x74;&#x69;&#x63;&#x73;&#x2e;&#x63;&#111;&#109;</a><br/>
+<a href="&#x6d;&#x61;&#x69;&#108;&#x74;&#111;&#58;&#x64;&#101;&#97;&#110;&#x2e;&#119;&#x61;&#x6d;&#x70;&#108;&#101;&#114;&#64;&#116;&#104;&#105;&#110;&#107;&#98;&#x69;&#103;&#97;&#110;&#97;&#108;&#x79;&#x74;&#105;&#x63;&#x73;&#x2e;&#99;&#111;&#109;">&#x64;&#101;&#x61;&#110;&#46;&#119;&#x61;&#109;&#112;&#x6c;&#x65;&#x72;&#x40;&#116;&#104;&#105;&#110;&#x6b;&#98;&#x69;&#103;&#97;&#x6e;&#97;&#108;&#121;&#x74;&#105;&#99;&#115;&#x2e;&#x63;&#x6f;&#x6d;</a><br/>
 December 30, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
@@ -53,9 +53,9 @@ December 30, 2012</p>
 <pre><code>make test-extras install
 </code></pre>
 
-<p>The <code>install</code> target installs everything, whether you want to use <code>syslog</code> and the &#8220;extras&#8221; or not. They are small and harmless, if left alone ;^)</p>
+<p>The <code>install</code> target installs everything, whether you want to use <code>syslog</code> and the &#8220;extras&#8221; or not. They are small and harmless, if left alone in a cold, dark room&#8230; ;^)</p>
 
-<p>Next, assuming you installed in <code>/usr/local/stampede/</code>, which we&#8217;ll call <code>$STAMPEDE_HOME</code> from now on, add <code>$STAMPEDE_HOME/bin</code> to the <code>PATH</code> for any user who plans to use <em>Stampede</em>. Also, the installation will include *nix <code>man</code> pages, so add $STAMPEDE_HOME/man<code>to the</code>MANPATH`.</p>
+<p>Next, assuming you installed in <code>/usr/local/stampede/</code>, which we&#8217;ll call <code>$STAMPEDE_HOME</code> from now on, add <code>$STAMPEDE_HOME/bin</code> to the <code>PATH</code> for any user who plans to use <em>Stampede</em>. Also, the installation will include *nix <code>man</code> pages, so add <code>$STAMPEDE_HOME/man</code> to the <code>MANPATH</code>.</p>
 
 <p>As part of the installation, the installer will ask you if you want a global <code>stampederc</code> file installed in <code>/etc</code>, <code>/etc/sysconfig</code>, or somewhere else. All statements in this file are commented out. If you want to make global changes to <em>Stampede&#8217;s</em> environment variables, edit this file appropriately. Note these &#8220;rc&#8221; files won&#8217;t contain all the possible variables you can define, see <code>$STAMPEDE_HOME/bin/env.sh</code> for the complete list of variables, their default values, and comments that describe them.</p>
 
@@ -97,7 +97,7 @@ December 30, 2012</p>
 <li>GNU <code>make</code> v3.8+ - The <code>Makefile</code> in this directory that&#8217;s used to test and install <em>Stampede</em> requires Gnu <code>make</code> v3.8+, as do the <code>examples</code>. However, you can adapt your project <code>Makefiles</code> to use any version of <code>make</code> you prefer.</li>
 <li><code>cron</code> - If you plan to use <code>cron</code> for scheduling workflows. In fact, <em>Stampede</em> doesn&#8217;t really do anything with <code>cron</code> itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. <em>Stampede</em> projects will work fine with any scheduling tool that can invoke shell commands.</li>
 <li><code>syslog</code> - If you plan to use the *nix logging facility <code>syslog</code>. See also the Installation section above.</li>
-<li><a href="http://hadoop.apache.org">Hadoop</a> - <em>Stampede</em> was nominally designed as a flyweight replacement for <a href="http://oozie.apache.org">Oozie</a>. However, all the support consists of helper scripts in <code>$STAMPEDE_HOME/bin/hadoop</code>.</li>
+<li><a href="http://hadoop.apache.org">Hadoop</a> - <em>Stampede</em> was originally designed as a flyweight replacement for <a href="http://oozie.apache.org">Oozie</a>. However, it is not restricted to Hadoop scenarios. All of the Hadoop support consists of helper scripts in <code>$STAMPEDE_HOME/bin/hadoop</code> (and corresponding tests and <code>man</code> pages).</li>
 </ul>
 
 <p><em>Stampede</em> is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user&#8217;s <code>PATH</code>.</p>
@@ -125,14 +125,17 @@ December 30, 2012</p>
 <li><code>FAQs.md</code> - Frequently-asked Questions.</li>
 <li><code>Makefile</code> - The <code>makefile</code> used to test and install <em>Stampede</em>.</li>
 <li><code>VERSION</code> - The version number, used by the <code>Makefile</code> for building releases.</li>
+<li><code>bin</code> - See the following section.</li>
 <li><code>src</code> - The directory for tools implemented with Java. The corresponding jars are prebuilt and included in the distribution, but if you want to build them yourself, see the <code>README.md</code> files in the corresponding directories under <code>src</code>.</li>
+<li><code>man</code> - *nix <code>man</code> pages for all the tools.</li>
+<li><code>test</code> - Tests for the tools.</li>
 </ul>
 
 <h3 id="bindirectory">Bin Directory</h3>
 
 <p><em>Stampede</em> supplies helper <code>bash</code> scripts in the <code>bin</code> directory and &#8220;extras&#8221; for specific applications (e.g., <a href="http://hadoop.apache.org">Hadoop</a>) in subdirectories. All the scripts that end with <code>.sh</code> are used internally by <em>Stampede</em>. The files without this extension are user-callable utilities for building workflows.</p>
 
-<p><em>NOTE:</em> All of them assume that <code>$STAMPEDE_HOME</code> is defined. This is true when they are called in a <em>stampede</em> workflow, e.g., a <code>Makefile</code>.</p>
+<p><em>NOTE:</em> All of these tools assume that <code>$STAMPEDE_HOME</code> is defined. This is true when they are called in a <em>stampede</em> workflow, e.g., a <code>Makefile</code>.</p>
 
 <h4 id="binutilities"><code>bin</code> Utilities</h4>
 
@@ -146,6 +149,7 @@ December 30, 2012</p>
 <li><code>dates</code> - Format dates and perform date arithmetic in a platform-portable way.</li>
 <li><code>from-log-level</code> and <code>to-log-level</code> - Convert from a log-level string, e.g., <code>DEBUG</code> to the corresponding <code>syslog</code>-compatible number and back again.</li>
 <li><code>format-log-message</code> - Format messages that are logged. If you want to customize the format beyond what&#8217;s possible by editing the environment variables <code>STAMPEDE_LOG_TIME_FORMAT</code> and <code>STAMPEDE_LOG_MESSAGE_FORMAT_STRING</code> (see <code>env.sh</code>), you can create your own version of this script and drop it in <code>$STAMPEDE_HOME/custom</code>, which is on the <code>PATH</code> BEFORE <code>$STAMPEDE_HOME/bin</code>. See the <em>Custom</em> section below for more details.</li>
+<li><code>install</code> - Install <em>Stampede</em> on your system.</li>
 <li><code>log-file</code> - Return the name of the log file used by <em>stampede</em> or <code>SYSLOG</code> if <code>syslog</code> is being used.</li>
 <li><code>send-email</code> - Use the *nux <code>mail</code> command (if configured) to send alerts.</li>
 <li><code>split-string</code> - Split a string on a delimiter and return an array or echo the elements to <code>stdout</code>.</li>
@@ -180,17 +184,17 @@ December 30, 2012</p>
 </ul>
 
 <p><strong>Note:</strong> While the <code>*-prop</code> utilities behave similarly and take similar arguments, there are some differences
-in the results they produce that reflect idiosyncrasies of the different implementations. See their help messages or <code>man</code> pages for details.</p>
+in the results they produce that reflect differences in how they were implemented. See their <code>*-prop --help</code> messages or <code>man</code> pages for details.</p>
 
 <h3 id="customandcontribdirectories">Custom and Contrib Directories</h3>
 
 <p>If you want to override the behavior of any particular script, drop a new version in the <code>custom</code> directory (or a subdirectory), which are added to the <code>PATH</code> first.</p>
 
-<p>We intend for <code>contrib</code> to be a place where as-is, community-contributed tools will go. This directory and any subdirectories will also be added to the path, after <code>custom</code> and <code>bin</code>.</p>
+<p>We intend for <code>contrib</code> to be a place where unsupported, community-contributed tools will go. This directory and any subdirectories will also be added to the path, after <code>custom</code> and <code>bin</code>.</p>
 
 <h3 id="exampledirectory">Example Directory</h3>
 
-<p>The <code>example</code> directory contains several example <em>stampedes</em> that you can adapt for your purposes as well as a sample configuration file.</p>
+<p>The <code>example</code> directory contains example <em>stampedes</em> that you can adapt for your purposes as well as a sample configuration file.</p>
 
 <ul>
 <li><code>crontab</code> - A sample <code>crontab</code> file.</li>
