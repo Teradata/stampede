@@ -110,11 +110,12 @@ if necessary, and new \fBMakefile\fR and \fB.stampederc\fR files will be created
 which you can then edit to create your "stampede" (workflow) and configure the environment.
 .RE
 .PP
-\fImakefile\fR
+\fB-f\fR \fImakefile\fR |
+\fB--file\fR=\fImakefile\fR |
+\fB--makefile\fR=\fImakefile\fR
 .RS 4
 Use \fImakefile\fR, which defines the stampede to execute. Prefix with the
-directory, if not the current directory. 
-Default: tries one of \fBMakefile\fR, \fBmakefile\fR, \fBMkFile\fR, \fBmkfile\fR, or \fBmfile\fR.
+directory, if not the current directory. Default: tries \fBMakefile\fR, \fBmakefile\fR, \fBMkFile\fR, \fBmkfile\fR, and \fBmfile\fR in the current directory.
 .RE
 .PP
 \fImake_options\fR

@@ -40,17 +40,15 @@ from-production-db:
 	  --num-mappers 5	\
 	  --hive-import
 
-from-ftp-drop-zone: ${HDFS_FTP_YYMD_DIR} ${BM-FTP-FILE} ${EH-FTP-FILE}
-
-${HDFS_FTP_YYMD_DIR}:
-	hadoop fs -mkdir ${HDFS_FTP_YYMD_DIR}
+from-ftp-drop-zone: ${BM-FTP-FILE} ${EH-FTP-FILE}
 
 # Wait up to 4 hours, checking every 10 minutes, for yesterday's data from 
 # "BargainMonster.com" and "ElectronicsHut.com" of orders that originated
 # as ad clicks. Once each arrives, put it in HDFS.
-${BM-FTP-FILE} ${EH-FTP-FILE}:
-	try-for 4h 20m 'test -f $@'
-	hadoop fs -put $@ ${HDFS_FTP_YYMD_DIR}
+${BM-FTP-FILE} ${EH-FTP-FILE}: 
+	try-for 4h 5s 'test -f $@'
+	hadoop fs -mkdir ${HDFS_FTP_YYMD_DIR}
+	hadoop fs -put $@ ${HDFS_FTP_YYMD_DIR} 
 
 # Pass in parameters that tell the "cleanse-orders.pig"
 cleanse:

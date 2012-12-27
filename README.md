@@ -56,7 +56,7 @@ Edit the `.stampederc` and `makefile` created in the project directory to define
 
 Once a stampede has been created, you can invoke it using this command:
 
-    stampede [options] /path/to/makefile [make_targets]
+    stampede -f /path/to/makefile [options] [make_targets]
 
 For help on the `stampede` options:
 

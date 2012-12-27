@@ -27,7 +27,8 @@ Usage: [env ENV_VAR_DEFS] stampede [-h | --help] \
          [--second=SS | --sec=SS] [--epoch=seconds] \ 
          [--force-rerun] [--tries=N] [--between-tries=N] \ 
          [--log-level=N | --logging-level=N] [-n | noexec] \ 
-         [create | makefile [make_options] [targets]]
+         [create | -f makefile | --file=makefile | --makefile=makefile] \ 
+         [make_options] [targets]]
 
 Where:
   -h | --help        Print this message and exit.
@@ -59,9 +60,11 @@ Where:
   -n | --noexec      Don't actually execute the commands in the script, 
                      just "echo" them.
   create             Create a new stampede workflow.
-  makefile           Run "makefile", which defines the stampede. Prefix with the
-                     directory, if not the current directory. 
-                     (default: one of "${DEFAULT_MAKEFILES[@]}" 
+  -f makefile | --file=makefile | --makefile=makefile
+                     Run "makefile", which defines the stampede. Prefix with the
+                     directory, if not the current directory. The "-f" is optional
+                     and supported for consistency with the behavior of "make".
+                     (default: tries "${DEFAULT_MAKEFILES[@]}" 
                      in the current working directory).
   make_options       Pass these options to make.
   targets            Build these targets (default: the first target in the Makefile).
@@ -115,6 +118,13 @@ do
     -h|--he*)
       help
       exit 0
+      ;;
+    --file=*|--makefile=*)
+      makefile=${1#--*file=}
+      ;;
+    -f|--file|--makefile)
+      shift
+      makefile=$1
       ;;
     --year=*)
       export YEAR=${1#--year=}
@@ -257,12 +267,7 @@ do
       command=$1
       ;;
     *)
-      if [ -z "$makefile" ]
-      then
-        makefile=$1
-      else
-        make_opts[${#make_opts[*]}]=$1
-      fi
+      make_opts[${#make_opts[*]}]=$1
       ;;
   esac        
   shift
@@ -272,10 +277,10 @@ if [ "$command" = "create" ]
 then
   if [ -n "$NOOP" ]
   then
-    echo "exec $STAMPEDE_HOME/bin/create-project"
+    echo "exec $STAMPEDE_HOME/bin/create-project $makefile"
     exit 0
   else
-    exec $STAMPEDE_HOME/bin/create-project
+    exec $STAMPEDE_HOME/bin/create-project $makefile
   fi
 fi
 

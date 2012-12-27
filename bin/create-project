@@ -17,10 +17,27 @@ then
   cat <<EOF
 $0 - Create a new Stampede project. It will prompt you for information.
 
-Usage: $0
+Usage: $0 [makefile]
+
+Where: 
+  makefile   The full path to the Makefile to create. 
+             (default: prompt for the directory and file name.)
 EOF
 exit 0
 fi
+
+function make_install_dir {
+  dir=$1
+  [ -d "$dir" ] && return 0
+  echo2 "Creating $dir:"
+  mkdir -p "$dir"
+  if [ $? -eq 0 ]
+  then
+    return 0
+  fi
+  echo2 "I couldn't create the project directory \"$dir\". Quitting..."
+  return 1
+}
 
 function answer {
   default=$1
@@ -33,52 +50,65 @@ function answer {
   fi
 }
 
-install_dir="$HOME/stampede"
-echo2 -n "Specify the directory for your new project: [$install_dir] "
-# Convert potential '~' to $HOME.
-install_dir=$(echo $(answer "$install_dir") | sed -e "s?~?$HOME?")
-echo2 "Using $install_dir:"
+echo2 "$0:"
 
-if [ -d "$install_dir" ]
+installdir="$HOME/stampede"
+makefile=Makefile
+makefilepath=$1
+if [ -n "$makefilepath" ]
 then
-  echo2 -n "$install_dir already exists. Remove it? [N/y] "
-  if [ "$(answer N)" = y ]
+  installdir=$(dirname $makefilepath)
+  makefile=$(basename $makefilepath)
+  echo2 "  Using directory:     $installdir"
+  echo2 "  Using makefile name: $makefile"
+  make_install_dir $installdir
+  [ $? -ne 0 ] && exit 1
+else
+  echo2 -n "Specify the directory for your new project: [$installdir] "
+  # Convert potential '~' to $HOME.
+  installdir=$(echo $(answer "$installdir") | sed -e "s?~?$HOME?")
+  if [ -d "$installdir" ]
   then
-    echo2 "Removing $install_dir..."
-    rm -rf $install_dir
-    [ $? -ne 0 ] && exit 1
+    echo2 -n "$installdir already exists. Remove it? [N/y] "
+    if [ "$(answer N)" = y ]
+    then
+      echo2 "Removing $installdir..."
+      rm -rf $installdir
+      [ $? -ne 0 ] && exit 1
+    fi
   fi
+  make_install_dir $installdir
+  [ $? -ne 0 ] && exit 1
+
+  echo2 -n "Specify the Makefile name: [$makefile] "
+  makefile=$(answer "$makefile")
 fi
 
-echo2 "Creating $install_dir:"
-mkdir -p "$install_dir"
-if [ $? -ne 0 ]
-then
-  echo2 "I couldn't create the project directory \"$install_dir\". Quitting..."
-  exit 1
-fi
-
-project_name=$(basename $install_dir)
+project_name=$(basename $installdir)
 echo2 -n "Specify the project name: [$project_name] "
 project_name=$(answer "$project_name")
 
-echo2 "Creating $install_dir/.stampederc:"
+echo2 "Creating $installdir/.stampederc:"
 cat $STAMPEDE_HOME/examples/stampederc | \
-  sed -e "s/.*STAMPEDE_PROJECT=.*/STAMPEDE_PROJECT=$project_name/" > $install_dir/.stampederc
+  sed -e "s/.*STAMPEDE_PROJECT=.*/STAMPEDE_PROJECT=$project_name/" > $installdir/.stampederc
 if [ $? -ne 0 ]
 then
   echo2 "I couldn't create the .stampederc file! Quitting..."
   exit 1
 fi
 
-echo2 "Creating $install_dir/Makefile:"
+echo2 "Creating $installdir/$makefile:"
 cat $STAMPEDE_HOME/examples/Makefile | \
-  sed -e "s/XX/$project_name/" > $install_dir/Makefile
+  sed -e "s/XX/$project_name/" > $installdir/$makefile
 if [ $? -ne 0 ]
 then
   echo2 "I couldn't create the Makefile! Quitting..."
   exit 1
 fi
 
-echo2 "Finished! Your project \"$project_name\" is in \"$install_dir\"."
-echo2 "Please see $STAMPEDE_HOME/examples for example projects."
+echo2 ""
+echo2 "Finished! Your project \"$project_name\" is in \"$installdir\"."
+echo2 "Next steps:"
+echo2 "  1) Edit $installdir/$makefile to create your \"stampedes\" (workflows)."
+echo2 "  2) Edit $installdir/.stampederc to configure project properties."
+echo2 "Please see $STAMPEDE_HOME/examples for ideas."

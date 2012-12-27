@@ -14,7 +14,7 @@ function dotest {
     target=$1
     shift
   fi
-  stampede "$@" $TEST_DIR/Makefile $target 2>&1 | grep 'test-stampede output:'
+  stampede "$@" -f $TEST_DIR/Makefile $target 2>&1 | grep 'test-stampede output:'
 }
 
 echo2 "  timestamp settings tests:"
@@ -126,9 +126,20 @@ echo2 "  --no-exec tests:"
 for n in -n --no --no-exec
 do
   args="$n --tries=1 --log-level=NOTICE"
-  stampede $args $TEST_DIR/Makefile tries 2>&1 | while read line
+  stampede $args -f $TEST_DIR/Makefile tries 2>&1 | while read line
   do
-    [[ $line =~ failed ]] && die "Unexpected message for \"$args\" (make --dry-run not called?): <$line>"
+    [[ $line =~ failed ]] && die "Unexpected message for \"$args\" (make $n test): <$line>"
+  done
+done
+
+echo2 "  --makefile=file tests:"
+
+for mf in '-f ' '--file ' '--file=' '--makefile ' '--makefile='
+do
+  args="${mf}$TEST_DIR/Makefile timestamp"
+  stampede $args 2>&1 | grep test-stampede.output | while read line
+  do
+    [[ $line =~ test-stampede.output ]] || die "Unexpected message for \"$args\" (make $mf test): <$line>"
   done
 done
 
@@ -136,6 +147,6 @@ echo2 "  create tests:"
 
 args="--no-exec create --log-level=NOTICE"
 msg=$(stampede $args 2>&1 | grep -i 'create')
-[[ $msg =~ create-project ]] || die "Unexpected message for \"$args\": <$line>"
+[[ $msg =~ create-project ]] || die "Unexpected message for \"$args\" (make 0create test): <$line>"
 
 exit 0
