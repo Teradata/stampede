@@ -74,12 +74,19 @@ function _do_try {
 	start=$(date +"$STAMPEDE_TIME_FORMAT")
 
 	# Compute the times in epoch seconds
+	let n=0
 	eval "$@"
 	while [ $? -ne 0 ]
 	do
+		let n=$n+1
 		let now=$(date +"%s")
-		[ $now -gt $end ] && return 1
-		sleep $retry_every 
+		if [ $now -gt $end ] 
+		then
+			error "$0: Expression failed to pass ($@)."
+			return 1
+		fi
+		waiting $n $retry_every "Waiting for: \"$@\""
 		eval "$@"
 	done
+	return 0
 }

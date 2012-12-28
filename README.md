@@ -172,6 +172,7 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 ## TODO
 
 * More examples.
+* Add Makefile tips to this file.
 * Test email support with the *nix `mail` command.
 * More tests, especially of command options.
  

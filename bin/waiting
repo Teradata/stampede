@@ -10,7 +10,7 @@ thisdir=$(dirname ${BASH_SOURCE[0]})
 if [[ "$1" =~ --?h.* ]]
 then
   cat <<EOF
-$0 - Sleep for a period of time and (occasionally) log a message that you're waiting.
+$0 - Sleep for a period of time and log a message that you're waiting.
 
 Usage: $0 tries_so_far sleep_interval [text]
 
@@ -24,15 +24,14 @@ EOF
 exit 0
 fi
 
-tries=$1
+let tries=$1
 shift
 sleep_interval=$1
 shift
 
-if [ $tries -le 5 -o $(expr $tries % 5) = 0 ]
-then
-  let seconds=$tries*$(to-seconds $sleep_interval)
-  info "$@ (waiting $seconds seconds so far)"
-fi
+let seconds=$tries*$(to-seconds $sleep_interval)
+[ $tries -le 1 ] && echo "Process $$: waiting for: $@"
+printf "$$: %5d seconds...\n" $seconds
+
 sleep $sleep_interval
 

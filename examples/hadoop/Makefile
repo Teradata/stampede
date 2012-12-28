@@ -6,9 +6,9 @@
 YMD           = $(shell ymd '-')
 YESTERDAY_YMD = $(shell yesterday-ymd '-')
 
-DROP_ZONE    = /var/ftp/drop-zone
+DROP_ZONE         = /var/ftp/drop-zone
 HDFS_FTP_YYMD_DIR = /ftp/${YESTERDAY_YMD}
-HDFS_ORDERS  = /orders/${YESTERDAY_YMD}
+HDFS_ORDERS       = /orders/${YESTERDAY_YMD}
 
 BM_FILE      = bargain-monster-orders-${YESTERDAY_YMD}.gzip
 EH_FILE      = electronics-hut-orders-${YESTERDAY_YMD}.gzip
@@ -22,6 +22,14 @@ RECOMMENDER_DATA_DIR = /recommendation-engine/clicks-orders
 HIVE_WAREHOUSE_DIR = $(shell hive-prop --print-value hive.metastore.warehouse.dir)
 HADOOP_NAMENODE = $(shell mapreduce-prop --print-value )
 
+HADOOP = hadoop
+PIG    = pig
+HIVE   = hive
+SQOOP  = sqoop
+
+foo:
+	@echo "HADOOP = ${HADOOP}"
+
 all: etl analysis export
 	@echo Hadoop stampede finished!
 
@@ -32,7 +40,7 @@ ingest: from-production-db from-ftp-drop-zone
 # Use Sqoop to ingest yesterday's clickstream data from the production database.
 from-production-db:
 	@echo "Ingesting clickstream data for yesterday: ${YESTERDAY_YMD} (today: ${YMD})
-	sqoop import \
+	${SQOOP} import \
 	  --connect jdbc:mysql://db-server:3306/clickstream-prod \
 	  --username some_user -P \
 	  --table adclicks \
@@ -40,19 +48,21 @@ from-production-db:
 	  --num-mappers 5	\
 	  --hive-import
 
-from-ftp-drop-zone: ${BM-FTP-FILE} ${EH-FTP-FILE}
+from-ftp-drop-zone: ${BM_FTP_FILE} ${EH_FTP_FILE}
 
 # Wait up to 4 hours, checking every 10 minutes, for yesterday's data from 
 # "BargainMonster.com" and "ElectronicsHut.com" of orders that originated
 # as ad clicks. Once each arrives, put it in HDFS.
-${BM-FTP-FILE} ${EH-FTP-FILE}: 
-	try-for 4h 5s 'test -f $@'
-	hadoop fs -mkdir ${HDFS_FTP_YYMD_DIR}
-	hadoop fs -put $@ ${HDFS_FTP_YYMD_DIR} 
+${BM_FTP_FILE} ${EH_FTP_FILE}: ${HDFS_FTP_YYMD_DIR}
+	@try-for 4h 10m 'test -f $@'
+	${HADOOP} fs -put $@ ${HDFS_FTP_YYMD_DIR} 
+
+${HDFS_FTP_YYMD_DIR}:
+	${HADOOP} fs -mkdir ${HDFS_FTP_YYMD_DIR}
 
 # Pass in parameters that tell the "cleanse-orders.pig"
 cleanse:
-	pig \
+	${PIG} \
 		-param INPUT_DIR=${HDFS_FTP_YYMD_DIR} \
 		-param OUTPUT_DIR=${HDFS_ORDERS} \
 		-f cleanse-orders.pig 
@@ -70,7 +80,7 @@ analysis: reports-analysis recommendations-analysis
 # We'll also have the internal "adclicks" table 
 # created by Sqoop.
 reports-analysis:
-	hive \
+	${HIVE} \
 		--define ORDERS_DIR=${HDFS_ORDERS} \
 		--define YMD=${YESTERDAY_YMD} \
 		-f clicks-orders-report.hql 
@@ -81,7 +91,7 @@ reports-analysis:
 # database (in a subdirectory named "finance.db"), and a
 # an "adclicks" subdirectory for the table data.
 recommendations-analysis:
-	hadoop \
+	${HADOOP} \
 		jar /usr/local/mycompany/clicks-orders-recommendations.jar \
 		--clicks=${HIVE_WAREHOUSE_DIR}/finance.db/adclicks \
 		--orders=${HDFS_ORDERS} \
@@ -94,7 +104,7 @@ recommendations-analysis:
 export: reports-analysis-export recommendations-analysis-export
 
 reports-analysis-export:
-	sqoop export \
+	${SQOOP} export \
  	  --connect jdbc:mysql://db-server:3306/orders-warehouse \
 	  --username uname -P
 	  --table clicks_orders \
@@ -102,7 +112,7 @@ reports-analysis-export:
 	  --export-dir ${HIVE_WAREHOUSE_DIR}/finance.db/clicks_orders_analysis
 
 recommendations-analysis-export:
-	sqoop export \
+	${SQOOP} export \
  	  --connect jdbc:mysql://db-server:3306/recommendations-prod \
 	  --username uname -P
 	  --table clicks_orders_recommendations \

@@ -38,3 +38,4 @@ shift
 retry_every=$1
 shift
 _do_try $end $retry_every "$@"
+exit $?

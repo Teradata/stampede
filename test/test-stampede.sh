@@ -57,11 +57,11 @@ expected="Usage:.*stampede.*"
 [[ $msg =~ $expected ]] || die "Unexpected message for help argument: $msg"
 let tscount=$tscount+1
 
-echo2 "  invalid arguments tests:"
+echo2 "  invalid make arguments tests:"
 
-msg=$(EXIT=: stampede --xyz 2011 2>&1 | grep Unrecognized)
-expected="Unrecognized option \"--xyz\"."
-[ "$msg" = "$expected" ] || die "Unexpected message for bad argument: $msg"
+msg=$(EXIT=: stampede --xyz 2011 2>&1 | grep unrecognized)
+expected="make:.unrecognized.option.*--xyz"
+[[ "$msg" =~ $expected ]] || die "Unexpected message for invalid argument --xyz: $msg"
 
 units=(year month day hour minute second)
 args=(1 11111 abcdef)

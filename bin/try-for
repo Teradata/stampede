@@ -43,3 +43,4 @@ retry_every=$1
 shift
 let end=$(dates --format="%s" 1:1 $wait_time S)
 _do_try $end $retry_every "$@"
+exit $?
