@@ -52,7 +52,7 @@ To create a stampede, run the following command:
 
 It will prompt you for properties such as the name of the stampede and the project's working directory.
 
-Edit the `.stampederc` and `makefile` created in the project directory to define your workflow. See the `$STAMPEDE_HOME/examples` for ideas. Note that `$STAMPEDE_HOME/bin` contains helper scripts to ease the development of workflows.
+Edit the `.stampederc` and `makefile` created in the project directory to define your workflow. See the `$STAMPEDE_HOME/examples` for ideas. Note that `$STAMPEDE_HOME/bin` contains helper scripts to ease the development of workflows. See also [Make and Bash Notes](MakeAndBashNotes.html) in this directory for some tips.
 
 Once a stampede has been created, you can invoke it using this command:
 
@@ -65,7 +65,7 @@ For help on the `stampede` options:
 ## Required Tools
 
 * `bash` v3+ - Because OS X ships with an older bash version, all the scripts supplied are v3 compatible. You can use newer constructs if your version of bash supports them.
-* GNU `make` v3.8+ - The `Makefile` in this directory that's used to test and install *Stampede* requires Gnu `make` v3.8+, as do the `examples`. However, you can adapt your project `Makefiles` to use any version of `make` you prefer.
+* GNU `make` v3.8+ - The `Makefile` in this directory that's used to test and install *Stampede* requires GNU `make` v3.8+, as do the `examples`. However, you can adapt your project `Makefiles` to use any version of `make` you prefer.
 * `cron` - If you plan to use `cron` for scheduling workflows. In fact, *Stampede* doesn't really do anything with `cron` itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. *Stampede* projects will work fine with any scheduling tool that can invoke shell commands.
 * `syslog` - If you plan to use the *nix logging facility `syslog`. See also the Installation section above.
 * [Hadoop](http://hadoop.apache.org) - *Stampede* was originally designed as a flyweight replacement for [Oozie](http://oozie.apache.org). However, it is not restricted to Hadoop scenarios. All of the Hadoop support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop` (and corresponding tests and `man` pages). 
@@ -171,8 +171,7 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 
 ## TODO
 
-* More examples.
-* Add Makefile tips to this file.
+* Reading make's output and logging it is very slow.
+* Add more examples.
 * Test email support with the *nix `mail` command.
-* More tests, especially of command options.
  
