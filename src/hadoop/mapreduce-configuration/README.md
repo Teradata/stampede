@@ -4,11 +4,11 @@
 
 ## Building the Code
 
-This code is already built and installed as `$STAMPEDE_HOME/bin/hadoop/mr-config.jar`. It was built using Hadoop v1.0.3. However, if you want to build it yourself, perhaps to support a different, incompatible version of Hadoop, you can build it from the top-level `$STAMPEDE_HOME` directory using `make`:
+This code is already built and installed as `$STAMPEDE_HOME/bin/hadoop/mapreduce-config.jar`. It was built using Hadoop v1.0.3. However, if you want to build it yourself, perhaps to support a different, incompatible version of Hadoop, you can build it from the top-level `$STAMPEDE_HOME` directory using `make`:
 
     make java
 
-Note that this command will overwrite `$STAMPEDE_HOME/bin/hadoop/mr-config.jar` with the one just built.
+Note that this command will overwrite `$STAMPEDE_HOME/bin/hadoop/mapreduce-config.jar` with the one just built.
 
 Alternatively, you can just build the jar without installing it by running `ant` with no arguments in this directory:
 

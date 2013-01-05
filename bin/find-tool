@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+#------------------------------------------------------------------------------
+# find-tool - Locate a tool, i.e., it's invocation command.
+
+thisdir=$(dirname ${BASH_SOURCE[0]})
+. $thisdir/common.sh
+
+function help {
+  cat <<EOF
+$0 - Find a tool executable. Print the path and return 0.
+     It first tries "which <tool name>", then searches optional input directories
+     and standard locations.
+     If it can't find the tool, it prints an error message to stderr and returns 1.
+
+Usage: $0 [-h | --help] [-v | --verbose] [--dir=dir1 ...] tool_name
+
+Where:
+  -h | --help      Show this message.
+  -v | --verbose   Print the directories to stderr that will be searched, if necessary.
+  --dir=dir1 ...   Look in these optional directories first, 
+                   after trying "which <tool_name>". 
+  tool_name        Name of the tool, e.g., "curl".
+EOF
+}
+
+directories=()
+let verbose=1
+while [ $# -ne 0 ]
+do
+  case $1 in
+    -h*|--h*)
+      help
+      exit 0
+      ;;
+    -v*|--v*)
+      let verbose=0
+      ;;
+    --d*=*)
+      dirs="${1#--d*=}"
+      for d in $(echo "$dirs" | sed -e 's/:/ /g')
+      do 
+        directories[${#directories[@]}]="$d"
+      done
+      ;;
+    *)
+      tool_name=$1
+      ;;
+  esac
+  shift
+done
+
+if [ -z "$tool_name" ]
+then
+  echo2 "$0: Must specify a tool name."
+  help
+  exit 1
+fi
+tool_name_uc=$(echo $tool_name | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+home=$(echo \$${tool_name_uc}_HOME)
+
+home2=$(eval echo "$home")
+if [ -n "$home2" -a -d "$home2" ]
+then
+  directories[${#directories[@]}]=$home2
+  directories[${#directories[@]}]=$home2/bin
+fi
+for d in /usr/local/ /opt/local/ /usr/ / "$HOME/"
+do
+  [ -n "$d" -a -d "$d" ] && directories[${#directories[@]}]=${d}bin
+done
+[ $verbose -eq 0 ] && echo2 "$0 search directories: ${directories[@]}"
+
+tool=$(which $tool_name)
+if [ $? -eq 0 ]
+then
+  echo $tool
+  exit 0
+fi
+
+for d in "${directories[@]}" 
+do
+  if [ -x "$d/$tool_name" ]
+  then
+    echo "$d/$tool_name"
+    exit 0
+  fi
+done
+
+echo2 "\"$tool_name\" was not found on your path and several system directories."
+echo2 "Define $home or add $tool_name to your path."
+exit 1

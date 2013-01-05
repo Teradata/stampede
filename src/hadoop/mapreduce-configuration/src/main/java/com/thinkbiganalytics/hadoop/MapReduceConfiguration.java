@@ -1,3 +1,6 @@
+/*------------------------------------------------------------------------------
+ * Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
+ *------------------------------------------------------------------------------ */
 package com.thinkbiganalytics.hadoop;
 
 import java.util.ArrayList;

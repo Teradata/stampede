@@ -12,7 +12,7 @@ $0 - Show the values for one or more Hive variables or properties.
      It determines the property values by running the command "hive -e 'set -v;'".
 
 Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
-          [--all | --regex=re1 [--regex=re2] string1 [string2] ...]
+          [hive options] [--all | --regex=re1 [--regex=re2] string1 [string2] ...]
 
 Where:
   -h | --help    Show this message.
@@ -22,35 +22,20 @@ Where:
   --print-values Print only the values for the matching keys.
                  (Confusing for multiple matches!)
   --all          Show ALL variables and properties.
-  -d | --define key=value
-  --hiveconf property=value
-  --hivevar key=value
-  -i include_file
-                 Hive options that are passed to the Hive CLI. All other Hive options
-                 are incompatible with this utility.
+  hive options   Some hive CLI options are supported, those that might
+                 affect the desired property value output. Specifically:
+                   -d | -define key=value
+                   --hiveconf property=value
+                   --hivevar key=value
+                   -i include_file
+                   While hive doesn't allow it, you can put an "=" between these
+                   options and their arguments. See "hive -h" for details on the
+                   meaning of these options. Using any other hive option is an error.
   --regex=re     Regular expression matching all or part of the property name.
   string         String matching the WHOLE the property name.
 
 Either "-all" or one or more combinations of "--regex=re" and/or strings is required.
 EOF
-}
-
-function find_hive {
-  hive=$(which hive)
-  if [ $? -eq 0 ]
-  then
-    echo $hive
-    return 0
-  fi
-  for hive in "$HIVE_HOME/bin/hive" /usr/local/bin/hive /usr/bin/hive /bin/hive
-  do
-    if [ -x "$hive" ]
-    then
-      echo "$hive"
-      return 0
-    fi
-  done
-  return 1
 }
 
 export VERBOSE=
@@ -79,6 +64,10 @@ do
     --print-v*)
       let print_kv=1
       ;;
+    -d=*|--define=*|--hiveconf=*|--hivevar=*|-i=*)
+      hive_args[${#hive_args[@]}]=${1%=*}
+      hive_args[${#hive_args[@]}]=${1#*=}
+      ;;
     -d|--define|--hiveconf|--hivevar|-i)
       hive_args[${#hive_args[@]}]=$1
       shift
@@ -106,13 +95,8 @@ then
   exit 1
 fi
 
-hive=$(find_hive)
-if [ $? -ne 0 ]
-then
-  echo "The hive command was not found on your path, several system directories."
-  echo "Define \$HIVE_HOME or add hive to your path."
-  exit 1
-fi
+hive=$($STAMPEDE_HOME/bin/find-tool hive)
+[ $? -ne 0 ] && exit 1
 
 [ -n "$VERBOSE" ] && echo "Using hive CLI: $hive ${hive_args[@]} -e 'set -v;'"
 

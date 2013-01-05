@@ -44,16 +44,25 @@ Show \fBall\fR variables and properties.
 Either \fB--all\fR or at least one \fB--regex\fR=\fIre\fR and/or \fIstring\fR is required.
 .RE
 .PP
+\fIpig_options\fR
+.RS 4
+Several \fBpig\fR (grunt) shell options are allowed that might affect the properties. Specifically, the following options are allowed:
+.PP
 \fB-d\fR | \fB--define\fR \fIkey=value\fR
-.RE
+.PP
 \fB--hiveconf\fR \fIproperty=value\fR
-.RE
+.PP
 \fB--hivevar\fR \fIkey=value\fR
+.RS 4
+Define Hive variables or properties.
 .RE
+.PP
 \fB-i\fR \fIinclude_file\fR
 .RS 4
-Hive options that are passed to the Hive CLI. All other Hive options
-are incompatible with this utility.
+Execute the contents of \fIinclude_file\fR as \fBhive\fI commands.
+.RE
+.PP
+You can also put an equal sign \fB=\fR between any of these options and their values, even though \fBhive\fR itself doesn't allow this. See \fBhive -h\fR for details on these options. Use of any other \fBhive\fR shell option is an error.
 .RE
 .PP
 \fB--regex\fR=\fIre\fR

@@ -34,10 +34,15 @@ JAVA_CLASS_DIRECTORIES = $(wildcard src/*/*/bin)
 JAVA_BUILT_JARS = $(wildcard src/*/*/*.jar)
 
 all: clean test release
+
 test: clean-tests test-core test-syslog 
 
-all-with-extras: clean test test-extras release
+all-with-extras: clean _all-with-extras
+_all-with-extras: test test-extras release
+
 test-extras: test-hadoop
+
+distribution: java-release _all-with-extras
 
 install:
 	bin/install
@@ -110,17 +115,36 @@ clean-build-products:
 	@[ -z "${JAVA_BUILT_JARS}" ] || rm -rf ${JAVA_BUILT_JARS}
 
 # Compile the Java source apps, build the jars, and put them where they belong.
+# Use the "java-release" target when building code for distributions of Stampede.
 
-java: clean-jars make-jars copy-jars
+java-release: check-java-6 java
 
-clean-jars:
-	rm -f src/hadoop/mapreduce-configuration/mr-config.jar
+check-java-6:
+	@java -version 2>&1 | grep -q 'java version "1.6'; \
+	if [ $$? -ne 0 ]; then echo "Please use Java 6 for building portable releases."; \
+	exit 1; fi
 
-make-jars:
-	st_home=$$PWD; \
-	cd src/hadoop/mapreduce-configuration; \
-	ant
+java: mapreduce-prop pig-prop
 
-copy-jars:
-	cp src/hadoop/mapreduce-configuration/mr-config.jar bin/hadoop
+mapreduce-prop: clean-mapreduce-jar make-mapreduce-jar copy-mapreduce-jar
+
+pig-prop: clean-pig-jar make-pig-jar copy-pig-jar
+
+clean-mapreduce-jar: 
+	rm -f src/hadoop/mapreduce-configuration/mapreduce-config.jar
+
+make-mapreduce-jar: 
+	cd src/hadoop/mapreduce-configuration; ant
+
+copy-mapreduce-jar:
+	cp src/hadoop/mapreduce-configuration/mapreduce-config.jar bin/hadoop
+
+clean-pig-jar:
+	rm -f src/hadoop/pig-configuration/pig-config.jar
+
+make-pig-jar:
+	cd src/hadoop/pig-configuration; ant
+
+copy-pig-jar:
+	cp src/hadoop/pig-configuration/pig-config.jar bin/hadoop
 	

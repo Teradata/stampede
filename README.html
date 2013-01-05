@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#97;&#x69;&#108;&#116;&#111;&#58;&#x64;&#101;&#97;&#x6e;&#46;&#x77;&#x61;&#109;&#x70;&#x6c;&#101;&#114;&#x40;&#116;&#x68;&#x69;&#110;&#107;&#x62;&#105;&#x67;&#97;&#110;&#97;&#108;&#121;&#x74;&#105;&#99;&#115;&#x2e;&#99;&#x6f;&#x6d;">&#x64;&#x65;&#97;&#110;&#46;&#x77;&#x61;&#109;&#x70;&#108;&#x65;&#114;&#x40;&#116;&#104;&#105;&#x6e;&#x6b;&#x62;&#105;&#103;&#97;&#x6e;&#x61;&#x6c;&#121;&#116;&#x69;&#99;&#x73;&#x2e;&#99;&#111;&#x6d;</a><br/>
+<a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x64;&#x65;&#97;&#x6e;&#46;&#119;&#97;&#109;&#x70;&#x6c;&#101;&#114;&#x40;&#116;&#x68;&#105;&#x6e;&#107;&#98;&#x69;&#x67;&#x61;&#x6e;&#97;&#x6c;&#x79;&#x74;&#105;&#x63;&#x73;&#x2e;&#99;&#x6f;&#x6d;">&#100;&#101;&#x61;&#x6e;&#46;&#119;&#97;&#x6d;&#112;&#x6c;&#101;&#x72;&#64;&#116;&#104;&#x69;&#x6e;&#107;&#x62;&#105;&#x67;&#x61;&#110;&#97;&#108;&#121;&#116;&#x69;&#99;&#x73;&#46;&#x63;&#111;&#x6d;</a><br/>
 December 30, 2012</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
@@ -147,6 +147,7 @@ December 30, 2012</p>
 <li><code>abs-path</code> - Return the absolute value for the specified paths.</li>
 <li><code>create-project</code> - Called by the <code>stampede</code> script to create new projects.</li>
 <li><code>dates</code> - Format dates and perform date arithmetic in a platform-portable way.</li>
+<li><code>find-tool</code> - Locate the command for the specified <code>tool</code> (e.g., <code>curl</code>) in the user&#8217;s path, several possible system directories, or in user-specified directories.</li>
 <li><code>from-log-level</code> and <code>to-log-level</code> - Convert from a log-level string, e.g., <code>DEBUG</code> to the corresponding <code>syslog</code>-compatible number and back again.</li>
 <li><code>format-log-message</code> - Format messages that are logged. If you want to customize the format beyond what&#8217;s possible by editing the environment variables <code>STAMPEDE_LOG_TIME_FORMAT</code> and <code>STAMPEDE_LOG_MESSAGE_FORMAT_STRING</code> (see <code>env.sh</code>), you can create your own version of this script and drop it in <code>$STAMPEDE_HOME/custom</code>, which is on the <code>PATH</code> BEFORE <code>$STAMPEDE_HOME/bin</code>. See the <em>Custom</em> section below for more details.</li>
 <li><code>install</code> - Install <em>Stampede</em> on your system.</li>
@@ -216,7 +217,8 @@ in the results they produce that reflect differences in how they were implemente
 <h2 id="todo">TODO</h2>
 
 <ul>
-<li>Reading make&#8217;s output and logging it is very slow.</li>
+<li>Reading make&#8217;s output and logging it is noticeably slow when there is a lot of it at once.</li>
+<li>Add hooks for HCatalog.</li>
 <li>Add more examples.</li>
 <li>Test email support with the *nix <code>mail</code> command.</li>
 </ul>

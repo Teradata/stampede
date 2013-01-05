@@ -8,15 +8,13 @@
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-\fBpig-prop\fR - Show the values for one or more Pig variables or properties, as defined in "pig.properties".
+\fBpig-prop\fR - Show the values for one or more Pig variables or properties.
 .SH "SYNOPSIS"
 \fBpig-prop\fR [\fB--help\fR] [\fIOPTIONS\fR]
 .sp
 .SH "DESCRIPTION"
 The pig-prop(1) command returns the values for one or more Pig variables or properties.
-It determines the property values by locating the "pig.properties" configuration file.
-\fBNOTE:\fR Only reads the first property file it finds. Unlike \fIhive\fR, we can't 
-easily run Pig and have it dump the properties.
+It determines the property values by running a Pig script with a special UDF. However, note that the limitations of Pig and the hacks required to make this work mean this tool may be fragile. Also, because it runs Pig, it is slow.
 .sp
 .SH "OPTIONS"
 .PP
@@ -27,7 +25,7 @@ Show this help message.
 .PP
 \fB-v\fR | \fB--verbose\fR
 .RS 4
-Echo the path to the pig CLI (command-line interface) command invoked.
+Echo the path to the \fBpig\fR CLI (command-line interface) command invoked.
 .RE
 .PP
 \fB--print-keys\fR
@@ -40,9 +38,41 @@ Print all matching keys in the \fIkey=value\fR pairs. Default: print the full \f
 Print only the values for the matching keys. Note: this will be confusing when there are multiple matches!
 .RE
 .PP
-\fB-f\fR \fIfile\fR | \fB--prop-file\fR=\fIfile\fR
+\fIpig_options\fR
 .RS 4
-Use \fIfile\fR instead of searching for the properties file.
+Several \fBpig\fR (grunt) shell options are allowed that might affect the properties. Specifically, the following options are allowed:
+.PP
+\fB-4\fR | \fB-log4jconf\fR \fIlog4j_conf_file\fR
+.RS 4
+Log4J configuration file.
+.RE
+.PP
+\fB-g\fR | \fB-embedded\fR \fIscript_engine_classname\fR
+.RS 4
+Class name of the scripting engine interpreter (e.g., for Jython).
+.RE
+.PP
+\fB-m\fR | \fB-paramfile\fR \fIparam_file\fR
+.RS 4
+A file with parameter/property definitions.
+.RE
+.PP
+\fB-p\fR | \fB-param\fR \fIkey=value\fR
+.RS 4
+A parameter/property definition.
+.RE
+.PP
+\fB-P\fR | \fB-propertyfile\fR \fIproperty_file\fR
+.RS 4
+A file with property definitions.
+.RE
+.PP
+\fB-x\fR | \fB-exectype\fR \fIlocal\fR|\fImapreduce\fR
+.RS 4
+Run in local or mapreduce mode.
+.RE
+.PP
+You can also put an equal sign \fB=\fR between any of these options and their values, even though \fBpig\fR itself doesn't allow this. See \fBpig -h\fR for details on these options. Use of any other \fBpig\fR shell option is an error.
 .RE
 .PP
 \fB--all\fR

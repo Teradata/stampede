@@ -112,6 +112,7 @@ Briefly, here are the utilities in the `bin` directory. All support a `--help` o
 * `abs-path` - Return the absolute value for the specified paths.
 * `create-project` - Called by the `stampede` script to create new projects.
 * `dates` - Format dates and perform date arithmetic in a platform-portable way.
+* `find-tool` - Locate the command for the specified `tool` (e.g., `curl`) in the user's path, several possible system directories, or in user-specified directories.
 * `from-log-level` and `to-log-level` - Convert from a log-level string, e.g., `DEBUG` to the corresponding `syslog`-compatible number and back again.
 * `format-log-message` - Format messages that are logged. If you want to customize the format beyond what's possible by editing the environment variables `STAMPEDE_LOG_TIME_FORMAT` and `STAMPEDE_LOG_MESSAGE_FORMAT_STRING` (see `env.sh`), you can create your own version of this script and drop it in `$STAMPEDE_HOME/custom`, which is on the `PATH` BEFORE `$STAMPEDE_HOME/bin`. See the *Custom* section below for more details.
 * `install` - Install *Stampede* on your system.
@@ -171,7 +172,8 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 
 ## TODO
 
-* Reading make's output and logging it is very slow.
+* Reading make's output and logging it is noticeably slow when there is a lot of it at once.
+* Add hooks for HCatalog.
 * Add more examples.
 * Test email support with the *nix `mail` command.
  

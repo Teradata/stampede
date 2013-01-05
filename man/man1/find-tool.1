@@ -1,0 +1,64 @@
+.\"        Title: find-tool
+.\"       Author: Dean Wampler
+.\"         Date: 01/06/2013
+.\"
+.TH "FIND-TOOL" "1" "01/06/2013" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+\fBfind-tool\fR - Find a tool executable. 
+.SH "SYNOPSIS"
+\fBfind-tool\fR [\fB-h\fR | \fB--help\fR] [\fB-v\fR | \fB--verbose\fR] \fB--dir\fR=\fIdir1\fR ... \fItool_name\fR
+.sp
+.SH "DESCRIPTION"
+The find-tool(1) command searches for a tool and if found, it prints the path and returns 0. It first tries \fIwhich <tool name>\fR, and if that doesn't succeed, it then searches optional, user-specified directories and then standard system locations. If it can't find the tool, it prints an error message to stderr and returns 1.
+.sp
+.SH "OPTIONS"
+.PP
+\fB-h\fR | \fB--help\fR
+.RS 4
+Show this help message.
+.RE
+.PP
+\fB-v\fR | \fB--verbose\fR
+.RS 4
+Print to stderr the directories that will be searched, if necessary.
+.RE
+.PP
+\fB--dir\fR=\fIdir1\fR ...
+.RS 4
+Look in these optional directories first, after trying \fBwhich\fR \fI<tool_name>\fR.
+You can specify a list of colon-separated directories with one \fB--dir\fR option or multiple options with single directories.
+.RE
+.PP
+\fItool_name\fR
+.RS 4
+Name of the tool, e.g., \fIcurl\fR.
+.RE
+.sp
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success if it finds the tool.
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure if can't find the tool.
+.RE
+.sp
+.SH "AUTHOR"
+Dean Wampler, <dean.wampler@thinkbiganalytics.com>.
+.sp
+.SH "RESOURCES"
+See also the tests of this script in \fI$STAMPEDE_HOME/test/test-find-tool.sh\fR for examples.
+.sp
+Main web site: https://github.com/ThinkBigAnalytics/stampede.
+.sp
+.SH "COPYING"
+Copyright (c) 2011\-2013, Think Big Analytics, Inc. Free use of this software is 
+granted under the terms of the Apache License, Version 2.0.
+.sp
