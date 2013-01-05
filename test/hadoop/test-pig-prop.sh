@@ -11,43 +11,34 @@ PIG_PROP="$STAMPEDE_HOME/bin/hadoop/pig-prop"
 
 echo "  strings tests:"
 
-msg=$("$PIG_PROP" --print-keys --props-file=$TEST_DIR/hadoop/pig.properties log4jconf)
+opts="-x local -propertyFile $TEST_DIR/hadoop/pig.properties"
+
+msg=$("$PIG_PROP" --print-keys $opts log4jconf)
 [[ $msg =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>"
 
-msg=$("$PIG_PROP" --print-values --props-file=$TEST_DIR/hadoop/pig.properties log4jconf)
+msg=$("$PIG_PROP" --print-values $opts log4jconf)
 [[ $msg =~ \./conf/log4j\.properties ]] || die "Missing ./conf/log4j.properties? msg = <$msg>"
 
 echo "  regular expressions tests:"
 
-msg=$("$PIG_PROP" --print-keys --props-file=$TEST_DIR/hadoop/pig.properties --regex=^log4j)
+msg=$("$PIG_PROP" --print-keys $opts --regex=^log4j)
 [[ $msg =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>"
 
-msg=$("$PIG_PROP" --print-values --props-file=$TEST_DIR/hadoop/pig.properties --regex=^log4j)
+msg=$("$PIG_PROP" --print-values $opts --regex=^log4j)
 [[ $msg =~ \./conf/log4j\.properties ]] || die "Missing ./conf/log4j.properties? msg = <$msg>"
 
 echo "  options tests:"
 
-"$PIG_PROP" --print-keys --props-file=$TEST_DIR/hadoop/pig.properties --all | grep log4jconf | ( read line
+"$PIG_PROP" --print-keys $opts --all | grep log4jconf | ( read line
 [[ $line =~ log4jconf ]] || die "Missing log4jconf? msg = <$msg>" )
 
 "$PIG_PROP" 2>&1 | ( read line
 [[ $line =~ ERROR:.Must.specify.one.or.more.names,.--regex=re,.or.--all ]] || die "Expected error message: msg = <$line>" )
 
-# This test will fail if there is no pig.properties in your environment:
-"$PIG_PROP" -v --all 2>&1 | ( read line
-[[ $line =~ Using.pig.properties ]] || die "Expected verbose message about which Pig properties file: msg = <$line>" )
+"$PIG_PROP" -z 2>&1 | ( read line
+[[ $line =~ ERROR:.Unrecognized.or.disallowed.pig.shell.argument:.\"-z\" ]] || die "Expected bad argument message: msg = <$line>" )
 
-"$PIG_PROP" -v -f $TEST_DIR/hadoop/pig.properties --all 2>&1 | ( read line
-[[ $line =~ Using.pig.properties ]] || die "Expected verbose message about which Pig properties file: msg = <$line>" )
-
-"$PIG_PROP" -v -f $TEST_DIR/hadoop/pig.properties --all 2>&1 | ( read line
-[[ $line =~ Using.pig.properties ]] || die "Expected verbose message about which Pig properties file: msg = <$line>" )
-
-"$PIG_PROP" -x 2>&1 | ( read line
-[[ $line =~ ERROR:.Unrecognized.argument.\"-x\" ]] || die "Expected bad argument message: msg = <$line>" )
-
-"$PIG_PROP" -x > /dev/null
+"$PIG_PROP" -z > /dev/null
 [ $? -eq 0 ] && die "Failed to return error status for invalid -x option!"
 
-msg=$("$PIG_PROP" -f $TEST_DIR/hadoop/pig.properties --all)
-[ -n "$msg" ] || die "No output for --all!"
+exit 0

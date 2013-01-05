@@ -4,3 +4,4 @@ stampede-v*.tar.gz
 stampede-v*
 src/hadoop/mapreduce-configuration/bin/**
 src/hadoop/mapreduce-configuration/mr-config.jar
+tmp

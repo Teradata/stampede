@@ -52,7 +52,7 @@ Log4J configuration file.
 Class name of the scripting engine interpreter (e.g., for Jython).
 .RE
 .PP
-\fB-m\fR | \fB-paramfile\fR \fIparam_file\fR
+\fB-m\fR | \fB-param_file\fR \fIparam_file\fR
 .RS 4
 A file with parameter/property definitions.
 .RE
@@ -62,7 +62,7 @@ A file with parameter/property definitions.
 A parameter/property definition.
 .RE
 .PP
-\fB-P\fR | \fB-propertyfile\fR \fIproperty_file\fR
+\fB-P\fR | \fB-propertyFile\fR \fIproperty_file\fR
 .RS 4
 A file with property definitions.
 .RE
@@ -103,6 +103,14 @@ Success if no errors occur, as described next. If no matches are found, nothing 
 .RS 4
 Failure if a \fIpig.properties\fR file is not found, \fB--all\fR or no strings or regular expressions are specified, etc.
 .RE
+.sp
+.SH NOTES
+\fIPig-prop(1)\fR uses the local file system's \fB/tmp\fR for temporary files. If this doesn't exist or it's not writable, pick another directory. Edit \fBpig-prop.pig\fR in the same directory
+as \fIpig-prop(1)\fR and change the "register ..." line to use that directory instead of
+\fB/tmp\fR, then invoke with "TMP=that_directory pig-prop ..."
+.sp
+.SH WARNING
+Because this runs Pig, it is slow and fragile.
 .sp
 .SH "AUTHOR"
 Dean Wampler, <dean.wampler@thinkbiganalytics.com>.

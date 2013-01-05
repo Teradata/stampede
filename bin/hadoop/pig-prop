@@ -2,59 +2,54 @@
 #------------------------------------------------------------------------------
 # Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.
 #------------------------------------------------------------------------------
-# pig-prop - Show the value for one or more Pig properties from the 
-# $PIG_HOME/conf/pig.properties file.
+# pig-prop - Show the value for one or more Pig properties by running a special
+# Pig script.
+# NOTE: Lots of hacks were used to make this work, so it's fragile...
 
 . "$STAMPEDE_HOME/bin/common.sh"
 
+thisdir=$(dirname ${BASH_SOURCE[0]})
+
 function help {
   cat <<EOF
-$0 - Show the value for one or more Pig variables or properties as defined in "pig.properties".
+$0 - Show the value for one or more Pig variables or properties.
 
-Usage: $0 [-h | --help] [-v | --verbose] [--print-keys | --print-values] \ 
-          [-f file | --prop-file=file] 
+Usage: $0 [-h | --help] [-v | --verbose] [pig options] \ 
+          [--print-keys | --print-values] \ 
           [--all | --regex=re1 [--regex=re2] string1 [string2] ...]
 
 Where:
   -h | --help      Show this message.
-  -v | --verbose   Echo the path to the Pig properties file read.
+  -v | --verbose   Echo the path to the Pig (grunt) shell invoked.
+  pig options      Some pig shell options are supported, those that might
+                   affect the desired property value output. Specifically:
+                   -4 | -log4jconf log4j_conf_file
+                   -g | -embedded script_engine_classname
+                   -m | -paramfile param_file
+                   -p | -param key=value
+                   -P | -propertyfile property_file
+                   -x | -exectype local|mapreduce
+                   While pig doesn't allow it, you can put an "=" between these
+                   options and their arguments. See "pig -h" for details on the
+                   meaning of these options. Using any other pig option is an error.
   --print-keys     Print all matching keys in the "key=value" pairs
                    (default: print the full "key=value").
   --print-values   Print only the values for the matching keys.
                    (Confusing for multiple matches!)
-  -f file
-  --prop-file=file Use "file" instead of searching for the properties file.
   --all            Show ALL properties.
   --regex=re       Regular expression matching all or part of the property name.
   string           String matching the WHOLE the property name.
 
 Either "-all" or one or more combinations of "--regex=re" and/or strings is required.
-NOTE: Only reads the first property file it finds. Eventually, we would like to call
-Pig with a custom UDF to determine the property values.
+NOTE: Uses the local file system's "/tmp" for temporary files. If this doesn't exist
+or it's not writable, pick another directory. Edit pig-prop.pig in the same directory
+as this script and change the "register ..." line to use that directory instead of
+"/tmp", then invoke with "TMP=that_directory pig-prop ...".
+WARNING: Because this runs Pig, it is slow and fragile.
 EOF
 }
 
-function find_prop_file {
-  dirs=()
-  pig=$(which pig)
-  [ $? -eq 0 ] && dirs[0]=${pig%/bin/pig}
-  dirs=(${dirs[@]}
-    /usr/lib/pig
-    /etc/pig 
-    /usr/local/lib/pig
-    /usr/local/etc/pig
-    "$PIG_HOME/conf/pig.properties")
-
-  for dir in ${dirs[@]}
-  do
-    if [ -f $dir/conf/pig.properties ]
-    then
-      echo $dir/conf/pig.properties
-      return 0
-    fi
-  done
-  return 1
-}
+: ${TMP:=/tmp}
 
 function verify_prop_file {
   if [ ! -f "$1" ]
@@ -64,11 +59,14 @@ function verify_prop_file {
   fi
 }
 
-VERBOSE=
+export VERBOSE=
+
 strings=()
 regexs=()
+pig_args=()
 let print_kv=0
 let all=1
+let localmode=1
 while [ $# -ne 0 ]
 do
   case $1 in
@@ -85,23 +83,34 @@ do
     --print-k*)
       let print_kv=-1
       ;;
-    --prop*-file=*)
-      prop_file=${1#--prop*-file=}
-      verify_prop_file "$prop_file"
-      ;;
-    -f)
-      shift
-      prop_file=$1
-      verify_prop_file "$prop_file"
-      ;;
     --print-v*)
       let print_kv=1
       ;;
     --regex=*)
       regexs[${#regexs[@]}]=${1#--regex=}
       ;;
+    -4=*|-log4jconf=*|-g=*|-embedded=*|-m=*|-param_file=*|-p=*|-param=*|-P=*|-propertyFile=*)
+      pig_args[${#pig_args[@]}]=${1%=*}
+      pig_args[${#pig_args[@]}]=${1#*=}
+      ;;
+    -4|-log4jconf|-g|-embedded|-m|-param_file|-p|-param|-P|-propertyFile)
+      pig_args[${#pig_args[@]}]=$1
+      shift
+      pig_args[${#pig_args[@]}]=$1
+      ;;
+    -x=*|-exectype=*)
+      pig_args[${#pig_args[@]}]=${1%=*}
+      pig_args[${#pig_args[@]}]=${1#*=}
+      [ $1 = "local" ] && let localmode=0
+      ;;
+    -x|-exectype)
+      pig_args[${#pig_args[@]}]=$1
+      shift
+      pig_args[${#pig_args[@]}]=$1
+      [ $1 = "local" ] && let localmode=0
+      ;;
     -*)
-      echo "$0: ERROR: Unrecognized argument \"$1\"."
+      echo "$0: ERROR: Unrecognized or disallowed pig shell argument: \"$1\"."
       help
       exit 1
       ;;
@@ -119,17 +128,68 @@ then
   exit 1
 fi
 
-[ -n "$prop_file" ] || prop_file=$(find_prop_file)
-if [ $? -ne 0 ]
+pig_log=$TMP/pig-$$.log
+for s in "-logfile" "$pig_log" "-debug" "ERROR" "-p" "STAMPEDE_HOME=$STAMPEDE_HOME"
+do
+  pig_args[${#pig_args[@]}]=$s
+done
+
+# To make this work, we have to pass a "dummy" file name for Pig to read, 
+# even though we ignore its contents. To make things worse, we have to 
+# give it an HDFS file if running in mapreduce mode or a local file if
+# running in local mode.
+# For local mode, just use the pig script itself.
+dummyfile="$STAMPEDE_HOME/bin/hadoop/pig-prop.pig"
+if [ $localmode -ne 0 ]
 then
-  echo "The Pig properties file was not found using your path and several system directories."
-  echo "Define \$PIG_HOME or add pig to your path."
-  exit 1
+  # For mapreduce mode, put a fake file in the user's HDFS home directory.
+  dummyfile=pig_prop_dummy_file.txt
+  echo "ignore" > $TMP/pig_prop_dummy_file.txt
+  hadoop=$($STAMPEDE_HOME/bin/find-tool hadoop)
+  [ $? -ne 0 ] && exit 1
+  [ -n "$VERBOSE" ] && echo2 "Putting $TMP/pig_prop_dummy_file.txt into your HDFS home directory."
+  $hadoop fs -test -e pig_prop_dummy_file.txt
+  [ $? -ne 0 ] && $hadoop fs -put $TMP/pig_prop_dummy_file.txt pig_prop_dummy_file.txt
+  if [ $? -ne 0 ]
+  then
+    echo2 "Could not put $TMP/pig_prop_dummy_file.txt into your HDFS home directory."
+    exit 1
+  fi
 fi
-[ -n "$VERBOSE" ] && echo "Using pig properties file: $prop_file"
- 
-thisdir=$(dirname ${BASH_SOURCE[0]})
+for s in "-p" "dummyfile=$dummyfile"
+do
+  pig_args[${#pig_args[@]}]=$s
+done
+
+pig=$($STAMPEDE_HOME/bin/find-tool pig)
+[ $? -ne 0 ] && exit 1
+
+[ -n "$VERBOSE" ] && echo "Using pig shell: $pig ${pig_args[@]} -f $thisdir/pig-prop.pig"
+
 . $thisdir/prop-helper.sh
 
-# Cat the file and strip out comment and empty lines.
-$NOOP cat "$prop_file" | grep -v '^#' | grep -v '^[ \t]*$' | each_line
+# Must copy the jar file somewhere so Pig's lame register command can find it.
+cp $STAMPEDE_HOME/bin/hadoop/pig-config.jar $TMP
+if [ $? -ne 0 ]
+then
+  echo2 "Could not stage $STAMPEDE_HOME/bin/hadoop/pig-config.jar to $TMP"
+  exit 1
+fi
+
+# The output we want is (key,value), which we convert to "key=value" before sending 
+# through "each_line".
+$NOOP "$pig" "${pig_args[@]}" -f "$thisdir/pig-prop.pig" 2> /dev/null | \
+  grep '^([^)]*)$' | sed -e 's/[()]//g; s/,/=/' | each_line
+if [ $? -ne 0 -o ${PIPESTATUS[0]} -ne 0 ]
+then
+  logfilemsg=""
+  [ -f $pig_log ] && logfilemsg="See Pig log file for possible clues: $pig_log"
+  echo2 "$0 failed! $logfilemsg"
+  rm -f $TMP/pig-config.jar
+  [ $localmode -ne 0 ] && hadoop fs -rm pig_prop_dummy_file.txt > /dev/null
+  exit 1
+else
+  rm -f $pig_log
+  rm -f $TMP/pig-config.jar
+  [ $localmode -ne 0 ] && hadoop fs -rm pig_prop_dummy_file.txt > /dev/null
+fi
