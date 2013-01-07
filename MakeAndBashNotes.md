@@ -105,6 +105,30 @@ At the moment when I ran `make show_vars`, I got the following output:
 
 Note that `make` variables must be referenced using the `${...}` syntax, unlike `bash` shell variables, where the `{` and `}` are only required to separate text, e.g., something like `${prefix}name`.
 
+### Multi-line Bash Scripts
+
+Note that each line in the *recipe* for a *rule* to build a target is executed in a separate shell invocation. This means multi-command `bash` scripts require care. For example, if you set a variable that will be used in subsequent commands or multi-line constructs like `for` loops. Consider the following sequence of `bash` commands you might run at the `bash` command prompt:
+
+    STAGING=$HOME/staging
+    for f in $FILES
+    do 
+      cp $f $STAGING/$f
+    done
+
+In a recipe, the have to be written on the same line in order to be executed in the same shell process:
+
+        STAGING=${HOME}/staging; for f in ${FILES}; do cp $$f $$STAGING/$$f; done
+
+Note that we separate each command with a semi-colon, we have to reference `${HOME}` with `{...}`, and we have to use two `$$` when referencing shell variables (as opposed to `make` variables). 
+
+Another way to write this more legibly, like the original non-`make` version, is the following:
+
+        STAGING=${HOME}/staging; \
+        for f in ${FILES}; \
+        do \
+          cp $$f $$STAGING/$$f; \
+        done
+
 
 ## Bash Notes
 
@@ -175,6 +199,20 @@ By convention, commands return `0` if successful and nonzero if not. Functions i
     fi
 
 The `$?` variable is the exit status of the previously-run command (e.g., `my_command`) and it will be `0` if the command succeeded. Note, you we used `-ne` for the test instead of `!=`, because `$?` is actually a number. In fact, `!=` would have worked, too, but it would have treated `$?` and `0` as strings.
+
+A related scenario is the need to loop forever or at least until a task fails:
+
+    do_something_that_succeeds
+    while [ $? -eq 0 ]
+    then
+      ...
+      some_command      
+    fi
+    echo "It failed!"
+
+A few points to keep in mind. First, the initial test of `$? -eq 0` will fail unless the command just before it, `do_something_that_succeeds` returns `0`. By the way, `let i=0`, to initialize a loop counter, actually returns `1` (failure)! However, `let i=1` or any other integer returns `0` (success)! 
+
+Similarly, your call to `some_command` must be the last command in the loop. If you do something after it, e.g., increment an integer counter, the success of *that* command will be tested, which is probably not what you intended.
 
 ### Conditionally Set a Variable
 

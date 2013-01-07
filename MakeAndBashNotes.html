@@ -135,6 +135,33 @@ bin/common.sh bin/env.sh bin/log.sh
 
 <p>Note that <code>make</code> variables must be referenced using the <code>${...}</code> syntax, unlike <code>bash</code> shell variables, where the <code>{</code> and <code>}</code> are only required to separate text, e.g., something like <code>${prefix}name</code>.</p>
 
+<h3 id="multi-linebashscripts">Multi-line Bash Scripts</h3>
+
+<p>Note that each line in the <em>recipe</em> for a <em>rule</em> to build a target is executed in a separate shell invocation. This means multi-command <code>bash</code> scripts require care. For example, if you set a variable that will be used in subsequent commands or multi-line constructs like <code>for</code> loops. Consider the following sequence of <code>bash</code> commands you might run at the <code>bash</code> command prompt:</p>
+
+<pre><code>STAGING=$HOME/staging
+for f in $FILES
+do 
+  cp $f $STAGING/$f
+done
+</code></pre>
+
+<p>In a recipe, the have to be written on the same line in order to be executed in the same shell process:</p>
+
+<pre><code>    STAGING=${HOME}/staging; for f in ${FILES}; do cp $$f $$STAGING/$$f; done
+</code></pre>
+
+<p>Note that we separate each command with a semi-colon, we have to reference <code>${HOME}</code> with <code>{...}</code>, and we have to use two <code>$$</code> when referencing shell variables (as opposed to <code>make</code> variables). </p>
+
+<p>Another way to write this more legibly, like the original non-<code>make</code> version, is the following:</p>
+
+<pre><code>    STAGING=${HOME}/staging; \
+    for f in ${FILES}; \
+    do \
+      cp $$f $$STAGING/$$f; \
+    done
+</code></pre>
+
 <h2 id="bashnotes">Bash Notes</h2>
 
 <p>A few advanced bash constructs are used. Some are briefly described here, but more complete information is readily available on the Internet. Recall that the <a href="README.html">README</a> mentioned that we have restricted ourselves to constructs in <code>bash</code> v3.X, which is the current release on Mac OSX. However, you can use <code>bash</code> v4.X constructs if you&#8217;re working exclusively on Linux systems.</p>
@@ -208,6 +235,21 @@ fi
 </code></pre>
 
 <p>The <code>$?</code> variable is the exit status of the previously-run command (e.g., <code>my_command</code>) and it will be <code>0</code> if the command succeeded. Note, you we used <code>-ne</code> for the test instead of <code>!=</code>, because <code>$?</code> is actually a number. In fact, <code>!=</code> would have worked, too, but it would have treated <code>$?</code> and <code>0</code> as strings.</p>
+
+<p>A related scenario is the need to loop forever or at least until a task fails:</p>
+
+<pre><code>do_something_that_succeeds
+while [ $? -eq 0 ]
+then
+  ...
+  some_command      
+fi
+echo &quot;It failed!&quot;
+</code></pre>
+
+<p>A few points to keep in mind. First, the initial test of <code>$? -eq 0</code> will fail unless the command just before it, <code>do_something_that_succeeds</code> returns <code>0</code>. By the way, <code>let i=0</code>, to initialize a loop counter, actually returns <code>1</code> (failure)! However, <code>let i=1</code> or any other integer returns <code>0</code> (success)! </p>
+
+<p>Similarly, your call to <code>some_command</code> must be the last command in the loop. If you do something after it, e.g., increment an integer counter, the success of <em>that</em> command will be tested, which is probably not what you intended.</p>
 
 <h3 id="conditionallysetavariable">Conditionally Set a Variable</h3>
 
