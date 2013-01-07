@@ -18,7 +18,7 @@ STAMPEDE_HOME = ${PWD}
 VERSION       = $(shell cat VERSION)
 RELEASE_NAME  = stampede-v${VERSION}
 RELEASE_FILE  = ${RELEASE_NAME}.tar.gz
-RELEASE_FILE_CONTENTS = README.md README.html LICENSE VERSION FAQs.md Makefile bin src custom contrib man examples test
+RELEASE_FILE_CONTENTS = *.md *.html LICENSE VERSION FAQs.md Makefile bin src custom contrib man examples test
 
 TESTS_LOGGING = format-log-message to-log-level from-log-level log
 TESTS_CORE1   = $(wildcard test/test-*.sh)
