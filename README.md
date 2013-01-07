@@ -2,7 +2,7 @@
 
 Dean Wampler<br/>
 [dean.wampler@thinkbiganalytics.com](mailto:dean.wampler@thinkbiganalytics.com)<br/>
-December 30, 2012
+January 9, 2013
 
 *Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.*
 
