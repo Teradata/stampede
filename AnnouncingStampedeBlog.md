@@ -166,6 +166,6 @@ Currently, there are three additional tools provided by *Stampede* for determini
 
 ## Where to Go from Here
 
-Download a release or clone the [Stampede GitHub repo](https://github.com/ThinkBigAnalytics/stampede) and follow the instuctions in the [README](https://github.com/ThinkBigAnalytics/stampede) for installing *Stampede* and using it. You'll also find the Hadoop example we discussed above in `$STAMPEDE_HOME/examples/hadoop`.
+Download a release or clone the [Stampede GitHub repo](https://github.com/ThinkBigAnalytics/stampede) and follow the instuctions in the [README](https://github.com/ThinkBigAnalytics/stampede) for installing *Stampede* and using it. You'll also find the Hadoop example we discussed above in `$STAMPEDE_HOME/examples/hadoop`. See also our [GitHub Wiki](https://github.com/ThinkBigAnalytics/stampede/wiki).
 
 We hope you find *Stampede* useful. Consider joining our Google Group, [stampede-users](https://groups.google.com/forum/#!forum/stampede-users).
