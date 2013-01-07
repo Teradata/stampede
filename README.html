@@ -23,7 +23,7 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
       <h1 id="stampedereadme">Stampede README</h1>
 
 <p>Dean Wampler<br/>
-<a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#100;&#x65;&#x61;&#x6e;&#46;&#x77;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#114;&#64;&#x74;&#x68;&#105;&#110;&#x6b;&#98;&#105;&#103;&#97;&#x6e;&#x61;&#108;&#x79;&#x74;&#105;&#x63;&#115;&#46;&#x63;&#111;&#x6d;">&#x64;&#x65;&#x61;&#x6e;&#x2e;&#119;&#x61;&#x6d;&#112;&#x6c;&#x65;&#114;&#x40;&#x74;&#x68;&#105;&#x6e;&#107;&#98;&#105;&#103;&#97;&#x6e;&#x61;&#108;&#121;&#116;&#x69;&#99;&#x73;&#x2e;&#x63;&#x6f;&#x6d;</a><br/>
+<a href="&#109;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#x64;&#101;&#x61;&#110;&#46;&#119;&#97;&#x6d;&#112;&#108;&#101;&#x72;&#64;&#x74;&#x68;&#105;&#110;&#107;&#98;&#105;&#x67;&#97;&#x6e;&#x61;&#x6c;&#x79;&#x74;&#x69;&#99;&#115;&#x2e;&#x63;&#111;&#109;">&#x64;&#x65;&#x61;&#x6e;&#46;&#119;&#97;&#x6d;&#112;&#x6c;&#101;&#114;&#x40;&#x74;&#x68;&#x69;&#x6e;&#107;&#98;&#x69;&#103;&#x61;&#x6e;&#97;&#x6c;&#x79;&#116;&#105;&#x63;&#x73;&#46;&#99;&#x6f;&#x6d;</a><br/>
 January 9, 2013</p>
 
 <p><em>Copyright (c) 2011&#8211;2013, Think Big Analytics, Inc. All Rights Reserved.</em></p>
@@ -31,6 +31,8 @@ January 9, 2013</p>
 <p>Welcome to <em>Stampede</em>, the workflow tool that works as <a href="http://en.wikipedia.org/wiki/Cthulhu">Cthulhu</a> intended for *nix systems, using <code>make</code> for dependency management and task seqeuencing, <code>bash</code> for scripting, and <code>cron</code> for scheduling.</p>
 
 <p><em>Stampede</em> originated as an alternative workflow tool for <a href="http://hadoop.apache.org">Hadoop</a>, but it is not limited to Hadoop scenarios.</p>
+
+<p>If you like <em>Stampede</em>, please consider joining the <a href="https://groups.google.com/forum/#!forum/stampede-users">stampede-users</a> Google group. Also, contributions in the form of Git patches are always welcome.</p>
 
 <h2 id="installation">Installation</h2>
 
@@ -211,7 +213,7 @@ in the results they produce that reflect differences in how they were implemente
 
 <ul>
 <li>The <code>bin/send-email</code> script requires the *nix mail service to be running on the server hosting the stampede.</li>
-<li>Supporting both Linux and Mac <code>date</code> commands added some complexity to the code.</li>
+<li>Supporting both Linux and Mac <code>date</code> commands added some complexity to the code. We might consider deprecating support for the Mac <code>date</code> command (based on a BSD legacy) and instead require Mac users to install the Linux version of <code>date</code> using <a href="http://mxcl.github.com/homebrew/">Homebrew</a> or <a href="http://www.macports.org/">MacPorts</a>. Feedback welcome.</li>
 </ul>
 
 <h2 id="todo">TODO</h2>

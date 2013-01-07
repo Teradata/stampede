@@ -12,11 +12,12 @@
 
 Patches are welcome, of course. For larger contributions, we intend the `$STAMPEDE_HOME/contrib` directory to be location for contributions that are "as-is" and not appropriate to roll into the main code base.
 
-We could also use contributions for supporting tools in addition to Hadoop.
+We also welcome contributions that support specific tool suites, in addition to Hadoop.
 
 Also, if you have *stampedes* (worflows) that demonstrate useful techniques *or* pain-points to improve, send them our way.
+
+Finally, we welcome patches that enable Stampede to work with Cygwin on Windows and Unix distributions where `bash` and Gnu `make` are installed.
 
 # Why does *Stampede* support Mac OSX, as well as Linux?
 
 Like many other server-side applications, *Stampede* was developed on a Mac for use primarily on Linux systems. In principle, it should work with any Unix variant, including Cygwin for Windows, although we have only tested on Mac OSX and several flavors of Linux. See the [README](README.html) for more information on platform issues.
-
