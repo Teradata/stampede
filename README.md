@@ -3,7 +3,7 @@
 Dean Wampler<br/>
 [dean.wampler@thinkbiganalytics.com](mailto:dean.wampler@thinkbiganalytics.com)<br/>
 [@StampedeWkFlow](https://twitter.com/StampedeWkFlow)<br/>
-January 9, 2013
+January 8, 2013
 
 *Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.*
 
@@ -11,7 +11,7 @@ Welcome to *Stampede*, the workflow tool that works as [Cthulhu](http://en.wikip
 
 *Stampede* originated as an alternative workflow tool for [Hadoop](http://hadoop.apache.org), but it is not limited to Hadoop scenarios.
 
-If you like *Stampede*, please consider joining the [stampede-users](https://groups.google.com/forum/#!forum/stampede-users) Google group and following us on Twitter [@StampedeWkFlow](https://twitter.com/StampedeWkFlow). Also, contributions in the form of Git patches are always welcome.
+If you like *Stampede*, please consider joining the [stampede-users](https://groups.google.com/forum/#!forum/stampede-users) Google group and following us on Twitter [@StampedeWkFlow](https://twitter.com/StampedeWkFlow). Also, contributions in the form of patches are always welcome and appreciated.
 
 ## Installation
 
@@ -71,7 +71,7 @@ For help on the `stampede` options:
 * GNU `make` v3.8+ - The `Makefile` in this directory that's used to test and install *Stampede* requires GNU `make` v3.8+, as do the `examples`. However, you can adapt your project `Makefiles` to use any version of `make` you prefer.
 * `cron` - If you plan to use `cron` for scheduling workflows. In fact, *Stampede* doesn't really do anything with `cron` itself; we just recommend that you use it first, before adopting something more heavyweight and proprietary. *Stampede* projects will work fine with any scheduling tool that can invoke shell commands.
 * `syslog` - If you plan to use the *nix logging facility `syslog`. See also the Installation section above.
-* [Hadoop](http://hadoop.apache.org) - *Stampede* was originally designed as a flyweight replacement for [Oozie](http://oozie.apache.org). However, it is not restricted to Hadoop scenarios. All of the Hadoop support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop` (and corresponding tests and `man` pages). 
+* [Hadoop](http://hadoop.apache.org) - *Stampede* was originally designed as a flyweight option for [Hadoop](http://hadoop.apache.org). However, it is not restricted to Hadoop scenarios. All of the Hadoop support consists of helper scripts in `$STAMPEDE_HOME/bin/hadoop` (and corresponding tests and `man` pages). 
 
 *Stampede* is mostly agnostic to tool versions. For any particular tool, including its own scripts, Stampede relies on finding the tool in the user's `PATH`.
  

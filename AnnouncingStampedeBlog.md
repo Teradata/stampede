@@ -4,7 +4,7 @@ Dean Wampler<br/>
 [dean.wampler@thinkbiganalytics.com](mailto:dean.wampler@thinkbiganalytics.com)<br/>
 [@StampedeWkFlow](https://twitter.com/StampedeWkFlow)<br/>
 [@thinkBigA](https://twitter.com/thinkBigA/)<br/>
-January 9, 2013
+January 8, 2013
 
 When you're building nontrivial workflows, you need a tool that lets you express the dependencies between tasks, schedule their execution, detect failures and attempt retries, etc. You also want that tool to be concise, easy to use, yet powerful.
 
@@ -167,6 +167,6 @@ Currently, there are three additional tools provided by *Stampede* for determini
 
 ## Where to Go from Here
 
-Download a release or clone the [Stampede GitHub repo](https://github.com/ThinkBigAnalytics/stampede) and follow the instuctions in the [README](https://github.com/ThinkBigAnalytics/stampede) for installing *Stampede* and using it. You'll also find the Hadoop example we discussed above in `$STAMPEDE_HOME/examples/hadoop`. See also our [GitHub Wiki](https://github.com/ThinkBigAnalytics/stampede/wiki).
+Clone the [Stampede GitHub repo](https://github.com/ThinkBigAnalytics/stampede) (release downloads are TBD) and follow the instuctions in the [README](https://github.com/ThinkBigAnalytics/stampede) for installing *Stampede* and using it. You'll also find the Hadoop example we discussed above in `$STAMPEDE_HOME/examples/hadoop`. See also the Stampede [Wiki](https://github.com/ThinkBigAnalytics/stampede/wiki).
 
 We hope you find *Stampede* useful. Consider joining our Google Group, [stampede-users](https://groups.google.com/forum/#!forum/stampede-users) and following us on Twitter [@StampedeWkFlow](https://twitter.com/StampedeWkFlow).
