@@ -49,7 +49,7 @@ install:
 
 clean: clean-release clean-tests clean-logs clean-build-products
 	
-release: ${RELEASE_FILE}
+release: clean-logs ${RELEASE_FILE}
 
 ${RELEASE_FILE}: clean-release create-release-dir stage-release-file-contents
 	tar czf ${RELEASE_FILE} $$(find ${RELEASE_NAME})
@@ -93,8 +93,10 @@ list-tests:
 	@echo "Syslog tests: ${TESTS_SYSLOG}"
 	@echo "Extras tests: ${TESTS_EXTRAS}"
 
-clean-tests:
-	rm -rf test/logs
+clean-tests: clean-logs
+
+clean-logs:
+	rm -rf test/logs bin/logs bin/hadoop/logs bin/hadoop/pig-prop.pig.substituted
 
 ${TESTS_CORE:%=test-%} ${TESTS_HADOOP:%=hadoop/test-%}:
 	@cd test; \
@@ -105,8 +107,6 @@ ${TESTS_CORE:%=test-%} ${TESTS_HADOOP:%=hadoop/test-%}:
 	  exit 1; \
 	fi
 
-clean-logs:
-	rm -rf logs test/logs
 
 # We do the -z test because these variables will be "" when there are 
 # no contents, e.g., for a fresh git clone or in a release archive!

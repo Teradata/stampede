@@ -3,6 +3,7 @@ save
 tmp
 stampede-v*.tar.gz
 stampede-v*
+bin/hadoop/pig-prop.pig.substituted
 src/hadoop/mapreduce-configuration/bin/
 src/hadoop/pig-configuration/bin/
 src/hadoop/mapreduce-configuration/mr-config.jar
