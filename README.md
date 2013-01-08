@@ -2,6 +2,7 @@
 
 Dean Wampler<br/>
 [dean.wampler@thinkbiganalytics.com](mailto:dean.wampler@thinkbiganalytics.com)<br/>
+[@StampedeWkFlow](https://twitter.com/StampedeWkFlow)<br/>
 January 9, 2013
 
 *Copyright (c) 2011-2013, Think Big Analytics, Inc. All Rights Reserved.*
@@ -10,7 +11,7 @@ Welcome to *Stampede*, the workflow tool that works as [Cthulhu](http://en.wikip
 
 *Stampede* originated as an alternative workflow tool for [Hadoop](http://hadoop.apache.org), but it is not limited to Hadoop scenarios.
 
-If you like *Stampede*, please consider joining the [stampede-users](https://groups.google.com/forum/#!forum/stampede-users) Google group. Also, contributions in the form of Git patches are always welcome.
+If you like *Stampede*, please consider joining the [stampede-users](https://groups.google.com/forum/#!forum/stampede-users) Google group and following us on Twitter [@StampedeWkFlow](https://twitter.com/StampedeWkFlow). Also, contributions in the form of Git patches are always welcome.
 
 ## Installation
 
@@ -172,10 +173,5 @@ Tests of *Stampede* itself are in the `test` directory. The tests provide good e
 * The `bin/send-email` script requires the *nix mail service to be running on the server hosting the stampede.
 * Supporting both Linux and Mac `date` commands added some complexity to the code. We might consider deprecating support for the Mac `date` command (based on a BSD legacy) and instead require Mac users to install the Linux version of `date` using [Homebrew](http://mxcl.github.com/homebrew/) or [MacPorts](http://www.macports.org/). Feedback welcome.
 
-## TODO
 
-* Reading make's output and logging it is noticeably slow when there is a lot of it at once.
-* Add hooks for HCatalog.
-* Add more examples.
-* Test email support with the *nix `mail` command.
  
